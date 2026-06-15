@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LandIt — AI Career Coach</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+:root {
+  --white:   #ffffff;
+  --off:     #f7f7f5;
+  --rule:    #e4e4e0;
+  --ink:     #111110;
+  --mid:     #666662;
+  --soft:    #999994;
+  --accent:  #1a1a18;
+  --blue:    #1c3faa;
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --max: 1160px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 56px; height: 64px;
+}
+.logo {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--ink);
+  letter-spacing: -0.3px;
+}
+.logo em { font-style: italic; color: var(--blue); }
+nav ul {
+  display: flex; gap: 36px; list-style: none;
+}
+nav ul a {
+  font-size: .8rem; font-weight: 500;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--mid); text-decoration: none;
+  transition: color .18s;
+}
+nav ul a:hover { color: var(--ink); }
+.nav-cta {
+  font-size: .8rem; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--white); background: var(--ink);
+  padding: 9px 22px; border-radius: 4px;
+  text-decoration: none; transition: background .18s;
+}
+.nav-cta:hover { background: var(--blue); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  padding: 160px 56px 100px;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+  overflow: hidden;
+}
+.hero-eyebrow {
+  font-size: .75rem; font-weight: 500;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--soft); margin-bottom: 32px;
+  display: flex; align-items: center; gap: 12px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: inline-block; width: 28px; height: 1px;
+  background: var(--soft);
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(3.2rem, 7.5vw, 6.5rem);
+  line-height: 1.0;
+  letter-spacing: -2px;
+  max-width: 820px;
+  margin-bottom: 40px;
+  color: var(--ink);
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--blue);
+}
+.hero-sub {
+  font-size: 1.1rem; font-weight: 400;
+  color: var(--mid); max-width: 480px;
+  line-height: 1.75; margin-bottom: 48px;
+}
+.hero-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.btn-dark {
+  background: var(--ink); color: var(--white);
+  padding: 14px 32px; border-radius: 4px;
+  font-size: .875rem; font-weight: 600;
+  border: none; cursor: pointer; transition: background .18s;
+  letter-spacing: .02em; text-decoration: none; display: inline-block;
+}
+.btn-dark:hover { background: var(--blue); }
+.btn-ghost {
+  background: transparent; color: var(--ink);
+  padding: 14px 32px; border-radius: 4px;
+  font-size: .875rem; font-weight: 500;
+  border: 1px solid var(--rule); cursor: pointer;
+  transition: border-color .18s, color .18s;
+  letter-spacing: .02em;
+}
+.btn-ghost:hover { border-color: var(--ink); }
+
+.hero-stats {
+  display: flex; gap: 0; margin-top: 80px;
+  border-top: 1px solid var(--rule);
+  padding-top: 40px;
+}
+.stat {
+  flex: 1; padding-right: 40px;
+  border-right: 1px solid var(--rule);
+  margin-right: 40px;
+}
+.stat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 2.6rem; line-height: 1;
+  color: var(--ink); margin-bottom: 6px;
+}
+.stat-label {
+  font-size: .78rem; font-weight: 500;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--soft);
+}
+
+/* ── SHARED LAYOUT ── */
+.section {
+  padding: 100px 56px;
+  border-bottom: 1px solid var(--rule);
+}
+.section-inner { max-width: var(--max); margin: 0 auto; }
+.section-alt { background: var(--off); }
+
+.eyebrow {
+  font-size: .72rem; font-weight: 500;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--soft); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.eyebrow::before {
+  content: ''; display: inline-block;
+  width: 20px; height: 1px; background: var(--soft);
+}
+.section-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.1; letter-spacing: -1px;
+  color: var(--ink); margin-bottom: 18px;
+}
+.section-heading em { font-style: italic; color: var(--blue); }
+.section-body {
+  font-size: 1rem; color: var(--mid);
+  line-height: 1.75; max-width: 520px;
+}
+
+/* ── FEATURES ── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin-top: 64px;
+  border-top: 1px solid var(--rule);
+  border-left: 1px solid var(--rule);
+}
+.feat-card {
+  padding: 36px 32px;
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  transition: background .18s;
+}
+.feat-card:hover { background: var(--off); }
+.feat-marker {
+  font-size: .68rem; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--soft); margin-bottom: 20px;
+}
+.feat-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem; font-weight: 400;
+  color: var(--ink); margin-bottom: 10px;
+  line-height: 1.3;
+}
+.feat-card p {
+  font-size: .875rem; color: var(--mid);
+  line-height: 1.7;
+}
+
+/* ── HOW IT WORKS ── */
+.steps {
+  margin-top: 64px;
+  display: flex; flex-direction: column;
+}
+.step {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 32px;
+  padding: 36px 0;
+  border-top: 1px solid var(--rule);
+  align-items: start;
+}
+.step-n {
+  font-family: var(--font-display);
+  font-size: 1rem; font-style: italic;
+  color: var(--soft); padding-top: 4px;
+}
+.step-content h3 {
+  font-family: var(--font-display);
+  font-size: 1.35rem; font-weight: 400;
+  color: var(--ink); margin-bottom: 10px;
+}
+.step-content p {
+  font-size: .9rem; color: var(--mid); line-height: 1.75;
+  max-width: 560px;
+}
+
+/* ── CHATBOT ── */
+.chat-wrap {
+  margin: 60px auto 0;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--white);
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  grid-template-rows: auto 1fr auto;
+  min-height: 540px;
+}
+.chat-topbar {
+  background: var(--ink);
+  padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  grid-column: 1 / -1;
+}
+.chat-topbar-left {
+  display: flex; align-items: center; gap: 10px;
+}
+.chat-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(255,255,255,.2);
+}
+.chat-dot.active { background: #4ade80; }
+.ivy-name {
+  font-size: .88rem; font-weight: 600; color: var(--white);
+  letter-spacing: .02em;
+}
+.ivy-sub {
+  font-size: .7rem; color: rgba(255,255,255,.38);
+  letter-spacing: .06em; text-transform: uppercase;
+}
+
+/* sidebar */
+.chat-sidebar {
+  border-right: 1px solid var(--rule);
+  background: var(--off);
+  grid-row: 2 / 4;
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.sidebar-label {
+  font-size: .65rem; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--soft); padding: 16px 16px 8px;
+}
+.feat-tab {
+  padding: 11px 16px;
+  font-size: .82rem; font-weight: 400;
+  color: var(--mid); background: transparent;
+  border: none; border-left: 2px solid transparent;
+  cursor: pointer; text-align: left;
+  transition: color .15s, background .15s, border-color .15s;
+  font-family: var(--font-body);
+  line-height: 1.3;
+}
+.feat-tab:hover { color: var(--ink); background: rgba(0,0,0,.03); }
+.feat-tab.active {
+  color: var(--ink); background: var(--white);
+  border-left-color: var(--ink);
+  font-weight: 600;
+}
+
+/* messages */
+.chat-messages {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex; flex-direction: column; gap: 18px;
+  background: var(--white);
+}
+.chat-messages::-webkit-scrollbar { width: 3px; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--rule); }
+
+.msg {
+  display: flex; gap: 10px;
+  max-width: 90%;
+  animation: fadeUp .22s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.msg.user { align-self: flex-end; flex-direction: row-reverse; }
+.msg-avatar {
+  width: 26px; height: 26px; border-radius: 3px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .68rem; font-weight: 700; letter-spacing: .02em;
+}
+.msg.ai   .msg-avatar { background: var(--ink); color: var(--white); }
+.msg.user .msg-avatar { background: var(--off); color: var(--ink); border: 1px solid var(--rule); }
+.msg-bubble {
+  padding: 12px 16px; border-radius: 4px;
+  font-size: .875rem; line-height: 1.7;
+}
+.msg.ai   .msg-bubble { background: var(--off); color: var(--ink); border: 1px solid var(--rule); }
+.msg.user .msg-bubble { background: var(--ink); color: var(--white); }
+.msg-bubble strong { font-weight: 600; }
+.msg.user .msg-bubble strong { font-weight: 700; }
+.msg-bubble ul { padding-left: 16px; margin-top: 6px; }
+.msg-bubble li { margin-bottom: 3px; }
+
+.typing-indicator {
+  display: flex; gap: 4px; padding: 12px 14px;
+  background: var(--off); border: 1px solid var(--rule);
+  border-radius: 4px; width: fit-content;
+}
+.typing-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--soft); animation: bounce .8s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: .14s; }
+.typing-dot:nth-child(3) { animation-delay: .28s; }
+@keyframes bounce {
+  0%,60%,100% { transform: translateY(0); }
+  30%          { transform: translateY(-5px); }
+}
+
+.chat-input-wrap {
+  border-top: 1px solid var(--rule);
+  background: var(--white);
+  grid-column: 2;
+}
+#attachment-preview {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 0;
+  max-height: 0; overflow: hidden;
+  transition: max-height .2s, padding .2s;
+}
+#attachment-preview.has-files {
+  max-height: 200px;
+  padding: 12px 16px 0;
+}
+.preview-item {
+  position: relative; display: inline-flex;
+  align-items: center; gap: 6px;
+  background: var(--off); border: 1px solid var(--rule);
+  border-radius: 4px; padding: 6px 10px;
+  font-size: .75rem; color: var(--mid);
+  max-width: 180px;
+}
+.preview-item img {
+  width: 32px; height: 32px; object-fit: cover;
+  border-radius: 2px; flex-shrink: 0;
+}
+.preview-item .preview-name {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  max-width: 100px;
+}
+.preview-remove {
+  background: none; border: none; cursor: pointer;
+  color: var(--soft); font-size: .85rem; padding: 0;
+  flex-shrink: 0; line-height: 1;
+  transition: color .15s;
+}
+.preview-remove:hover { color: var(--ink); }
+.chat-input-row {
+  display: flex; gap: 0;
+}
+.attach-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 48px; flex-shrink: 0;
+  color: var(--soft); cursor: pointer;
+  border-right: 1px solid var(--rule);
+  transition: color .15s, background .15s;
+}
+.attach-btn:hover { color: var(--ink); background: var(--off); }
+#chat-input {
+  flex: 1;
+  border: none; outline: none;
+  padding: 16px 16px;
+  font-size: .875rem; font-family: var(--font-body);
+  color: var(--ink); background: transparent;
+  resize: none; min-height: 52px; max-height: 120px;
+  line-height: 1.5;
+}
+#chat-input::placeholder { color: var(--soft); }
+#send-btn {
+  border: none; border-left: 1px solid var(--rule);
+  background: var(--ink); color: var(--white);
+  padding: 0 24px; cursor: pointer;
+  font-size: .78rem; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  font-family: var(--font-body);
+  transition: background .18s;
+  flex-shrink: 0;
+}
+#send-btn:hover { background: var(--blue); }
+#send-btn:disabled { background: var(--rule); color: var(--soft); cursor: not-allowed; }
+
+/* ── PRICING ── */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0; margin-top: 64px;
+  border: 1px solid var(--rule);
+  border-radius: 4px; overflow: hidden;
+}
+.price-card {
+  padding: 40px 36px;
+  border-right: 1px solid var(--rule);
+  position: relative;
+}
+.price-card:last-child { border-right: none; }
+.price-card.popular { background: var(--ink); }
+.price-tier {
+  font-size: .72rem; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--soft); margin-bottom: 24px;
+}
+.price-card.popular .price-tier { color: rgba(255,255,255,.45); }
+.price-amount {
+  font-family: var(--font-display);
+  font-size: 3rem; line-height: 1;
+  color: var(--ink); margin-bottom: 4px;
+}
+.price-card.popular .price-amount { color: var(--white); }
+.price-per { font-size: .82rem; color: var(--soft); margin-bottom: 20px; }
+.price-card.popular .price-per { color: rgba(255,255,255,.4); }
+.price-desc {
+  font-size: .875rem; color: var(--mid);
+  margin-bottom: 28px; line-height: 1.6;
+}
+.price-card.popular .price-desc { color: rgba(255,255,255,.55); }
+.price-divider { border: none; border-top: 1px solid var(--rule); margin-bottom: 24px; }
+.price-card.popular .price-divider { border-color: rgba(255,255,255,.12); }
+.price-features { list-style: none; display: flex; flex-direction: column; gap: 11px; margin-bottom: 32px; }
+.price-features li {
+  font-size: .83rem; color: var(--mid);
+  display: flex; align-items: flex-start; gap: 10px; line-height: 1.4;
+}
+.price-card.popular .price-features li { color: rgba(255,255,255,.65); }
+.price-features li::before { content: '—'; color: var(--soft); flex-shrink: 0; font-size: .75rem; margin-top: 1px; }
+.price-card.popular .price-features li::before { color: rgba(255,255,255,.3); }
+.price-btn {
+  width: 100%; padding: 12px 20px;
+  border-radius: 4px; font-size: .82rem;
+  font-weight: 600; letter-spacing: .04em;
+  cursor: pointer; transition: all .18s;
+  font-family: var(--font-body);
+  border: 1px solid var(--rule);
+  background: var(--white); color: var(--ink);
+}
+.price-btn:hover { border-color: var(--ink); }
+.price-card.popular .price-btn {
+  background: var(--white); color: var(--ink); border-color: transparent;
+}
+.price-card.popular .price-btn:hover { background: var(--off); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 60px 56px 40px;
+  border-top: 1px solid var(--rule);
+}
+.footer-top {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; gap: 48px;
+  flex-wrap: wrap; padding-bottom: 48px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 32px;
+}
+.footer-brand .logo { font-size: 1.2rem; margin-bottom: 8px; }
+.footer-brand p { font-size: .83rem; color: var(--soft); max-width: 220px; line-height: 1.6; }
+.footer-links { display: flex; gap: 64px; }
+.footer-col h5 {
+  font-size: .68rem; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--soft); margin-bottom: 16px;
+}
+.footer-col a {
+  display: block; font-size: .83rem; color: var(--mid);
+  text-decoration: none; margin-bottom: 10px;
+  transition: color .15s;
+}
+.footer-col a:hover { color: var(--ink); }
+.footer-bottom {
+  display: flex; justify-content: space-between;
+  align-items: center; flex-wrap: wrap; gap: 12px;
+}
+.footer-bottom p { font-size: .78rem; color: var(--soft); }
+
+@media (max-width: 860px) {
+  nav { padding: 0 24px; }
+  nav ul { display: none; }
+  .hero { padding: 140px 24px 80px; }
+  .hero-stats { flex-direction: column; gap: 24px; }
+  .stat { border-right: none; border-bottom: 1px solid var(--rule); padding-bottom: 20px; margin-bottom: 4px; }
+  .section { padding: 72px 24px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .price-card { border-right: none; border-bottom: 1px solid var(--rule); }
+  footer { padding: 48px 24px 32px; }
+  .footer-links { gap: 32px; flex-wrap: wrap; }
+}
+
+/* ── AUTH MODAL ── */
+#auth-modal {
+  position: fixed; inset: 0; z-index: 1000;
+  display: none; align-items: center; justify-content: center;
+}
+.modal-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
+}
+.modal-box {
+  position: relative; z-index: 1;
+  background: var(--white); border: 1px solid var(--rule);
+  border-radius: 8px; padding: 40px 36px;
+  width: 100%; max-width: 400px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.modal-logo {
+  font-family: var(--font-display);
+  font-size: 1.4rem; font-weight: 400;
+  color: var(--ink); margin-bottom: 4px;
+  font-style: italic;
+}
+.modal-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--rule); margin-bottom: 4px; }
+.modal-tab {
+  flex: 1; padding: 10px; background: none; border: none;
+  font-size: .82rem; font-weight: 500; color: var(--soft);
+  cursor: pointer; border-bottom: 2px solid transparent;
+  font-family: var(--font-body); transition: color .15s;
+}
+.modal-tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 600; }
+.auth-error {
+  background: #fef2f2; border: 1px solid #fecaca;
+  color: #991b1b; padding: 10px 14px; border-radius: 4px;
+  font-size: .82rem;
+}
+.modal-box input {
+  border: 1px solid var(--rule); border-radius: 4px;
+  padding: 12px 14px; font-size: .9rem;
+  font-family: var(--font-body); color: var(--ink);
+  outline: none; transition: border-color .15s;
+}
+.modal-box input:focus { border-color: var(--ink); }
+.modal-submit {
+  background: var(--ink); color: var(--white);
+  border: none; border-radius: 4px; padding: 13px;
+  font-size: .88rem; font-weight: 600; cursor: pointer;
+  font-family: var(--font-body); transition: background .18s;
+  margin-top: 4px;
+}
+.modal-submit:hover { background: var(--blue); }
+.modal-submit:disabled { background: var(--soft); cursor: not-allowed; }
+.modal-note { font-size: .72rem; color: var(--soft); text-align: center; line-height: 1.5; }
+.modal-note a { color: var(--mid); }
+
+/* ── PLAN BADGE ── */
+#plan-badge {
+  display: none; font-size: .65rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  background: var(--off); border: 1px solid var(--rule);
+  color: var(--soft); padding: 3px 8px; border-radius: 3px;
+}
+#usage-badge {
+  font-size: .7rem; color: var(--soft);
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Land<em>It</em></div>
+  <ul>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#chat">Try it</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+  <a href="#chat" class="nav-cta">Get started</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">AI Career Coach · Powered by Claude</div>
+  <h1>Stop applying.<br><em>Start landing.</em></h1>
+  <p class="hero-sub">LandIt rewrites your resume, preps you for interviews, researches companies, and coaches you from first application to signed offer.</p>
+  <div class="hero-actions">
+    <button class="btn-dark" onclick="document.getElementById('chat').scrollIntoView({behavior:'smooth'})">Try LandIt free</button>
+    <button class="btn-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">See all features</button>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">3×</div>
+      <div class="stat-label">More interviews</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">47%</div>
+      <div class="stat-label">Higher offer rate</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">12k+</div>
+      <div class="stat-label">Jobs landed</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4.9</div>
+      <div class="stat-label">User rating</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-inner">
+    <div class="eyebrow">Everything you need</div>
+    <h2 class="section-heading">Your unfair advantage<br>in the job market</h2>
+    <p class="section-body">Every tool you need to go from job seeker to offer-holder, in one AI-powered platform.</p>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-marker">Resume</div>
+        <h3>Resume Review & Rewriting</h3>
+        <p>Upload your resume and a job description. AI scores your match, rewrites bullet points for ATS, and makes you impossible to skip.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-marker">Interview</div>
+        <h3>Mock Interview Coach</h3>
+        <p>Role-specific AI interviews with real-time feedback on STAR method, clarity, and confidence. Practice until you're ready.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-marker">Cover Letter</div>
+        <h3>Cover Letter Generator</h3>
+        <p>Tailored cover letters written in your voice, matched to the company's tone and culture in seconds.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-marker">Tracker</div>
+        <h3>Application Tracker</h3>
+        <p>Track every application, status, follow-up date, and resume version. Never lose track of an opportunity again.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-marker">LinkedIn</div>
+        <h3>LinkedIn Optimizer</h3>
+        <p>Rewritten headlines, summaries, and experience sections loaded with recruiter-magnet keywords.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-marker">Negotiation</div>
+        <h3>Salary Negotiation Coach</h3>
+        <p>AI plays the hiring manager. Roleplay offer negotiations until you can confidently ask for more and get it.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-marker">Analysis</div>
+        <h3>Job Description Decoder</h3>
+        <p>Paste any JD and AI reveals what they really mean, culture red flags, and exactly how to position yourself.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-marker">Skills</div>
+        <h3>Skills Gap Analyzer</h3>
+        <p>Compare your profile to your dream role. Get a precise list of certifications and skills that will get you there.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-marker">Research</div>
+        <h3>Company Research Briefing</h3>
+        <p>Enter any company and get an instant prep sheet: recent news, culture insights, likely interview questions, and key people to know.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-marker">Career</div>
+        <h3>Career Path Suggester</h3>
+        <p>Based on your skills and experience, AI maps realistic next roles and long-term career trajectories tailored to you.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-marker">Onboarding</div>
+        <h3>30/60/90 Day Plan</h3>
+        <p>Once you land the job, AI builds your first three-month plan so you impress from day one and never look back.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-marker">Outreach</div>
+        <h3>Cold Outreach Writer</h3>
+        <p>Personalized LinkedIn DMs and referral messages that feel human, not spammy — and actually get replies.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section section-alt" id="how">
+  <div class="section-inner">
+    <div class="eyebrow">How it works</div>
+    <h2 class="section-heading">From lost to hired<br>in four steps</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">One</div>
+        <div class="step-content">
+          <h3>Tell LandIt about your situation</h3>
+          <p>Share your current resume, your target role, and where you are in your job search. LandIt builds a personalized strategy from day one.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">Two</div>
+        <div class="step-content">
+          <h3>Optimize every piece of your application</h3>
+          <p>Rewrite your resume for each job, generate tailored cover letters, and polish your LinkedIn — all in minutes, not hours.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">Three</div>
+        <div class="step-content">
+          <h3>Prepare like a professional for every interview</h3>
+          <p>Run mock interviews, decode the company's culture, and walk in already knowing what questions are coming and exactly how to answer them.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">Four</div>
+        <div class="step-content">
+          <h3>Negotiate your offer and hit the ground running</h3>
+          <p>Practice salary negotiation until it's second nature, compare offers side by side, and start your new role with a 90-day plan ready to go.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHATBOT -->
+<section class="section" id="chat">
+  <div class="section-inner">
+    <div class="eyebrow">AI Career Coach</div>
+    <h2 class="section-heading">Meet <em>Ivy</em></h2>
+    <p class="section-body">Your personal AI career coach, powered by Anthropic Claude. Pick what you need help with and start talking.</p>
+    <div class="chat-wrap">
+      <div class="chat-topbar">
+        <div class="chat-topbar-left">
+          <div class="chat-dot active"></div>
+          <div>
+            <div class="ivy-name">Ivy — LandIt AI</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;"><span id="plan-badge"></span><span id="usage-badge"></span><div class="ivy-sub">Powered by Claude</div></div>
+      </div>
+      <div class="chat-sidebar" id="feature-tabs">
+        <div class="sidebar-label">What can I help with?</div>
+        <button class="feat-tab active" data-feature="resume">Resume Review</button>
+        <button class="feat-tab" data-feature="interview">Mock Interview</button>
+        <button class="feat-tab" data-feature="coverletter">Cover Letter</button>
+        <button class="feat-tab" data-feature="company">Company Research</button>
+        <button class="feat-tab" data-feature="career">Career Path</button>
+        <button class="feat-tab" data-feature="salary">Salary Coach</button>
+        <button class="feat-tab" data-feature="decoder">JD Decoder</button>
+        <button class="feat-tab" data-feature="skills">Skills Gap</button>
+        <button class="feat-tab" data-feature="outreach">Cold Outreach</button>
+        <button class="feat-tab" data-feature="plan">30/60/90 Plan</button>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-input-wrap">
+        <div id="attachment-preview"></div>
+        <div class="chat-input-row">
+          <label for="file-upload" class="attach-btn" title="Attach image or file">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.41 17.41a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+          </label>
+          <input type="file" id="file-upload" accept="image/*,.pdf" style="display:none" multiple />
+          <textarea id="chat-input" placeholder="Message Ivy…" rows="1"></textarea>
+          <button id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section section-alt" id="pricing">
+  <div class="section-inner">
+    <div class="eyebrow">Pricing</div>
+    <h2 class="section-heading">Invest in your career</h2>
+    <p class="section-body">One month of LandIt costs less than one hour with a career coach — and it never sleeps.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-tier">Starter</div>
+        <div class="price-amount">$0</div>
+        <div class="price-per">per month</div>
+        <div class="price-desc">Try LandIt with no commitment.</div>
+        <hr class="price-divider">
+        <ul class="price-features">
+          <li>1 resume review per month</li>
+          <li>3 cover letters</li>
+          <li>5 mock interview sessions</li>
+          <li>Company research (3 searches)</li>
+          <li>Application tracker (10 jobs)</li>
+        </ul>
+        <button class="price-btn">Get started free</button>
+      </div>
+      <div class="price-card popular">
+        <div class="price-tier">Pro</div>
+        <div class="price-amount">$19</div>
+        <div class="price-per">per month</div>
+        <div class="price-desc">Everything you need to land the role.</div>
+        <hr class="price-divider">
+        <ul class="price-features">
+          <li>Unlimited resume rewrites</li>
+          <li>Unlimited cover letters</li>
+          <li>Unlimited mock interviews</li>
+          <li>Salary negotiation coach</li>
+          <li>Skills gap analyzer</li>
+          <li>LinkedIn optimizer</li>
+          <li>Unlimited company research</li>
+          <li>Career path suggester</li>
+          <li>Cold outreach writer</li>
+        </ul>
+        <button class="price-btn">Start Pro free</button>
+      </div>
+      <div class="price-card">
+        <div class="price-tier">Teams</div>
+        <div class="price-amount">$49</div>
+        <div class="price-per">per month</div>
+        <div class="price-desc">For bootcamps and career programs.</div>
+        <hr class="price-divider">
+        <ul class="price-features">
+          <li>Everything in Pro</li>
+          <li>Up to 25 team seats</li>
+          <li>Admin dashboard</li>
+          <li>Progress analytics</li>
+          <li>White-label option</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="price-btn">Contact sales</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="logo">Land<em>It</em></div>
+      <p>Your AI career coach, available around the clock.</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h5>Product</h5>
+        <a href="#">Features</a>
+        <a href="#">Pricing</a>
+        <a href="#">Changelog</a>
+        <a href="#">Roadmap</a>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <a href="#">About</a>
+        <a href="#">Blog</a>
+        <a href="#">Careers</a>
+        <a href="#">Press</a>
+      </div>
+      <div class="footer-col">
+        <h5>Legal</h5>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 LandIt. All rights reserved.</p>
+    <p>Powered by Anthropic Claude</p>
+  </div>
+</footer>
+
+<script>
+const featurePrompts = {
+  resume: `You are LandIt's Resume Coach. Help users improve their resumes. Ask for their current resume content and target job description, then provide specific ATS-friendly rewrites, bullet point improvements, and keyword suggestions. Be specific, actionable, and encouraging.`,
+  interview: `You are LandIt's Mock Interview Coach. Conduct realistic job interviews. Ask the user what role they're interviewing for, then ask them one interview question at a time. After each answer, give detailed feedback on their STAR method, specificity, and delivery.`,
+  coverletter: `You are LandIt's Cover Letter Writer. Help users craft compelling, tailored cover letters. Ask for their target role, company, key experience, and what excites them about the role. Then write a polished, personalized cover letter.`,
+  company: `You are LandIt's Company Research Analyst. When a user gives you a company name, provide a comprehensive briefing: company overview, recent news, culture and values, typical interview process, key executives, and tips for standing out. Be thorough and structured.`,
+  career: `You are LandIt's Career Path Advisor. Help users map their career trajectory. Ask about their current role, years of experience, skills, interests, and goals. Then suggest realistic next roles, long-term paths, skills to develop, and timelines.`,
+  salary: `You are LandIt's Salary Negotiation Coach. Help users negotiate better compensation. Roleplay as a hiring manager making an offer, then coach the user through countering effectively. Share specific scripts, tactics, and data points.`,
+  decoder: `You are LandIt's Job Description Decoder. When a user pastes a job description, analyze it deeply: explain what buzzwords really mean, identify green and red flags, reveal what the culture is likely like, and explain what skills are truly essential vs. nice-to-have.`,
+  skills: `You are LandIt's Skills Gap Analyzer. Ask the user for their current skills and their target role. Then provide a detailed gap analysis: what they have, what's missing, which certifications would help most, and a prioritized action plan.`,
+  outreach: `You are LandIt's Networking Coach. Help users write personalized LinkedIn messages, cold emails, and referral requests. Ask who they're reaching out to and why, then craft messages that feel human and actually get replies.`,
+  plan: `You are LandIt's Onboarding Coach. Help users build a 30/60/90 day plan for a new job. Ask about their role, team, and goals. Create a structured plan that will help them build relationships, deliver quick wins, and establish themselves as a top performer.`
+};
+
+const featureWelcomes = {
+  resume: "Hey, I'm Ivy! I'm here to make your resume impossible to ignore. Paste your current resume and the job description you're going for, and I'll rewrite it to beat ATS filters and catch a recruiter's eye.",
+  interview: "Hey, I'm Ivy! Think of me as your personal interview coach. Tell me what role you're interviewing for and I'll put you through the real questions — then give you honest, specific feedback on every answer.",
+  coverletter: "Hey, I'm Ivy! Cover letters are my thing. Tell me the role, the company, and what genuinely excites you about this opportunity — and I'll write you something that actually gets read.",
+  company: "Hey, I'm Ivy! Walking into an interview blind is never a good look. Tell me which company you're researching and I'll brief you on everything — their culture, recent news, who's who, and what questions they're likely to ask.",
+  career: "Hey, I'm Ivy! Not sure where your career is headed? Let's figure it out together. Tell me where you are right now — your role, experience, and what you're hoping for — and I'll map out what's realistically possible for you.",
+  salary: "Hey, I'm Ivy! Most people leave money on the table because they don't practice negotiating. I can roleplay as a hiring manager making you an offer so you can practice pushing back — or help you with a real offer you've received.",
+  decoder: "Hey, I'm Ivy! Job descriptions are often full of jargon that hides what they actually want. Paste one below and I'll break it down — the real requirements, the red flags, and exactly how to position yourself to stand out.",
+  skills: "Hey, I'm Ivy! Let's be honest about where you stand. Share your current skills and the role you're targeting, and I'll tell you exactly what's missing and how to close the gap as fast as possible.",
+  outreach: "Hey, I'm Ivy! Cold outreach is awkward — until you know what to say. Tell me who you're trying to reach and why, and I'll write you a message that feels genuine and actually gets a reply.",
+  plan: "Hey, I'm Ivy! Landing the job is just the beginning. Tell me about your new role and company, and I'll build you a 30/60/90 day plan so you show up ready to make a real impression from week one."
+};
+
+let currentFeature = 'resume';
+let conversationHistory = [];
+let isLoading = false;
+let pendingFiles = []; // { file, base64, mediaType, isImage }
+
+window.addEventListener('load', () => setFeature('resume'));
+
+document.getElementById('feature-tabs').addEventListener('click', e => {
+  const tab = e.target.closest('.feat-tab');
+  if (!tab) return;
+  const f = tab.dataset.feature;
+  if (f === currentFeature) return;
+  document.querySelectorAll('.feat-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  setFeature(f);
+});
+
+function setFeature(feature) {
+  currentFeature = feature;
+  conversationHistory = [];
+  pendingFiles = [];
+  document.getElementById('chat-messages').innerHTML = '';
+  renderPreview();
+  addMessage('ai', featureWelcomes[feature]);
+}
+
+// ── FILE HANDLING ──
+document.getElementById('file-upload').addEventListener('change', async function() {
+  const files = Array.from(this.files);
+  for (const file of files) {
+    const isImage = file.type.startsWith('image/');
+    const isPDF = file.type === 'application/pdf';
+    if (!isImage && !isPDF) continue;
+    const base64 = await toBase64(file);
+    pendingFiles.push({ file, base64, mediaType: file.type, isImage, isPDF });
+  }
+  this.value = '';
+  renderPreview();
+});
+
+// Drag-and-drop onto chat messages
+const chatMessages = document.getElementById('chat-messages');
+chatMessages.addEventListener('dragover', e => { e.preventDefault(); chatMessages.style.background = 'var(--off)'; });
+chatMessages.addEventListener('dragleave', () => { chatMessages.style.background = ''; });
+chatMessages.addEventListener('drop', async e => {
+  e.preventDefault();
+  chatMessages.style.background = '';
+  const files = Array.from(e.dataTransfer.files);
+  for (const file of files) {
+    const isImage = file.type.startsWith('image/');
+    const isPDF = file.type === 'application/pdf';
+    if (!isImage && !isPDF) continue;
+    const base64 = await toBase64(file);
+    pendingFiles.push({ file, base64, mediaType: file.type, isImage, isPDF });
+  }
+  renderPreview();
+});
+
+// Paste images directly
+document.getElementById('chat-input').addEventListener('paste', async e => {
+  const items = Array.from(e.clipboardData.items);
+  for (const item of items) {
+    if (!item.type.startsWith('image/')) continue;
+    const file = item.getAsFile();
+    const base64 = await toBase64(file);
+    pendingFiles.push({ file, base64, mediaType: file.type, isImage: true });
+  }
+  if (pendingFiles.length) renderPreview();
+});
+
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+function renderPreview() {
+  const el = document.getElementById('attachment-preview');
+  el.innerHTML = '';
+  if (!pendingFiles.length) { el.classList.remove('has-files'); return; }
+  el.classList.add('has-files');
+  pendingFiles.forEach((pf, i) => {
+    const item = document.createElement('div');
+    item.className = 'preview-item';
+    if (pf.isImage) {
+      item.innerHTML = `<img src="data:${pf.mediaType};base64,${pf.base64}" alt=""/>`;
+    } else {
+      item.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>`;
+    }
+    item.innerHTML += `<span class="preview-name">${pf.file.name}</span>
+      <button class="preview-remove" onclick="removeFile(${i})">×</button>`;
+    el.appendChild(item);
+  });
+}
+
+function removeFile(i) {
+  pendingFiles.splice(i, 1);
+  renderPreview();
+}
+
+// ── MESSAGES ──
+function addMessage(role, text, attachments) {
+  const el = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  let attachHTML = '';
+  if (attachments && attachments.length) {
+    attachHTML = '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">';
+    attachments.forEach(a => {
+      if (a.isImage) {
+        attachHTML += `<img src="data:${a.mediaType};base64,${a.base64}" style="max-width:180px;max-height:140px;border-radius:3px;object-fit:cover;" />`;
+      } else {
+        attachHTML += `<div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border-radius:3px;padding:5px 10px;font-size:.75rem;">`
+          + `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>`
+          + `${a.file.name}</div>`;
+      }
+    });
+    attachHTML += '</div>';
+  }
+  div.innerHTML = `
+    <div class="msg-avatar">${role === 'ai' ? 'Ivy' : 'You'}</div>
+    <div class="msg-bubble">${attachHTML}${fmt(text)}</div>
+  `;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+}
+
+function fmt(t) {
+  return t
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/^### (.*?)$/gm, '<strong style="display:block;margin-top:10px">$1</strong>')
+    .replace(/^## (.*?)$/gm, '<strong style="display:block;margin-top:12px;font-size:.95rem">$1</strong>')
+    .replace(/^- (.*?)$/gm, '<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>')
+    .replace(/\n/g, '<br>');
+}
+
+function showTyping() {
+  const el = document.getElementById('chat-messages');
+  const d = document.createElement('div');
+  d.className = 'msg ai'; d.id = 'typing';
+  d.innerHTML = `<div class="msg-avatar">Ivy</div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+// ── AUTH STATE ──
+let authToken = localStorage.getItem('landit_token') || null;
+let currentUser = null;
+
+async function initAuth() {
+  if (!authToken) return showAuthModal();
+  try {
+    const res = await fetch('/api/auth/me', {
+      headers: { 'Authorization': 'Bearer ' + authToken }
+    });
+    if (!res.ok) { authToken = null; localStorage.removeItem('landit_token'); return showAuthModal(); }
+    const data = await res.json();
+    currentUser = data.user;
+    updateAuthUI();
+  } catch { showAuthModal(); }
+}
+
+function updateAuthUI() {
+  const navCta = document.querySelector('.nav-cta');
+  if (currentUser && navCta) {
+    navCta.textContent = currentUser.plan === 'starter' ? 'Upgrade to Pro' : 'Dashboard';
+    navCta.href = currentUser.plan === 'starter' ? '#pricing' : '#';
+  }
+  // Show plan badge in chat
+  const badge = document.getElementById('plan-badge');
+  if (badge && currentUser) {
+    badge.textContent = currentUser.plan.charAt(0).toUpperCase() + currentUser.plan.slice(1);
+    badge.style.display = 'inline-block';
+  }
+}
+
+function showAuthModal(mode = 'login') {
+  let modal = document.getElementById('auth-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'auth-modal';
+    modal.innerHTML = `
+      <div class="modal-overlay" onclick="closeAuthIfLoggedIn()"></div>
+      <div class="modal-box">
+        <div class="modal-logo">LandIt</div>
+        <div class="modal-tabs">
+          <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Sign in</button>
+          <button class="modal-tab" id="tab-signup" onclick="switchTab('signup')">Create account</button>
+        </div>
+        <div id="auth-error" class="auth-error" style="display:none"></div>
+        <input type="email" id="auth-email" placeholder="Email address" autocomplete="email" />
+        <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password" />
+        <button class="modal-submit" id="auth-submit" onclick="submitAuth()">Sign in</button>
+        <p class="modal-note">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('auth-email').addEventListener('keydown', e => { if (e.key === 'Enter') submitAuth(); });
+    document.getElementById('auth-password').addEventListener('keydown', e => { if (e.key === 'Enter') submitAuth(); });
+  }
+  modal.style.display = 'flex';
+  switchTab(mode);
+}
+
+function closeAuthIfLoggedIn() {
+  if (currentUser) document.getElementById('auth-modal').style.display = 'none';
+}
+
+let authMode = 'login';
+function switchTab(mode) {
+  authMode = mode;
+  document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+  document.getElementById('auth-submit').textContent = mode === 'login' ? 'Sign in' : 'Create account';
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+async function submitAuth() {
+  const email    = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const errEl    = document.getElementById('auth-error');
+  const btn      = document.getElementById('auth-submit');
+
+  if (!email || !password) { showAuthError('Please enter your email and password.'); return; }
+
+  btn.disabled = true; btn.textContent = 'Please wait…';
+
+  try {
+    const res = await fetch(`/api/auth/${authMode}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) { showAuthError(data.error || 'Something went wrong.'); btn.disabled = false; btn.textContent = authMode === 'login' ? 'Sign in' : 'Create account'; return; }
+
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem('landit_token', authToken);
+    document.getElementById('auth-modal').style.display = 'none';
+    updateAuthUI();
+  } catch {
+    showAuthError('Connection error. Please try again.');
+    btn.disabled = false;
+    btn.textContent = authMode === 'login' ? 'Sign in' : 'Create account';
+  }
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+// ── UPGRADE helpers ──
+async function startCheckout(plan) {
+  if (!currentUser) return showAuthModal();
+  try {
+    const res = await fetch('/api/payments/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+      credentials: 'include',
+      body: JSON.stringify({ plan })
+    });
+    const data = await res.json();
+    if (data.url) window.location.href = data.url;
+  } catch { alert('Could not start checkout. Please try again.'); }
+}
+
+// Wire up pricing buttons
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.price-btn').forEach(btn => {
+    const card = btn.closest('.price-card');
+    const tier = card?.querySelector('.price-tier')?.textContent?.toLowerCase();
+    if (tier === 'starter') btn.onclick = () => showAuthModal('signup');
+    if (tier === 'pro')     btn.onclick = () => startCheckout('pro');
+    if (tier === 'teams')   btn.onclick = () => startCheckout('teams');
+  });
+  initAuth();
+});
+
+// ── SEND MESSAGE (via backend) ──
+async function sendMessage() {
+  if (!currentUser) return showAuthModal();
+
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if ((!text && !pendingFiles.length) || isLoading) return;
+
+  const filesToSend = [...pendingFiles];
+  pendingFiles = [];
+  renderPreview();
+  input.value = ''; input.style.height = 'auto';
+  isLoading = true;
+  document.getElementById('send-btn').disabled = true;
+
+  addMessage('user', text || '(see attached file)', filesToSend);
+
+  // Build content array
+  const userContent = [];
+  for (const pf of filesToSend) {
+    if (pf.isImage) {
+      userContent.push({ type: 'image', source: { type: 'base64', media_type: pf.mediaType, data: pf.base64 } });
+    } else if (pf.isPDF) {
+      userContent.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pf.base64 } });
+    }
+  }
+  if (text) userContent.push({ type: 'text', text });
+  else userContent.push({ type: 'text', text: 'Please analyze the attached file and help me with it in the context of ' + currentFeature + '.' });
+
+  conversationHistory.push({ role: 'user', content: userContent });
+  showTyping();
+
+  try {
+    const res = await fetch('/api/ai/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+      credentials: 'include',
+      body: JSON.stringify({ feature: currentFeature, messages: conversationHistory })
+    });
+    const data = await res.json();
+
+    removeTyping();
+
+    if (res.status === 403 && data.upgradeRequired) {
+      addMessage('ai', data.error + ' [Upgrade to Pro](' + '#pricing' + ') to continue.');
+      showUpgradeBanner(data.error);
+    } else if (!res.ok) {
+      addMessage('ai', data.error || 'Something went wrong. Please try again.');
+    } else {
+      conversationHistory.push({ role: 'assistant', content: data.reply });
+      addMessage('ai', data.reply);
+      updateUsageBadge(data.usage);
+    }
+  } catch {
+    removeTyping();
+    addMessage('ai', 'Connection issue — please try again.');
+  }
+  isLoading = false;
+  document.getElementById('send-btn').disabled = false;
+  input.focus();
+}
+
+function updateUsageBadge(usage) {
+  if (!usage || usage.remaining === 'unlimited') return;
+  const badge = document.getElementById('usage-badge');
+  if (badge) {
+    badge.textContent = usage.remaining === 0 ? 'Limit reached' : `${usage.remaining} left this month`;
+    badge.style.color = usage.remaining <= 1 ? '#c0392b' : 'var(--soft)';
+  }
+}
+
+function showUpgradeBanner(message) {
+  let banner = document.getElementById('upgrade-banner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'upgrade-banner';
+    banner.style.cssText = 'background:var(--ink);color:#fff;text-align:center;padding:12px 24px;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:16px;';
+    document.querySelector('.chat-wrap').insertAdjacentElement('afterend', banner);
+  }
+  banner.innerHTML = `<span>${message}</span><button onclick="startCheckout('pro')" style="background:#fff;color:var(--ink);border:none;padding:7px 16px;border-radius:4px;font-weight:600;cursor:pointer;font-size:.8rem;">Upgrade to Pro →</button>`;
+}
+
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+document.getElementById('chat-input').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const el = document.querySelector(a.getAttribute('href'));
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>
