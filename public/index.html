@@ -9,373 +9,137 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --white:#ffffff;
-  --off:#f8f7f4;
-  --ink:#0f0f0d;
-  --mid:#5a5a52;
-  --soft:#9a9a8e;
-  --rule:#e2e2da;
-  --green:#1a7a55;
-  --green-light:#e8f4ef;
-  --accent:#2d6a4f;
-  --font-serif:'Playfair Display',Georgia,serif;
-  --font-body:'Inter',system-ui,sans-serif;
+  --white:#ffffff;--off:#f8f7f4;--ink:#0f0f0d;--mid:#5a5a52;--soft:#9a9a8e;
+  --rule:#e2e2da;--green:#1a7a55;--green-light:#e8f4ef;--accent:#2d6a4f;
+  --font-serif:'Playfair Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;
 }
 html{scroll-behavior:smooth;}
-body{
-  font-family:var(--font-body);
-  color:var(--ink);
-  background:var(--white);
-  overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
-}
-
-/* ── NAV ── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:500;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 56px;height:68px;
-  transition:background .3s,backdrop-filter .3s,box-shadow .3s;
-}
-nav.scrolled{
-  background:rgba(255,255,255,.95);
-  backdrop-filter:blur(16px);
-  box-shadow:0 1px 0 var(--rule);
-}
-.nav-logo{
-  font-family:var(--font-serif);
-  font-size:1.6rem;font-weight:700;
-  color:var(--white);letter-spacing:-.5px;
-  transition:color .3s;
-}
+body{font-family:var(--font-body);color:var(--ink);background:var(--white);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 56px;height:68px;transition:background .3s,box-shadow .3s;}
+nav.scrolled{background:rgba(255,255,255,.95);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--rule);}
+.nav-logo{font-family:var(--font-serif);font-size:1.6rem;font-weight:700;color:var(--white);letter-spacing:-.5px;transition:color .3s;}
 nav.scrolled .nav-logo{color:var(--ink);}
 nav ul{display:flex;gap:32px;list-style:none;}
-nav ul a{
-  font-size:.82rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
-  color:rgba(255,255,255,.8);text-decoration:none;transition:color .2s;
-}
+nav ul a{font-size:.82rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.8);text-decoration:none;transition:color .2s;}
 nav.scrolled ul a{color:var(--mid);}
 nav ul a:hover{color:var(--white);}
 nav.scrolled ul a:hover{color:var(--ink);}
-.nav-cta{
-  font-size:.8rem;font-weight:600;letter-spacing:.04em;
-  color:var(--white);background:var(--accent);
-  padding:10px 24px;border-radius:4px;text-decoration:none;
-  transition:background .2s,color .2s;
-}
+.nav-cta{font-size:.8rem;font-weight:600;letter-spacing:.04em;color:var(--white);background:var(--accent);padding:10px 24px;border-radius:4px;text-decoration:none;transition:background .2s;}
 nav.scrolled .nav-cta{background:var(--ink);color:var(--white);}
 .nav-cta:hover{opacity:.85;}
-
-/* ── HERO — parallax ── */
-.hero{
-  position:relative;height:100vh;min-height:700px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;overflow:hidden;
-}
-.hero-bg{
-  position:absolute;inset:0;z-index:0;
-  background:
-    linear-gradient(160deg,rgba(10,30,20,.82) 0%,rgba(15,40,28,.65) 60%,rgba(10,20,15,.8) 100%),
-    url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1800&q=80') center/cover no-repeat;
-  will-change:transform;
-  transform:translateY(0);
-}
-.hero-content{
-  position:relative;z-index:2;
-  max-width:820px;padding:0 24px;
-}
-.hero-eyebrow{
-  display:inline-flex;align-items:center;gap:10px;
-  font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
-  color:rgba(255,255,255,.6);margin-bottom:28px;
-}
-.hero-eyebrow::before,.hero-eyebrow::after{
-  content:'';display:inline-block;width:24px;height:1px;background:rgba(255,255,255,.3);
-}
-.hero h1{
-  font-family:var(--font-serif);
-  font-size:clamp(3rem,8vw,6.5rem);
-  font-weight:900;line-height:1.02;letter-spacing:-2px;
-  color:var(--white);margin-bottom:28px;
-}
+.hero{position:relative;height:100vh;min-height:700px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;z-index:0;background:linear-gradient(160deg,rgba(10,30,20,.82) 0%,rgba(15,40,28,.65) 60%,rgba(10,20,15,.8) 100%),url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1800&q=80') center/cover no-repeat;will-change:transform;}
+.hero-content{position:relative;z-index:2;max-width:820px;padding:0 24px;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:28px;}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';display:inline-block;width:24px;height:1px;background:rgba(255,255,255,.3);}
+.hero h1{font-family:var(--font-serif);font-size:clamp(3rem,8vw,6.5rem);font-weight:900;line-height:1.02;letter-spacing:-2px;color:var(--white);margin-bottom:28px;}
 .hero h1 em{font-style:italic;color:#7ed4a8;}
-.hero-sub{
-  font-size:1.1rem;color:rgba(255,255,255,.7);
-  line-height:1.75;max-width:520px;margin:0 auto 44px;font-weight:300;
-}
+.hero-sub{font-size:1.1rem;color:rgba(255,255,255,.7);line-height:1.75;max-width:520px;margin:0 auto 44px;font-weight:300;}
 .hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
-.btn-hero-primary{
-  background:var(--white);color:var(--ink);
-  padding:15px 36px;border-radius:4px;
-  font-size:.9rem;font-weight:600;cursor:pointer;border:none;
-  transition:all .2s;letter-spacing:.02em;
-}
+.btn-hero-primary{background:var(--white);color:var(--ink);padding:15px 36px;border-radius:4px;font-size:.9rem;font-weight:600;cursor:pointer;border:none;transition:all .2s;letter-spacing:.02em;}
 .btn-hero-primary:hover{background:#e8f4ef;transform:translateY(-2px);}
-.btn-hero-ghost{
-  background:transparent;color:var(--white);
-  padding:15px 36px;border-radius:4px;
-  font-size:.9rem;font-weight:500;cursor:pointer;
-  border:1px solid rgba(255,255,255,.35);transition:all .2s;
-}
-.btn-hero-ghost:hover{border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.06);}
-
-/* hero stats bar */
-.hero-stats{
-  position:absolute;bottom:0;left:0;right:0;z-index:2;
-  display:flex;border-top:1px solid rgba(255,255,255,.12);
-  background:rgba(0,0,0,.25);backdrop-filter:blur(8px);
-}
-.hero-stat{
-  flex:1;padding:22px 0;text-align:center;
-  border-right:1px solid rgba(255,255,255,.1);
-}
+.btn-hero-ghost{background:transparent;color:var(--white);padding:15px 36px;border-radius:4px;font-size:.9rem;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.35);transition:all .2s;}
+.btn-hero-ghost:hover{border-color:rgba(255,255,255,.7);}
+.hero-stats{position:absolute;bottom:0;left:0;right:0;z-index:2;display:flex;border-top:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);backdrop-filter:blur(8px);}
+.hero-stat{flex:1;padding:22px 0;text-align:center;border-right:1px solid rgba(255,255,255,.1);}
 .hero-stat:last-child{border-right:none;}
-.hero-stat-num{
-  font-family:var(--font-serif);font-size:2rem;font-weight:700;
-  color:var(--white);line-height:1;margin-bottom:4px;
-}
+.hero-stat-num{font-family:var(--font-serif);font-size:2rem;font-weight:700;color:var(--white);line-height:1;margin-bottom:4px;}
 .hero-stat-label{font-size:.7rem;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;}
-
-/* ── PARALLAX IMAGE SECTIONS ── */
-.parallax-section{
-  position:relative;height:500px;overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
-}
-.parallax-bg{
-  position:absolute;inset:-20%;z-index:0;
-  background-size:cover;background-position:center;background-attachment:fixed;
-}
-.parallax-overlay{
-  position:absolute;inset:0;z-index:1;
-}
-.parallax-content{
-  position:relative;z-index:2;
-  text-align:center;padding:0 24px;max-width:720px;
-}
-.parallax-content h2{
-  font-family:var(--font-serif);font-size:clamp(2.2rem,5vw,4rem);
-  font-weight:700;color:var(--white);letter-spacing:-1px;
-  line-height:1.1;margin-bottom:16px;
-}
-.parallax-content p{
-  font-size:1.05rem;color:rgba(255,255,255,.75);line-height:1.7;
-}
-
-/* ── STANDARD SECTIONS ── */
 .section{padding:100px 56px;border-bottom:1px solid var(--rule);}
-.section-alt{background:var(--off);}
 .section-inner{max-width:1140px;margin:0 auto;}
-.section-dark{background:var(--ink);border-bottom:none;}
-
-.eyebrow{
-  font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--soft);margin-bottom:18px;display:flex;align-items:center;gap:12px;
-}
+.section-alt{background:var(--off);}
+.eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--soft);margin-bottom:18px;display:flex;align-items:center;gap:12px;}
 .eyebrow::before{content:'';width:20px;height:1px;background:var(--soft);}
-.eyebrow.light{color:rgba(255,255,255,.4);}
-.eyebrow.light::before{background:rgba(255,255,255,.3);}
-
-.section-heading{
-  font-family:var(--font-serif);
-  font-size:clamp(2rem,4vw,3.2rem);
-  font-weight:700;letter-spacing:-1px;line-height:1.1;
-  margin-bottom:18px;color:var(--ink);
-}
+.section-heading{font-family:var(--font-serif);font-size:clamp(2rem,4vw,3.2rem);font-weight:700;letter-spacing:-1px;line-height:1.1;margin-bottom:18px;color:var(--ink);}
 .section-heading em{font-style:italic;color:var(--accent);}
-.section-heading.light{color:var(--white);}
-.section-heading.light em{color:#7ed4a8;}
 .section-body{font-size:1rem;color:var(--mid);line-height:1.8;max-width:540px;}
-.section-body.light{color:rgba(255,255,255,.6);}
-
-/* ── FEATURES GRID ── */
-.features-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  border-top:1px solid var(--rule);border-left:1px solid var(--rule);
-  margin-top:60px;
-}
-.feat-card{
-  padding:36px 32px;
-  border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);
-  transition:background .18s;position:relative;
-}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule);border-left:1px solid var(--rule);margin-top:60px;}
+.feat-card{padding:36px 32px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);transition:background .18s;position:relative;}
 .feat-card:hover{background:var(--green-light);}
-.feat-card:hover::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);
-}
-.feat-tag{
-  font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--accent);margin-bottom:14px;
-}
-.feat-card h3{
-  font-family:var(--font-serif);font-size:1.15rem;font-weight:700;
-  color:var(--ink);margin-bottom:10px;line-height:1.3;
-}
+.feat-card:hover::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);}
+.feat-tag{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+.feat-card h3{font-family:var(--font-serif);font-size:1.15rem;font-weight:700;color:var(--ink);margin-bottom:10px;line-height:1.3;}
 .feat-card p{font-size:.875rem;color:var(--mid);line-height:1.7;}
-
-/* ── HOW IT WORKS ── */
+.parallax-section{position:relative;height:500px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.parallax-bg{position:absolute;inset:-20%;z-index:0;background-size:cover;background-position:center;background-attachment:fixed;}
+.parallax-overlay{position:absolute;inset:0;z-index:1;}
+.parallax-content{position:relative;z-index:2;text-align:center;padding:0 24px;max-width:720px;}
+.parallax-content h2{font-family:var(--font-serif);font-size:clamp(2.2rem,5vw,4rem);font-weight:700;color:var(--white);letter-spacing:-1px;line-height:1.1;margin-bottom:16px;}
+.parallax-content p{font-size:1.05rem;color:rgba(255,255,255,.75);line-height:1.7;}
 .steps{margin-top:60px;}
-.step{
-  display:grid;grid-template-columns:72px 1fr;gap:28px;
-  padding:36px 0;border-top:1px solid var(--rule);align-items:start;
-}
-.step-num{
-  font-family:var(--font-serif);font-size:3rem;font-weight:900;
-  color:var(--rule);line-height:1;letter-spacing:-2px;
-}
-.step h3{
-  font-family:var(--font-serif);font-size:1.3rem;font-weight:700;
-  margin-bottom:10px;color:var(--ink);
-}
+.step{display:grid;grid-template-columns:72px 1fr;gap:28px;padding:36px 0;border-top:1px solid var(--rule);align-items:start;}
+.step-num{font-family:var(--font-serif);font-size:3rem;font-weight:900;color:var(--rule);line-height:1;letter-spacing:-2px;}
+.step h3{font-family:var(--font-serif);font-size:1.3rem;font-weight:700;margin-bottom:10px;color:var(--ink);}
 .step p{font-size:.9rem;color:var(--mid);line-height:1.75;max-width:560px;}
-
-/* ── CHAT SECTION ── */
-.chat-layout{
-  display:grid;grid-template-columns:260px 1fr;
-  border:1px solid var(--rule);border-radius:8px;overflow:hidden;
-  box-shadow:0 24px 80px rgba(0,0,0,.08);margin-top:60px;
-  background:var(--white);
-}
-.chat-sidebar{
-  background:#0f1a14;
-  display:flex;flex-direction:column;
-  min-width:200px;
-}
-.chat-sidebar-header{
-  padding:20px 20px 16px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-.ivy-brand{
-  font-family:var(--font-serif);font-size:1.1rem;font-weight:700;
-  color:var(--white);display:flex;align-items:center;gap:8px;
-  margin-bottom:4px;
-}
-.ivy-dot{
-  width:8px;height:8px;border-radius:50%;background:#4ade80;
-  box-shadow:0 0 6px #4ade80;
-}
+.chat-layout{display:grid;grid-template-columns:220px 1fr;border:1px solid var(--rule);border-radius:8px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.08);margin-top:60px;background:var(--white);}
+.chat-sidebar{background:#0f1a14;display:flex;flex-direction:column;min-width:220px;}
+.chat-sidebar-header{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
+.ivy-brand{font-family:var(--font-serif);font-size:1.1rem;font-weight:700;color:var(--white);display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.ivy-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;}
 .ivy-tagline{font-size:.7rem;color:rgba(255,255,255,.35);letter-spacing:.06em;}
-.sidebar-label{
-  font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-  color:rgba(255,255,255,.25);padding:20px 20px 8px;
-}
-.feat-tab{
-  padding:11px 20px;font-size:.8rem;font-weight:400;
-  color:rgba(255,255,255,.5);background:transparent;
-  border:none;border-left:2px solid transparent;
-  cursor:pointer;text-align:left;transition:all .15s;
-  font-family:var(--font-body);
-  display:block;width:100%;white-space:nowrap;
-}
+.sidebar-label{font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:20px 20px 8px;}
+#feature-tabs{display:flex;flex-direction:column;width:100%;}
+.feat-tab{padding:11px 20px;font-size:.8rem;font-weight:400;color:rgba(255,255,255,.5);background:transparent;border:none;border-left:2px solid transparent;cursor:pointer;text-align:left;transition:all .15s;font-family:var(--font-body);display:block;width:100%;white-space:nowrap;}
 .feat-tab:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.04);}
-.feat-tab.active{
-  color:var(--white);background:rgba(255,255,255,.07);
-  border-left-color:#4ade80;font-weight:500;
-}
+.feat-tab.active{color:var(--white);background:rgba(255,255,255,.07);border-left-color:#4ade80;font-weight:500;}
 .chat-main{display:flex;flex-direction:column;}
-.chat-topbar{
-  background:var(--off);border-bottom:1px solid var(--rule);
-  padding:14px 24px;display:flex;justify-content:space-between;align-items:center;
-}
+.chat-topbar{background:var(--off);border-bottom:1px solid var(--rule);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;}
 .chat-topbar-title{font-size:.82rem;font-weight:600;color:var(--ink);}
-.chat-topbar-right{font-size:.7rem;color:var(--soft);letter-spacing:.06em;text-transform:uppercase;}
-.chat-messages{
-  flex:1;padding:24px;min-height:360px;max-height:440px;
-  overflow-y:auto;display:flex;flex-direction:column;gap:16px;
-  background:var(--white);
-}
+.chat-topbar-right{font-size:.7rem;color:var(--soft);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:10px;}
+.chat-messages{flex:1;padding:24px;min-height:360px;max-height:440px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;background:var(--white);}
 .chat-messages::-webkit-scrollbar{width:3px;}
 .chat-messages::-webkit-scrollbar-thumb{background:var(--rule);}
 .msg{display:flex;gap:10px;max-width:88%;animation:fadeUp .22s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 .msg.user{align-self:flex-end;flex-direction:row-reverse;}
-.msg-avatar{
-  width:28px;height:28px;border-radius:4px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.68rem;font-weight:700;
-}
+.msg-avatar{width:28px;height:28px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;}
 .msg.ai .msg-avatar{background:#0f1a14;color:#4ade80;}
 .msg.user .msg-avatar{background:var(--off);color:var(--ink);border:1px solid var(--rule);}
-.msg-bubble{
-  padding:12px 16px;border-radius:6px;font-size:.875rem;line-height:1.7;
-}
+.msg-bubble{padding:12px 16px;border-radius:6px;font-size:.875rem;line-height:1.7;}
 .msg.ai .msg-bubble{background:var(--off);border:1px solid var(--rule);color:var(--ink);}
 .msg.user .msg-bubble{background:#0f1a14;color:var(--white);}
 .msg-bubble strong{font-weight:600;}
 .msg-bubble ul{padding-left:16px;margin-top:6px;}
 .msg-bubble li{margin-bottom:3px;}
-.typing-indicator{
-  display:flex;gap:4px;padding:12px 14px;
-  background:var(--off);border:1px solid var(--rule);
-  border-radius:6px;width:fit-content;
-}
-.typing-dot{
-  width:5px;height:5px;border-radius:50%;
-  background:var(--soft);animation:bounce .8s infinite;
-}
-.typing-dot:nth-child(2){animation-delay:.14s;}
-.typing-dot:nth-child(3){animation-delay:.28s;}
-@keyframes bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
+.msg-bubble h3{font-size:.9rem;font-weight:600;margin-top:12px;margin-bottom:4px;color:var(--ink);}
+.msg-bubble hr{border:none;border-top:1px solid var(--rule);margin:10px 0;}
+.msg-bubble table{width:100%;border-collapse:collapse;font-size:.8rem;margin:8px 0;}
+.msg-bubble th{background:var(--rule);padding:6px 8px;text-align:left;font-weight:600;}
+.msg-bubble td{padding:5px 8px;border-bottom:1px solid var(--rule);}
+.typing-indicator{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--off);border:1px solid var(--rule);border-radius:6px;width:fit-content;}
+.typing-bars{display:flex;gap:3px;align-items:flex-end;height:16px;}
+.typing-bar{width:3px;border-radius:2px;background:#2d6a4f;animation:barrise .9s ease-in-out infinite;}
+.typing-bar:nth-child(1){height:6px;animation-delay:0s;}
+.typing-bar:nth-child(2){height:10px;animation-delay:.15s;}
+.typing-bar:nth-child(3){height:14px;animation-delay:.3s;}
+.typing-bar:nth-child(4){height:10px;animation-delay:.45s;}
+.typing-bar:nth-child(5){height:6px;animation-delay:.6s;}
+@keyframes barrise{0%,100%{opacity:.3;transform:scaleY(.6);}50%{opacity:1;transform:scaleY(1);}}
+.typing-text{font-size:.78rem;color:var(--soft);font-style:italic;font-family:var(--font-body);}
 .chat-input-wrap{border-top:1px solid var(--rule);}
-.attach-preview{display:flex;flex-wrap:wrap;gap:8px;max-height:0;overflow:hidden;transition:all .2s;}
-.attach-preview.has-files{max-height:200px;padding:12px 16px 0;}
-.preview-item{
-  display:inline-flex;align-items:center;gap:6px;
-  background:var(--off);border:1px solid var(--rule);border-radius:4px;
-  padding:5px 10px;font-size:.75rem;color:var(--mid);max-width:180px;
-}
-.preview-item img{width:30px;height:30px;object-fit:cover;border-radius:2px;flex-shrink:0;}
-.preview-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100px;}
-.preview-remove{background:none;border:none;cursor:pointer;color:var(--soft);font-size:.85rem;padding:0;transition:color .15s;}
+.attach-preview{display:none;flex-wrap:wrap;gap:8px;padding:12px 16px;border-bottom:1px solid var(--rule);background:var(--off);}
+.attach-preview.has-files{display:flex;}
+.preview-item{display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--rule);border-radius:4px;padding:6px 10px;font-size:.75rem;color:var(--mid);max-width:220px;}
+.preview-item img{width:28px;height:28px;object-fit:cover;border-radius:2px;flex-shrink:0;}
+.preview-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;}
+.preview-remove{background:none;border:none;cursor:pointer;color:var(--soft);font-size:1rem;padding:0 0 0 4px;line-height:1;flex-shrink:0;}
 .preview-remove:hover{color:var(--ink);}
 .chat-input-row{display:flex;}
-.attach-btn{
-  display:flex;align-items:center;justify-content:center;
-  width:48px;flex-shrink:0;color:var(--soft);cursor:pointer;
-  border-right:1px solid var(--rule);transition:all .15s;
-}
+.attach-btn{display:flex;align-items:center;justify-content:center;width:48px;flex-shrink:0;color:var(--soft);cursor:pointer;border:none;background:transparent;border-right:1px solid var(--rule);transition:all .15s;}
 .attach-btn:hover{color:var(--ink);background:var(--off);}
-#chat-input{
-  flex:1;border:none;outline:none;padding:15px 18px;
-  font-size:.875rem;font-family:var(--font-body);color:var(--ink);
-  background:transparent;resize:none;min-height:50px;max-height:120px;line-height:1.5;
-}
+#chat-input{flex:1;border:none;outline:none;padding:15px 18px;font-size:.875rem;font-family:var(--font-body);color:var(--ink);background:transparent;resize:none;min-height:50px;max-height:120px;line-height:1.5;}
 #chat-input::placeholder{color:var(--soft);}
-#send-btn{
-  border:none;border-left:1px solid var(--rule);
-  background:#0f1a14;color:var(--white);padding:0 24px;cursor:pointer;
-  font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
-  font-family:var(--font-body);transition:background .18s;flex-shrink:0;
-}
+#send-btn{border:none;border-left:1px solid var(--rule);background:#0f1a14;color:var(--white);padding:0 24px;cursor:pointer;font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-family:var(--font-body);transition:background .18s;flex-shrink:0;}
 #send-btn:hover{background:var(--accent);}
 #send-btn:disabled{background:var(--rule);color:var(--soft);cursor:not-allowed;}
-
-/* ── PRICING ── */
-.pricing-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:24px;margin-top:60px;
-}
-.price-card{
-  background:var(--white);border:1px solid var(--rule);
-  border-radius:8px;padding:40px 36px;position:relative;
-  transition:transform .2s,box-shadow .2s;
-}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px;}
+.price-card{background:var(--white);border:1px solid var(--rule);border-radius:8px;padding:40px 36px;position:relative;transition:transform .2s,box-shadow .2s;}
 .price-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.08);}
 .price-card.popular{background:var(--ink);border-color:var(--ink);}
-.popular-badge{
-  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
-  background:var(--accent);color:var(--white);
-  padding:5px 20px;border-radius:100px;
-  font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;
-}
-.price-tier{
-  font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--soft);margin-bottom:20px;
-}
+.popular-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--white);padding:5px 20px;border-radius:100px;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;}
+.price-tier{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);margin-bottom:20px;}
 .price-card.popular .price-tier{color:rgba(255,255,255,.4);}
-.price-amount{
-  font-family:var(--font-serif);font-size:3.2rem;font-weight:900;
-  color:var(--ink);line-height:1;margin-bottom:6px;
-}
+.price-amount{font-family:var(--font-serif);font-size:3.2rem;font-weight:900;color:var(--ink);line-height:1;margin-bottom:6px;}
 .price-card.popular .price-amount{color:var(--white);}
 .price-per{font-size:.82rem;color:var(--soft);margin-bottom:16px;}
 .price-card.popular .price-per{color:rgba(255,255,255,.4);}
@@ -384,146 +148,63 @@ nav.scrolled .nav-cta{background:var(--ink);color:var(--white);}
 .price-divider{border:none;border-top:1px solid var(--rule);margin-bottom:24px;}
 .price-card.popular .price-divider{border-color:rgba(255,255,255,.1);}
 .price-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:32px;}
-.price-features li{
-  font-size:.83rem;color:var(--mid);display:flex;align-items:flex-start;gap:10px;line-height:1.4;
-}
+.price-features li{font-size:.83rem;color:var(--mid);display:flex;align-items:flex-start;gap:10px;line-height:1.4;}
 .price-card.popular .price-features li{color:rgba(255,255,255,.65);}
 .price-features li::before{content:'✓';color:var(--accent);font-weight:700;flex-shrink:0;}
 .price-card.popular .price-features li::before{color:#7ed4a8;}
-.price-btn{
-  width:100%;padding:13px;border-radius:6px;
-  font-size:.85rem;font-weight:600;cursor:pointer;
-  border:1px solid var(--rule);background:var(--white);
-  color:var(--ink);transition:all .18s;font-family:var(--font-body);
-}
+.price-btn{width:100%;padding:13px;border-radius:6px;font-size:.85rem;font-weight:600;cursor:pointer;border:1px solid var(--rule);background:var(--white);color:var(--ink);transition:all .18s;font-family:var(--font-body);}
 .price-btn:hover{border-color:var(--ink);}
 .price-card.popular .price-btn{background:var(--white);border-color:transparent;color:var(--ink);}
 .price-card.popular .price-btn:hover{background:var(--off);}
-
-/* ── TESTIMONIALS ── */
-.testimonials-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px;
-}
-.testimonial-card{
-  background:var(--white);border:1px solid var(--rule);
-  border-radius:8px;padding:32px;transition:transform .2s,box-shadow .2s;
-}
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px;}
+.testimonial-card{background:var(--white);border:1px solid var(--rule);border-radius:8px;padding:32px;transition:transform .2s,box-shadow .2s;}
 .testimonial-card:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.06);}
-.testimonial-quote{
-  font-family:var(--font-serif);font-size:1rem;font-style:italic;
-  color:var(--ink);line-height:1.7;margin-bottom:24px;
-}
+.testimonial-quote{font-family:var(--font-serif);font-size:1rem;font-style:italic;color:var(--ink);line-height:1.7;margin-bottom:24px;}
 .testimonial-author{display:flex;align-items:center;gap:12px;}
-.testimonial-avatar{
-  width:40px;height:40px;border-radius:50%;
-  background:var(--green-light);border:2px solid var(--rule);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-serif);font-size:1rem;font-weight:700;color:var(--accent);
-  flex-shrink:0;
-}
+.testimonial-avatar{width:40px;height:40px;border-radius:50%;background:var(--green-light);border:2px solid var(--rule);display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);font-size:1rem;font-weight:700;color:var(--accent);flex-shrink:0;}
 .testimonial-name{font-size:.85rem;font-weight:600;color:var(--ink);}
 .testimonial-role{font-size:.75rem;color:var(--soft);}
-
-/* ── FOOTER ── */
-footer{
-  background:var(--ink);padding:72px 56px 40px;
-}
-.footer-top{
-  display:flex;justify-content:space-between;gap:48px;flex-wrap:wrap;
-  padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:32px;
-}
-.footer-logo{
-  font-family:var(--font-serif);font-size:1.6rem;font-weight:700;
-  color:var(--white);margin-bottom:10px;
-}
+footer{background:var(--ink);padding:72px 56px 40px;}
+.footer-top{display:flex;justify-content:space-between;gap:48px;flex-wrap:wrap;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:32px;}
+.footer-logo{font-family:var(--font-serif);font-size:1.6rem;font-weight:700;color:var(--white);margin-bottom:10px;}
 .footer-tagline{font-size:.85rem;color:rgba(255,255,255,.35);max-width:200px;line-height:1.6;}
 .footer-links{display:flex;gap:56px;flex-wrap:wrap;}
-.footer-col h5{
-  font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-  color:rgba(255,255,255,.3);margin-bottom:18px;
-}
-.footer-col a{
-  display:block;font-size:.83rem;color:rgba(255,255,255,.5);
-  text-decoration:none;margin-bottom:10px;transition:color .15s;
-}
+.footer-col h5{font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:18px;}
+.footer-col a{display:block;font-size:.83rem;color:rgba(255,255,255,.5);text-decoration:none;margin-bottom:10px;transition:color .15s;}
 .footer-col a:hover{color:var(--white);}
-.footer-bottom{
-  display:flex;justify-content:space-between;align-items:center;
-  flex-wrap:wrap;gap:12px;
-}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
 .footer-bottom p{font-size:.78rem;color:rgba(255,255,255,.25);}
-
-/* ── AUTH MODAL ── */
-#auth-modal{
-  position:fixed;inset:0;z-index:1000;
-  display:none;align-items:center;justify-content:center;
-}
+#auth-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;}
 .modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);}
-.modal-box{
-  position:relative;z-index:1;
-  background:var(--white);border-radius:10px;padding:44px 40px;
-  width:100%;max-width:400px;
-  display:flex;flex-direction:column;gap:14px;
-  box-shadow:0 32px 80px rgba(0,0,0,.2);
-}
-.modal-logo{
-  font-family:var(--font-serif);font-size:1.5rem;font-weight:700;
-  color:var(--ink);margin-bottom:4px;
-}
+.modal-box{position:relative;z-index:1;background:var(--white);border-radius:10px;padding:44px 40px;width:100%;max-width:400px;display:flex;flex-direction:column;gap:14px;box-shadow:0 32px 80px rgba(0,0,0,.2);margin:24px;}
+.modal-logo{font-family:var(--font-serif);font-size:1.5rem;font-weight:700;color:var(--ink);margin-bottom:4px;}
 .modal-tabs{display:flex;gap:0;border-bottom:1px solid var(--rule);margin-bottom:4px;}
-.modal-tab{
-  flex:1;padding:10px;background:none;border:none;
-  font-size:.82rem;font-weight:500;color:var(--soft);
-  cursor:pointer;border-bottom:2px solid transparent;font-family:var(--font-body);
-  transition:color .15s;
-}
+.modal-tab{flex:1;padding:10px;background:none;border:none;font-size:.82rem;font-weight:500;color:var(--soft);cursor:pointer;border-bottom:2px solid transparent;font-family:var(--font-body);transition:color .15s;}
 .modal-tab.active{color:var(--ink);border-bottom-color:var(--accent);font-weight:600;}
-.auth-error{
-  background:#fef2f2;border:1px solid #fecaca;color:#991b1b;
-  padding:10px 14px;border-radius:4px;font-size:.82rem;
-}
-.modal-box input{
-  border:1px solid var(--rule);border-radius:4px;padding:12px 14px;
-  font-size:.9rem;font-family:var(--font-body);color:var(--ink);outline:none;
-  transition:border-color .15s;
-}
+.auth-error{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:10px 14px;border-radius:4px;font-size:.82rem;}
+.modal-box input{border:1px solid var(--rule);border-radius:4px;padding:12px 14px;font-size:.9rem;font-family:var(--font-body);color:var(--ink);outline:none;transition:border-color .15s;width:100%;}
 .modal-box input:focus{border-color:var(--accent);}
-.modal-submit{
-  background:var(--ink);color:var(--white);border:none;border-radius:4px;
-  padding:13px;font-size:.88rem;font-weight:600;cursor:pointer;
-  font-family:var(--font-body);transition:background .18s;margin-top:4px;
-}
+.modal-submit{background:var(--ink);color:var(--white);border:none;border-radius:4px;padding:13px;font-size:.88rem;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:background .18s;margin-top:4px;}
 .modal-submit:hover{background:var(--accent);}
 .modal-submit:disabled{background:var(--soft);cursor:not-allowed;}
 .modal-note{font-size:.72rem;color:var(--soft);text-align:center;line-height:1.5;}
 .modal-note a{color:var(--mid);}
-
-/* ── PLAN BADGE ── */
-#plan-badge{
-  display:none;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  background:rgba(126,212,168,.15);border:1px solid rgba(126,212,168,.3);
-  color:#7ed4a8;padding:3px 8px;border-radius:3px;
-}
+#plan-badge{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(126,212,168,.15);border:1px solid rgba(126,212,168,.3);color:#7ed4a8;padding:3px 8px;border-radius:3px;display:none;}
 #usage-badge{font-size:.7rem;color:rgba(255,255,255,.35);}
-
+#legal-modal{position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;}
 @media(max-width:860px){
-  nav{padding:0 24px;}
-  nav ul{display:none;}
+  nav{padding:0 24px;}nav ul{display:none;}
   .section{padding:72px 24px;}
   .features-grid{grid-template-columns:1fr;}
   .pricing-grid{grid-template-columns:1fr;}
   .testimonials-grid{grid-template-columns:1fr;}
-  .chat-layout{grid-template-columns:1fr;grid-template-rows:auto auto;}
+  .chat-layout{grid-template-columns:1fr;}
   .chat-sidebar{display:none;}
   footer{padding:48px 24px 32px;}
-  .footer-links{gap:32px;}
-  .hero-stats{display:none;}
 }
 </style>
 </head>
 <body>
-
-<!-- NAV -->
 <nav id="main-nav">
   <div class="nav-logo">Nuvori</div>
   <ul>
@@ -532,10 +213,8 @@ footer{
     <li><a href="#chat">Try Nuvori AI</a></li>
     <li><a href="#pricing">Pricing</a></li>
   </ul>
-  <a href="#chat" class="nav-cta">Get started free</a>
+  <a href="#chat" class="nav-cta" id="nav-cta-btn">Get started free</a>
 </nav>
-
-<!-- HERO -->
 <section class="hero" id="home">
   <div class="hero-bg" id="hero-parallax"></div>
   <div class="hero-content">
@@ -554,8 +233,6 @@ footer{
     <div class="hero-stat"><div class="hero-stat-num">4.9★</div><div class="hero-stat-label">User rating</div></div>
   </div>
 </section>
-
-<!-- FEATURES -->
 <section class="section" id="features">
   <div class="section-inner">
     <div class="eyebrow">Everything you need</div>
@@ -577,56 +254,26 @@ footer{
     </div>
   </div>
 </section>
-
-<!-- PARALLAX BREAK 1 -->
 <div class="parallax-section">
   <div class="parallax-bg" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600&q=80');"></div>
   <div class="parallax-overlay" style="background:linear-gradient(135deg,rgba(10,30,20,.85),rgba(15,50,35,.75));"></div>
   <div class="parallax-content">
     <h2>Meet <em style="font-style:italic;color:#7ed4a8;">Nuvori AI</em> — your career coach</h2>
-    <p>Available 24/7. Never judgmental. Always in your corner. Nuvori AI is powered by Anthropic Claude — the most thoughtful AI available — and trained to know exactly what hiring managers want.</p>
+    <p>Available 24/7. Never judgmental. Always in your corner. Powered by Anthropic Claude — the most thoughtful AI available — and trained to know exactly what hiring managers want.</p>
   </div>
 </div>
-
-<!-- HOW IT WORKS -->
 <section class="section section-alt" id="how">
   <div class="section-inner">
     <div class="eyebrow">How it works</div>
     <h2 class="section-heading">From stuck to signed<br><em>in four steps.</em></h2>
     <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div>
-          <h3>Tell Nuvori where you are</h3>
-          <p>Share your resume, your target role, and where you're at in your search. Nuvori AI builds a personalized strategy from your very first message.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div>
-          <h3>Optimize every piece of your application</h3>
-          <p>Rewrite your resume for each role, generate tailored cover letters, and polish your LinkedIn — all in minutes, not hours.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div>
-          <h3>Prepare like a professional for every interview</h3>
-          <p>Run mock interviews, decode the company culture, and walk in already knowing what questions are coming and exactly how to answer them.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">04</div>
-        <div>
-          <h3>Negotiate your offer and hit the ground running</h3>
-          <p>Practice salary negotiation until it's second nature, compare offers side by side, and start your new role with a 90-day plan already built.</p>
-        </div>
-      </div>
+      <div class="step"><div class="step-num">01</div><div><h3>Tell Nuvori where you are</h3><p>Share your resume, your target role, and where you're at in your search. Nuvori builds a personalized strategy from your very first message.</p></div></div>
+      <div class="step"><div class="step-num">02</div><div><h3>Optimize every piece of your application</h3><p>Rewrite your resume for each role, generate tailored cover letters, and polish your LinkedIn — all in minutes, not hours.</p></div></div>
+      <div class="step"><div class="step-num">03</div><div><h3>Prepare like a professional for every interview</h3><p>Run mock interviews, decode the company culture, and walk in already knowing what questions are coming and exactly how to answer them.</p></div></div>
+      <div class="step"><div class="step-num">04</div><div><h3>Negotiate your offer and hit the ground running</h3><p>Practice salary negotiation until it's second nature, compare offers side by side, and start your new role with a 90-day plan already built.</p></div></div>
     </div>
   </div>
 </section>
-
-<!-- PARALLAX BREAK 2 -->
 <div class="parallax-section">
   <div class="parallax-bg" style="background-image:url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1600&q=80');"></div>
   <div class="parallax-overlay" style="background:linear-gradient(135deg,rgba(15,26,20,.88),rgba(20,50,35,.78));"></div>
@@ -635,8 +282,6 @@ footer{
     <p>Nuvori users report 3× more interview requests after letting Nuvori AI rewrite their resume and coach them through the application process.</p>
   </div>
 </div>
-
-<!-- CHAT / TRY IVY -->
 <section class="section" id="chat">
   <div class="section-inner">
     <div class="eyebrow">AI Career Coach</div>
@@ -646,11 +291,11 @@ footer{
       <div class="chat-sidebar">
         <div class="chat-sidebar-header">
           <div class="ivy-brand"><span class="ivy-dot"></span>Nuvori AI</div>
-          <div class="ivy-plan" id="plan-badge"></div>
-          <div class="ivy-tagline">Powered by Claude · <span id="usage-badge"></span></div>
+          <div class="ivy-tagline">Powered by Claude</div>
+          <div style="margin-top:6px;display:flex;align-items:center;gap:8px;"><span id="plan-badge"></span><span id="usage-badge"></span></div>
         </div>
         <div class="sidebar-label">What can I help with?</div>
-        <div id="feature-tabs" style="display:flex;flex-direction:column;width:100%;">
+        <div id="feature-tabs">
           <button class="feat-tab active" data-feature="resume">Resume Review</button>
           <button class="feat-tab" data-feature="interview">Mock Interview</button>
           <button class="feat-tab" data-feature="coverletter">Cover Letter</button>
@@ -676,7 +321,7 @@ footer{
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.41 17.41a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
             </button>
             <input type="file" id="file-upload" accept="image/*,.pdf" style="position:fixed;left:-9999px;opacity:0;" multiple/>
-            <textarea id="chat-input" placeholder="Message Nuvori…" rows="1"></textarea>
+            <textarea id="chat-input" placeholder="Message Nuvori AI..." rows="1"></textarea>
             <button id="send-btn" onclick="sendMessage()">Send</button>
           </div>
         </div>
@@ -684,92 +329,45 @@ footer{
     </div>
   </div>
 </section>
-
-<!-- TESTIMONIALS -->
 <section class="section section-alt">
   <div class="section-inner">
     <div class="eyebrow">Real stories</div>
     <h2 class="section-heading">People who found their<br><em>new beginning.</em></h2>
     <div class="testimonials-grid">
-      <div class="testimonial-card">
-        <div class="testimonial-quote">"Nuvori AI rewrote my resume in 10 minutes and I got a callback from Google the next week. I had been applying for 4 months with nothing."</div>
-        <div class="testimonial-author"><div class="testimonial-avatar">M</div><div><div class="testimonial-name">Marcus T.</div><div class="testimonial-role">Software Engineer · Hired at Google</div></div></div>
-      </div>
-      <div class="testimonial-card">
-        <div class="testimonial-quote">"The salary negotiation roleplay was a game changer. I walked in confident and came out with $18k more than their initial offer."</div>
-        <div class="testimonial-author"><div class="testimonial-avatar">S</div><div><div class="testimonial-name">Sarah K.</div><div class="testimonial-role">Product Manager · 18k salary increase</div></div></div>
-      </div>
-      <div class="testimonial-card">
-        <div class="testimonial-quote">"I was changing careers at 38 with no tech background. Nuvori built me a 6-month plan and I landed my first UX role 5 months later."</div>
-        <div class="testimonial-author"><div class="testimonial-avatar">D</div><div><div class="testimonial-name">Diana R.</div><div class="testimonial-role">UX Designer · Career changer</div></div></div>
-      </div>
+      <div class="testimonial-card"><div class="testimonial-quote">"Nuvori AI rewrote my resume in 10 minutes and I got a callback from Google the next week. I had been applying for 4 months with nothing."</div><div class="testimonial-author"><div class="testimonial-avatar">M</div><div><div class="testimonial-name">Marcus T.</div><div class="testimonial-role">Software Engineer · Hired at Google</div></div></div></div>
+      <div class="testimonial-card"><div class="testimonial-quote">"The salary negotiation roleplay was a game changer. I walked in confident and came out with $18k more than their initial offer."</div><div class="testimonial-author"><div class="testimonial-avatar">S</div><div><div class="testimonial-name">Sarah K.</div><div class="testimonial-role">Product Manager · 18k salary increase</div></div></div></div>
+      <div class="testimonial-card"><div class="testimonial-quote">"I was changing careers at 38 with no tech background. Nuvori built me a 6-month plan and I landed my first UX role 5 months later."</div><div class="testimonial-author"><div class="testimonial-avatar">D</div><div><div class="testimonial-name">Diana R.</div><div class="testimonial-role">UX Designer · Career changer</div></div></div></div>
     </div>
   </div>
 </section>
-
-<!-- PRICING -->
 <section class="section" id="pricing">
   <div class="section-inner">
     <div class="eyebrow">Pricing</div>
     <h2 class="section-heading">Invest in your<br><em>new beginning.</em></h2>
-    <p class="section-body">One month of Nuvori costs less than one hour with a career coach — and Nuvori never sleeps.</p>
+    <p class="section-body">One month of Nuvori costs less than one hour with a career coach — and Nuvori AI never sleeps.</p>
     <div class="pricing-grid">
       <div class="price-card">
-        <div class="price-tier">Starter</div>
-        <div class="price-amount">$0</div>
-        <div class="price-per">per month, forever free</div>
-        <div class="price-desc">Try Nuvori with no commitment.</div>
-        <hr class="price-divider"/>
-        <ul class="price-features">
-          <li>1 resume review per month</li>
-          <li>3 cover letters</li>
-          <li>5 mock interview sessions</li>
-          <li>Company research (3 searches)</li>
-          <li>Application tracker (10 jobs)</li>
-        </ul>
+        <div class="price-tier">Starter</div><div class="price-amount">$0</div><div class="price-per">per month, forever free</div>
+        <div class="price-desc">Try Nuvori with no commitment.</div><hr class="price-divider"/>
+        <ul class="price-features"><li>1 resume review per month</li><li>3 cover letters</li><li>5 mock interview sessions</li><li>Company research (3 searches)</li><li>Application tracker (10 jobs)</li></ul>
         <button class="price-btn" onclick="showAuthModal('signup')">Get started free</button>
       </div>
       <div class="price-card popular">
         <div class="popular-badge">Most Popular</div>
-        <div class="price-tier">Pro</div>
-        <div class="price-amount">$19</div>
-        <div class="price-per">per month</div>
-        <div class="price-desc">Everything you need to land the role.</div>
-        <hr class="price-divider"/>
-        <ul class="price-features">
-          <li>Unlimited resume rewrites</li>
-          <li>Unlimited cover letters</li>
-          <li>Unlimited mock interviews</li>
-          <li>Salary negotiation coach</li>
-          <li>Skills gap analyzer</li>
-          <li>LinkedIn optimizer</li>
-          <li>Unlimited company research</li>
-          <li>Career path suggester</li>
-          <li>Cold outreach writer</li>
-        </ul>
+        <div class="price-tier">Pro</div><div class="price-amount">$19</div><div class="price-per">per month</div>
+        <div class="price-desc">Everything you need to land the role.</div><hr class="price-divider"/>
+        <ul class="price-features"><li>Unlimited resume rewrites</li><li>Unlimited cover letters</li><li>Unlimited mock interviews</li><li>Salary negotiation coach</li><li>Skills gap analyzer</li><li>LinkedIn optimizer</li><li>Unlimited company research</li><li>Career path suggester</li><li>Cold outreach writer</li></ul>
         <button class="price-btn" onclick="startCheckout('pro')">Start Pro free</button>
       </div>
       <div class="price-card">
-        <div class="price-tier">Teams</div>
-        <div class="price-amount">$49</div>
-        <div class="price-per">per month</div>
-        <div class="price-desc">For bootcamps and career programs.</div>
-        <hr class="price-divider"/>
-        <ul class="price-features">
-          <li>Everything in Pro</li>
-          <li>Up to 25 team seats</li>
-          <li>Admin dashboard</li>
-          <li>Progress analytics</li>
-          <li>White-label option</li>
-          <li>Priority support</li>
-        </ul>
+        <div class="price-tier">Teams</div><div class="price-amount">$49</div><div class="price-per">per month</div>
+        <div class="price-desc">For bootcamps and career programs.</div><hr class="price-divider"/>
+        <ul class="price-features"><li>Everything in Pro</li><li>Up to 25 team seats</li><li>Admin dashboard</li><li>Progress analytics</li><li>White-label option</li><li>Priority support</li></ul>
         <button class="price-btn" onclick="startCheckout('teams')">Contact sales</button>
       </div>
     </div>
   </div>
 </section>
-
-<!-- PARALLAX CTA -->
 <div class="parallax-section" style="height:400px;">
   <div class="parallax-bg" style="background-image:url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1600&q=80');"></div>
   <div class="parallax-overlay" style="background:linear-gradient(135deg,rgba(10,30,20,.9),rgba(15,50,35,.85));"></div>
@@ -779,36 +377,17 @@ footer{
     <button class="btn-hero-primary" onclick="document.getElementById('chat').scrollIntoView({behavior:'smooth'})">Start with Nuvori AI</button>
   </div>
 </div>
-
-<!-- FOOTER -->
 <footer>
   <div class="footer-top">
-    <div>
-      <div class="footer-logo">Nuvori</div>
-      <p class="footer-tagline">Your new beginning starts here. AI-powered career coaching, available 24/7.</p>
-    </div>
+    <div><div class="footer-logo">Nuvori</div><p class="footer-tagline">Your new beginning starts here. AI-powered career coaching, available 24/7.</p></div>
     <div class="footer-links">
-      <div class="footer-col">
-        <h5>Product</h5>
-        <a href="#">Features</a><a href="#">Pricing</a><a href="#">Changelog</a><a href="#">Roadmap</a>
-      </div>
-      <div class="footer-col">
-        <h5>Company</h5>
-        <a href="#">About</a><a href="#">Blog</a><a href="#">Careers</a><a href="#">Press</a>
-      </div>
-      <div class="footer-col">
-        <h5>Legal</h5>
-        <a href="#" onclick="showLegal('privacy');return false;">Privacy Policy</a><a href="#" onclick="showLegal('terms');return false;">Terms of Service</a><a href="#" onclick="showLegal('ai');return false;">AI Disclosure</a>
-      </div>
+      <div class="footer-col"><h5>Product</h5><a href="#">Features</a><a href="#">Pricing</a><a href="#">Changelog</a><a href="#">Roadmap</a></div>
+      <div class="footer-col"><h5>Company</h5><a href="#">About</a><a href="#">Blog</a><a href="#">Careers</a><a href="#">Press</a></div>
+      <div class="footer-col"><h5>Legal</h5><a href="#" onclick="showLegal('privacy');return false;">Privacy Policy</a><a href="#" onclick="showLegal('terms');return false;">Terms of Service</a><a href="#" onclick="showLegal('ai');return false;">AI Disclosure</a></div>
     </div>
   </div>
-  <div class="footer-bottom">
-    <p>© 2026 Nuvori. All rights reserved.</p>
-    <p>Powered by Anthropic Claude</p>
-  </div>
+  <div class="footer-bottom"><p>© 2026 Nuvori. All rights reserved.</p><p>Powered by Anthropic Claude</p></div>
 </footer>
-
-<!-- AUTH MODAL -->
 <div id="auth-modal">
   <div class="modal-overlay" onclick="closeAuthIfLoggedIn()"></div>
   <div class="modal-box">
@@ -824,63 +403,54 @@ footer{
     <p class="modal-note">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
   </div>
 </div>
-
+<div id="legal-modal">
+  <div onclick="document.getElementById('legal-modal').style.display='none'" style="position:absolute;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);"></div>
+  <div style="position:relative;z-index:1;background:#fff;border-radius:10px;width:100%;max-width:640px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,.2);margin:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 32px;border-bottom:1px solid #e2e2da;">
+      <div id="legal-title" style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:#0f0f0d;"></div>
+      <button onclick="document.getElementById('legal-modal').style.display='none'" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#9a9a8e;line-height:1;">&times;</button>
+    </div>
+    <div id="legal-body" style="padding:28px 32px;overflow-y:auto;font-size:.875rem;color:#5a5a52;line-height:1.8;"></div>
+  </div>
+</div>
 <script>
 // ── PARALLAX ──
 function handleParallax(){
-  const bg = document.getElementById('hero-parallax');
-  if(bg) bg.style.transform = `translateY(${window.scrollY * 0.45}px)`;
+  var bg=document.getElementById('hero-parallax');
+  if(bg) bg.style.transform='translateY('+window.scrollY*.45+'px)';
 }
-window.addEventListener('scroll', handleParallax, {passive:true});
+window.addEventListener('scroll',handleParallax,{passive:true});
 
-// ── NAV scroll ──
-const nav = document.getElementById('main-nav');
-window.addEventListener('scroll', ()=>{
-  nav.classList.toggle('scrolled', window.scrollY > 60);
-}, {passive:true});
+// ── NAV ──
+var nav=document.getElementById('main-nav');
+window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>60);},{passive:true});
 
-// ── SMOOTH NAV ──
-document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  a.addEventListener('click', e=>{
+// ── SMOOTH SCROLL ──
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var target=a.getAttribute('href');
+    if(target==="#")return;
     e.preventDefault();
-    const el = document.querySelector(a.getAttribute('href'));
+    var el=document.querySelector(target);
     if(el) el.scrollIntoView({behavior:'smooth'});
   });
 });
 
-// ── FEATURE PROMPTS ──
-const featurePrompts = {
-  resume:`You are Nuvori, an expert AI Resume Coach and ATS optimization specialist. Your job is to make the user's resume beat ATS systems and impress human recruiters.
-
-When a user shares their resume and job description, follow this process:
-
-STEP 1 — ATS KEYWORD ANALYSIS: Extract the top 12-15 EXACT keywords/phrases from the JD (skills, tools, titles, certs, methodologies). ATS matches exact phrases — "cross-functional collaboration" differs from "worked with teams."
-
-STEP 2 — ATS MATCH SCORE: Give an honest 0-100% score of how well the resume currently matches the JD. Explain briefly.
-
-STEP 3 — MISSING KEYWORDS: List every important JD keyword absent from the resume. Rank by importance.
-
-STEP 4 — REWRITTEN BULLETS: Rewrite experience bullets to: mirror EXACT JD phrases (word for word), start with strong action verbs (Led, Drove, Built, Reduced, Increased, Launched), include measurable results (%, $, time, team size), stay under 2 lines, naturally embed missing keywords.
-
-STEP 5 — ATS FORMATTING AUDIT: Flag these ATS killers: tables or multi-column layouts, images or graphics, non-standard section headers (must be: Summary, Work Experience, Education, Skills, Certifications), inconsistent dates (use: Jan 2022 – Mar 2024), acronyms without expansion on first use, headers/footers, text boxes.
-
-STEP 6 — JOB TITLE OPTIMIZATION: If the user's title differs from the JD target title, advise how to adjust it. ATS filters by title keyword.
-
-STEP 7 — KEYWORD DENSITY: Confirm top 5 JD keywords each appear at least once naturally.
-
-Target: a resume scoring 80%+ on any ATS while reading naturally to humans. Be specific, direct, and encouraging.`,
-  interview:`You are Nuvori, an expert AI Mock Interview Coach. Ask what role the user is interviewing for, then ask one interview question at a time. After each answer give detailed feedback on STAR method, specificity, and delivery. Gradually increase difficulty. After 5+ questions offer a summary score and top 3 improvements. Be encouraging but honest.`,
-  coverletter:`You are Nuvori, an expert AI Cover Letter Writer. Ask for: target role, company name, key experience, and what excites them. Write a cover letter with a compelling hook (not "I am applying for..."), mirroring JD language, 2-3 specific achievements with numbers, genuine company knowledge, confident close. Under 400 words. Offer to adjust tone after the first draft.`,
-  company:`You are Nuvori, an expert AI Company Research Analyst. When given a company name, provide a comprehensive briefing: Company Overview, Recent News, Culture & Values, Interview Process, Likely Interview Questions (5-7), Key People, Green & Red Flags, and How to Stand Out. Be thorough.`,
-  career:`You are Nuvori, an expert AI Career Path Advisor. Ask about current role, years of experience, skills, industry, goals, and income targets. Provide: immediate next role, 2-3 year path, 5-year vision, skills to prioritize, worthwhile certifications, salary trajectory, and alternative paths. Be realistic and honest.`,
-  salary:`You are Nuvori, an expert AI Salary Negotiation Coach. Either roleplay as a hiring manager making an offer, or help with a real offer. When roleplaying, react authentically to counters. Teach: anchoring high, silence as a tool, asking for time, bundling compensation, getting it in writing.`,
-  decoder:`You are Nuvori, an expert AI Job Description Decoder. Analyze JDs with honesty: What They Actually Want, Must-Have vs Nice-to-Have, Keyword Density, Culture Signals, Red Flags, Green Flags, Compensation Reality, and How to Position Yourself. Be direct — job seekers need the truth.`,
-  skills:`You are Nuvori, an expert AI Skills Gap Analyzer. Ask for current skills/resume, target role, and timeline. Deliver: Current Strengths, Critical Gaps, Nice-to-Have Gaps, Priority Action Plan, Specific Resources (courses/certs), Realistic Timeline, and Shortcut Opportunities. Be specific about timelines.`,
-  outreach:`You are Nuvori, an expert AI Networking Coach. Help write outreach messages that get replies. Ask who they're contacting, the platform, and their goal. Write messages under 150 words, reference something specific, state the ask clearly, sound human, have a specific easy CTA. Provide 2-3 versions. Help with follow-ups too.`,
-  plan:`You are Nuvori, an expert AI Onboarding Coach. Build a 30/60/90 day plan. Ask about role, company, team size, manager style, goals, known challenges. Structure as: Days 1-30 (Listen & Learn), Days 31-60 (Contribute), Days 61-90 (Lead). Make it specific to their role and industry.`
+// ── FEATURE SYSTEM PROMPTS ──
+var featurePrompts={
+  resume:'You are Nuvori, an expert AI Resume Coach and ATS optimization specialist. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis in your responses. Format responses with clear section headers using markdown ## and ###, bullet points, and clean plain text.\n\nWhen a user shares their resume and job description, follow this process:\n\n## ATS Keyword Analysis\nExtract the top 12-15 exact keywords and phrases from the JD. List them clearly.\n\n## Match Score\nGive an honest 0-100% score. Explain what is driving the score.\n\n## Missing Keywords\nList every important JD keyword absent from the resume, ranked by importance.\n\n## Rewritten Bullet Points\nRewrite experience bullets to mirror exact JD phrases, start with strong action verbs, include measurable results, and embed missing keywords naturally.\n\n## ATS Formatting Audit\nFlag: tables or multi-column layouts, images or graphics, non-standard headers, inconsistent dates, acronyms without expansion, headers/footers, text boxes.\n\n## Job Title Optimization\nAdvise on adjusting the job title to match the JD target title.\n\n## Keyword Density Check\nConfirm top 5 JD keywords each appear at least once.\n\nAfter the analysis, always end with: "Would you like me to rebuild your entire resume from scratch with all of these improvements and export it as a PDF?"',
+  interview:'You are Nuvori, an expert AI Mock Interview Coach. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Ask what role the user is interviewing for, then ask one question at a time and give detailed STAR method feedback after each answer.',
+  coverletter:'You are Nuvori, an expert AI Cover Letter Writer. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Ask for target role, company, key experience, and what excites them. Write a compelling, tailored cover letter under 400 words.',
+  company:'You are Nuvori, an expert AI Company Research Analyst. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. When given a company name, provide a thorough briefing with clear sections: Company Overview, Recent News, Culture and Values, Interview Process, Likely Interview Questions, Key People, Green and Red Flags, How to Stand Out.',
+  career:'You are Nuvori, an expert AI Career Path Advisor. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Ask about current role, experience, skills, goals. Provide: immediate next role, 2-3 year path, 5-year vision, skills to prioritize, certifications, salary trajectory, alternative paths.',
+  salary:'You are Nuvori, an expert AI Salary Negotiation Coach. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Roleplay as a hiring manager or help with a real offer. Teach: anchoring high, silence as a tool, bundling compensation, getting it in writing.',
+  decoder:'You are Nuvori, an expert AI Job Description Decoder. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Analyze JDs with clear sections: What They Actually Want, Must-Have vs Nice-to-Have, Keyword Density, Culture Signals, Red Flags, Green Flags, Compensation Reality, How to Position Yourself.',
+  skills:'You are Nuvori, an expert AI Skills Gap Analyzer. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Ask for current skills and target role. Provide: Current Strengths, Critical Gaps, Nice-to-Have Gaps, Priority Action Plan, Specific Resources, Realistic Timeline, Shortcut Opportunities.',
+  outreach:'You are Nuvori, an expert AI Networking Coach. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Help write outreach messages under 150 words that sound human and get replies. Provide 2-3 versions.',
+  plan:'You are Nuvori, an expert AI Onboarding Coach. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Build a 30/60/90 day plan with clear sections: Days 1-30 Listen and Learn, Days 31-60 Contribute, Days 61-90 Lead.'
 };
 
-const featureWelcomes = {
+var featureWelcomes={
   resume:"Hey, I'm Nuvori! I'm here to make your resume impossible to ignore. Paste your current resume and the job description you're targeting, and I'll rewrite it to beat ATS filters and catch a recruiter's eye.",
   interview:"Hey, I'm Nuvori! Think of me as your personal interview coach. Tell me what role you're interviewing for and I'll put you through the real questions — then give you honest, specific feedback on every answer.",
   coverletter:"Hey, I'm Nuvori! Cover letters are my thing. Tell me the role, the company, and what genuinely excites you about this opportunity — and I'll write you something that actually gets read.",
@@ -894,38 +464,43 @@ const featureWelcomes = {
 };
 
 // ── AUTH ──
-let authToken = localStorage.getItem('nuvori_token') || null;
-let currentUser = null;
-let authMode = 'login';
+var authToken=localStorage.getItem('nuvori_token')||null;
+var currentUser=null;
+var authMode='login';
 
-async function initAuth(){
-  if(!authToken) return;
-  try{
-    const res = await fetch('/api/auth/me',{headers:{'Authorization':'Bearer '+authToken}});
-    if(!res.ok){authToken=null;localStorage.removeItem('nuvori_token');return;}
-    const data = await res.json();
-    currentUser = data.user;
-    updateAuthUI();
-  }catch{}
+function initAuth(){
+  if(!authToken)return;
+  fetch('/api/auth/me',{headers:{'Authorization':'Bearer '+authToken}})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.user){currentUser=d.user;updateAuthUI();}
+      else{authToken=null;localStorage.removeItem('nuvori_token');}
+    })
+    .catch(function(){authToken=null;localStorage.removeItem('nuvori_token');});
 }
 
 function updateAuthUI(){
-  const navCta = document.querySelector('.nav-cta');
-  if(currentUser && navCta){
-    navCta.textContent = currentUser.plan==='starter'?'Upgrade to Pro':'Dashboard';
+  var btn=document.getElementById('nav-cta-btn');
+  if(currentUser&&btn){
+    btn.textContent=currentUser.plan==='starter'?'Upgrade to Pro':'My Account';
   }
-  const badge = document.getElementById('plan-badge');
-  if(badge && currentUser){
-    badge.textContent = currentUser.plan.charAt(0).toUpperCase()+currentUser.plan.slice(1)+' Plan';
-    badge.style.display = 'inline-block';
+  var badge=document.getElementById('plan-badge');
+  if(badge&&currentUser){
+    badge.textContent=currentUser.plan.charAt(0).toUpperCase()+currentUser.plan.slice(1)+' Plan';
+    badge.style.display='inline-block';
   }
 }
 
-function showAuthModal(mode='login'){
+function showAuthModal(mode){
+  mode=mode||'login';
   document.getElementById('auth-modal').style.display='flex';
-  switchTab(mode||'login');
+  switchTab(mode);
 }
-function closeAuthIfLoggedIn(){if(currentUser)document.getElementById('auth-modal').style.display='none';}
+
+function closeAuthIfLoggedIn(){
+  if(currentUser)document.getElementById('auth-modal').style.display='none';
+}
+
 function switchTab(mode){
   authMode=mode;
   document.getElementById('tab-login').classList.toggle('active',mode==='login');
@@ -933,392 +508,365 @@ function switchTab(mode){
   document.getElementById('auth-submit').textContent=mode==='login'?'Sign in':'Create account';
   document.getElementById('auth-error').style.display='none';
 }
-async function submitAuth(){
-  const email=document.getElementById('auth-email').value.trim();
-  const password=document.getElementById('auth-password').value;
-  const btn=document.getElementById('auth-submit');
+
+function submitAuth(){
+  var email=document.getElementById('auth-email').value.trim();
+  var password=document.getElementById('auth-password').value;
+  var btn=document.getElementById('auth-submit');
   if(!email||!password){showAuthError('Please enter your email and password.');return;}
-  btn.disabled=true;btn.textContent='Please wait\u2026';
-  try{
-    const res=await fetch(`/api/auth/${authMode}`,{
-      method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',
-      body:JSON.stringify({email,password})
-    });
-    const data=await res.json();
-    if(!res.ok){showAuthError(data.error||'Something went wrong.');btn.disabled=false;btn.textContent=authMode==='login'?'Sign in':'Create account';return;}
-    authToken=data.token;currentUser=data.user;
+  btn.disabled=true;btn.textContent='Please wait...';
+  fetch('/api/auth/'+authMode,{
+    method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',
+    body:JSON.stringify({email:email,password:password})
+  })
+  .then(function(r){return r.json().then(function(d){return{ok:r.ok,data:d};});})
+  .then(function(result){
+    if(!result.ok){
+      showAuthError(result.data.error||'Something went wrong.');
+      btn.disabled=false;
+      btn.textContent=authMode==='login'?'Sign in':'Create account';
+      return;
+    }
+    authToken=result.data.token;
+    currentUser=result.data.user;
     localStorage.setItem('nuvori_token',authToken);
     document.getElementById('auth-modal').style.display='none';
     updateAuthUI();
-  }catch{showAuthError('Connection error. Please try again.');btn.disabled=false;btn.textContent=authMode==='login'?'Sign in':'Create account';}
+  })
+  .catch(function(){
+    showAuthError('Connection error. Please try again.');
+    btn.disabled=false;
+    btn.textContent=authMode==='login'?'Sign in':'Create account';
+  });
 }
-function showAuthError(msg){const el=document.getElementById('auth-error');el.textContent=msg;el.style.display='block';}
 
-async function startCheckout(plan){
+function showAuthError(msg){
+  var el=document.getElementById('auth-error');
+  el.textContent=msg;el.style.display='block';
+}
+
+function startCheckout(plan){
   if(!currentUser)return showAuthModal();
-  try{
-    const res=await fetch('/api/payments/checkout',{
-      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
-      credentials:'include',body:JSON.stringify({plan})
+  fetch('/api/payments/checkout',{
+    method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
+    credentials:'include',body:JSON.stringify({plan:plan})
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){if(d.url)window.location.href=d.url;})
+  .catch(function(){alert('Could not start checkout. Please try again.');});
+}
+
+// ── FILE UPLOAD ──
+var pendingFiles=[];
+
+document.addEventListener('DOMContentLoaded',function(){
+  var fileInput=document.getElementById('file-upload');
+  if(fileInput){
+    fileInput.addEventListener('change',function(){
+      var files=Array.from(this.files);
+      var promises=files.map(function(file){
+        var isImage=file.type.startsWith('image/');
+        var isPDF=file.type==='application/pdf';
+        if(!isImage&&!isPDF)return Promise.resolve(null);
+        return new Promise(function(resolve){
+          var reader=new FileReader();
+          reader.onload=function(){
+            resolve({file:file,base64:reader.result.split(',')[1],mediaType:file.type,isImage:isImage,isPDF:isPDF});
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+      Promise.all(promises).then(function(results){
+        results.forEach(function(r){if(r)pendingFiles.push(r);});
+        fileInput.value='';
+        renderPreview();
+      });
     });
-    const data=await res.json();
-    if(data.url)window.location.href=data.url;
-  }catch{alert('Could not start checkout. Please try again.');}
-}
-
-// ── CHAT ──
-let currentFeature='resume';
-let conversationHistory=[];
-let isLoading=false;
-let pendingFiles=[];
-
-window.addEventListener('load',()=>{setFeature('resume');initAuth();});
-
-document.getElementById('feature-tabs').addEventListener('click',e=>{
-  const tab=e.target.closest('.feat-tab');
-  if(!tab)return;
-  const f=tab.dataset.feature;
-  if(f===currentFeature)return;
-  document.querySelectorAll('.feat-tab').forEach(t=>t.classList.remove('active'));
-  tab.classList.add('active');
-  setFeature(f);
-});
-
-function setFeature(f){
-  currentFeature=f;conversationHistory=[];pendingFiles=[];
-  document.getElementById('chat-messages').innerHTML='';
-  renderPreview();addMessage('ai',featureWelcomes[f]);
-  const pdfBtn = document.getElementById('pdf-btn-wrap');
-  if(pdfBtn) pdfBtn.remove();
-}
-
-// file handling
-document.getElementById('file-upload').addEventListener('change',async function(e){
-  console.log('File input changed:', this.files);
-  const files = Array.from(this.files);
-  console.log('Files selected:', files.length);
-  for(const file of files){
-    console.log('Processing file:', file.name, file.type, file.size);
-    const isImage=file.type.startsWith('image/');
-    const isPDF=file.type==='application/pdf';
-    if(!isImage&&!isPDF){
-      console.log('Skipping non-image/PDF file:', file.type);
-      continue;
-    }
-    try {
-      const base64=await toBase64(file);
-      console.log('File converted to base64, length:', base64.length);
-      pendingFiles.push({file,base64,mediaType:file.type,isImage,isPDF});
-      console.log('Pending files now:', pendingFiles.length);
-    } catch(err) {
-      console.error('Error converting file:', err);
-    }
   }
-  this.value='';
-  renderPreview();
-  console.log('Preview rendered, pendingFiles:', pendingFiles.length);
-});
-document.getElementById('chat-messages').addEventListener('dragover',e=>{e.preventDefault();});
-document.getElementById('chat-messages').addEventListener('drop',async e=>{
-  e.preventDefault();
-  for(const file of Array.from(e.dataTransfer.files)){
-    const isImage=file.type.startsWith('image/');const isPDF=file.type==='application/pdf';
-    if(!isImage&&!isPDF)continue;
-    const base64=await toBase64(file);pendingFiles.push({file,base64,mediaType:file.type,isImage,isPDF});
+
+  // drag and drop
+  var msgs=document.getElementById('chat-messages');
+  if(msgs){
+    msgs.addEventListener('dragover',function(e){e.preventDefault();});
+    msgs.addEventListener('drop',function(e){
+      e.preventDefault();
+      var files=Array.from(e.dataTransfer.files);
+      var promises=files.map(function(file){
+        var isImage=file.type.startsWith('image/');
+        var isPDF=file.type==='application/pdf';
+        if(!isImage&&!isPDF)return Promise.resolve(null);
+        return new Promise(function(resolve){
+          var reader=new FileReader();
+          reader.onload=function(){resolve({file:file,base64:reader.result.split(',')[1],mediaType:file.type,isImage:isImage,isPDF:isPDF});};
+          reader.readAsDataURL(file);
+        });
+      });
+      Promise.all(promises).then(function(results){
+        results.forEach(function(r){if(r)pendingFiles.push(r);});
+        renderPreview();
+      });
+    });
   }
-  renderPreview();
-});
-document.getElementById('chat-input').addEventListener('paste',async e=>{
-  for(const item of Array.from(e.clipboardData.items)){
-    if(!item.type.startsWith('image/'))continue;
-    const file=item.getAsFile();const base64=await toBase64(file);
-    pendingFiles.push({file,base64,mediaType:file.type,isImage:true});
+
+  // paste
+  var chatInput=document.getElementById('chat-input');
+  if(chatInput){
+    chatInput.addEventListener('paste',function(e){
+      var items=Array.from(e.clipboardData.items);
+      var imageItems=items.filter(function(i){return i.type.startsWith('image/');});
+      if(!imageItems.length)return;
+      var promises=imageItems.map(function(item){
+        var file=item.getAsFile();
+        return new Promise(function(resolve){
+          var reader=new FileReader();
+          reader.onload=function(){resolve({file:file,base64:reader.result.split(',')[1],mediaType:file.type,isImage:true,isPDF:false});};
+          reader.readAsDataURL(file);
+        });
+      });
+      Promise.all(promises).then(function(results){
+        results.forEach(function(r){if(r)pendingFiles.push(r);});
+        renderPreview();
+      });
+    });
+    chatInput.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
+    chatInput.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
   }
-  if(pendingFiles.length)renderPreview();
+
+  setFeature('resume');
+  initAuth();
 });
-function toBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});}
+
 function renderPreview(){
-  const el=document.getElementById('attachment-preview');
-  if(!el){ console.error('attachment-preview not found'); return; }
+  var el=document.getElementById('attachment-preview');
+  if(!el)return;
   el.innerHTML='';
-  if(!pendingFiles.length){
-    el.classList.remove('has-files');
-    el.style.cssText='';
-    return;
-  }
+  if(!pendingFiles.length){el.classList.remove('has-files');return;}
   el.classList.add('has-files');
-  el.style.cssText='display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;border-bottom:1px solid var(--rule);background:var(--off);';
-  pendingFiles.forEach((pf,i)=>{
-    const item=document.createElement('div');
-    item.style.cssText='display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--rule);border-radius:4px;padding:6px 10px;font-size:.75rem;color:var(--mid);max-width:220px;';
+  pendingFiles.forEach(function(pf,i){
+    var item=document.createElement('div');
+    item.className='preview-item';
     if(pf.isImage){
-      const img=document.createElement('img');
+      var img=document.createElement('img');
       img.src='data:'+pf.mediaType+';base64,'+pf.base64;
-      img.style.cssText='width:28px;height:28px;object-fit:cover;border-radius:2px;flex-shrink:0;';
       item.appendChild(img);
     } else {
-      const icon=document.createElement('span');
-      icon.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>';
-      item.appendChild(icon);
+      item.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>';
     }
-    const name=document.createElement('span');
-    name.style.cssText='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;';
-    name.textContent=pf.file.name;
-    const btn=document.createElement('button');
-    btn.style.cssText='background:none;border:none;cursor:pointer;color:var(--soft);font-size:1rem;padding:0 0 0 4px;line-height:1;flex-shrink:0;';
-    btn.textContent='×';
-    btn.onclick=(()=>{const idx=i;return()=>removeFile(idx);})();
-    item.appendChild(name);
-    item.appendChild(btn);
+    var name=document.createElement('span');name.className='preview-name';name.textContent=pf.file.name;
+    var btn=document.createElement('button');btn.className='preview-remove';btn.textContent='\u00d7';
+    btn.onclick=(function(idx){return function(){removeFile(idx);};})(i);
+    item.appendChild(name);item.appendChild(btn);
     el.appendChild(item);
   });
 }
 
 function removeFile(i){pendingFiles.splice(i,1);renderPreview();}
 
-function addMessage(role,text,attachments){
-  const el=document.getElementById('chat-messages');
-  const div=document.createElement('div');div.className=`msg ${role}`;
-  let attachHTML='';
-  if(attachments&&attachments.length){
-    attachHTML='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">';
-    attachments.forEach(a=>{
-      if(a.isImage)attachHTML+=`<img src="data:${a.mediaType};base64,${a.base64}" style="max-width:160px;max-height:120px;border-radius:4px;object-fit:cover;"/>`;
-      else attachHTML+=`<div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:4px;padding:4px 10px;font-size:.75rem;">${a.file.name}</div>`;
-    });
-    attachHTML+='</div>';
-  }
-  const formatted = fmt(text);
-  div.innerHTML=`<div class="msg-avatar">${role==='ai'?'N':'You'}</div><div class="msg-bubble">${attachHTML}<p style="margin:0">${formatted}</p></div>`;
-  el.appendChild(div);el.scrollTop=el.scrollHeight;
+// ── CHAT ──
+var currentFeature='resume';
+var conversationHistory=[];
+var isLoading=false;
+
+document.getElementById('feature-tabs').addEventListener('click',function(e){
+  var tab=e.target.closest('.feat-tab');
+  if(!tab)return;
+  var f=tab.dataset.feature;
+  if(f===currentFeature)return;
+  document.querySelectorAll('.feat-tab').forEach(function(t){t.classList.remove('active');});
+  tab.classList.add('active');
+  setFeature(f);
+});
+
+function setFeature(f){
+  currentFeature=f;conversationHistory=[];pendingFiles=[];
+  var msgs=document.getElementById('chat-messages');
+  if(msgs)msgs.innerHTML='';
+  renderPreview();
+  addMessage('ai',featureWelcomes[f]);
 }
-function fmt(t){
-  return t
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/&lt;strong&gt;/g,'<strong>').replace(/&lt;\/strong&gt;/g,'</strong>')
+
+function addMessage(role,text,attachments){
+  var el=document.getElementById('chat-messages');
+  if(!el)return;
+  var div=document.createElement('div');
+  div.className='msg '+role;
+  var avatar=document.createElement('div');
+  avatar.className='msg-avatar';
+  avatar.textContent=role==='ai'?'N':'You';
+  var bubble=document.createElement('div');
+  bubble.className='msg-bubble';
+  if(attachments&&attachments.length){
+    var attachDiv=document.createElement('div');
+    attachDiv.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;';
+    attachments.forEach(function(a){
+      if(a.isImage){
+        var img=document.createElement('img');
+        img.src='data:'+a.mediaType+';base64,'+a.base64;
+        img.style.cssText='max-width:160px;max-height:120px;border-radius:4px;object-fit:cover;';
+        attachDiv.appendChild(img);
+      } else {
+        var fileDiv=document.createElement('div');
+        fileDiv.style.cssText='display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:4px;padding:4px 10px;font-size:.75rem;';
+        fileDiv.textContent=a.file.name;
+        attachDiv.appendChild(fileDiv);
+      }
+    });
+    bubble.appendChild(attachDiv);
+  }
+  bubble.innerHTML+=formatMessage(text);
+  div.appendChild(avatar);div.appendChild(bubble);
+  el.appendChild(div);
+  el.scrollTop=el.scrollHeight;
+}
+
+function formatMessage(text){
+  return text
     .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
     .replace(/\*(.*?)\*/g,'<em>$1</em>')
-    .replace(/^#### (.*?)$/gm,'<div style="font-weight:600;margin-top:16px;margin-bottom:4px;font-size:.9rem;color:var(--ink)">$1</div>')
-    .replace(/^### (.*?)$/gm,'<div style="font-weight:600;margin-top:20px;margin-bottom:6px;font-size:.95rem;color:var(--ink);border-bottom:1px solid var(--rule);padding-bottom:4px">$1</div>')
-    .replace(/^## (.*?)$/gm,'<div style="font-family:var(--font-serif);font-size:1.05rem;font-weight:700;margin-top:24px;margin-bottom:8px;color:var(--ink)">$1</div>')
-    .replace(/^---$/gm,'<hr style="border:none;border-top:1px solid var(--rule);margin:16px 0;">')
-    .replace(/^- (.*?)$/gm,'<li style="margin-bottom:4px;padding-left:4px">$1</li>')
-    .replace(/^\d+\. (.*?)$/gm,'<li style="margin-bottom:4px;list-style-type:decimal;padding-left:4px">$1</li>')
-    .replace(/(<li[\s\S]*?<\/li>
-?)+/g,'<ul style="padding-left:20px;margin:8px 0">$&</ul>')
-    .replace(/`([^`]+)`/g,'<code style="background:var(--off);padding:1px 5px;border-radius:3px;font-size:.85em;font-family:monospace">$1</code>')
-    .replace(/\n\n/g,'</p><p style="margin-top:10px">')
+    .replace(/^## (.*?)$/gm,'<h3 style="font-family:var(--font-serif);font-size:1rem;font-weight:700;margin-top:16px;margin-bottom:6px;color:var(--ink);border-bottom:1px solid var(--rule);padding-bottom:4px;">$1</h3>')
+    .replace(/^### (.*?)$/gm,'<h3 style="font-size:.9rem;font-weight:600;margin-top:12px;margin-bottom:4px;color:var(--ink);">$1</h3>')
+    .replace(/^- (.*?)$/gm,'<li style="margin-bottom:3px;padding-left:2px;">$1</li>')
+    .replace(/^(\d+)\. (.*?)$/gm,'<li style="margin-bottom:3px;list-style-type:decimal;">$2</li>')
+    .replace(/(<li[^>]*>.*<\/li>\n?)+/g,'<ul style="padding-left:18px;margin:6px 0;">$&</ul>')
+    .replace(/^---$/gm,'<hr style="border:none;border-top:1px solid var(--rule);margin:12px 0;">')
+    .replace(/`([^`]+)`/g,'<code style="background:var(--rule);padding:1px 4px;border-radius:3px;font-size:.85em;">$1</code>')
+    .replace(/\n\n/g,'<br><br>')
     .replace(/\n/g,'<br>');
 }
+
 function showTyping(){
-  const el=document.getElementById('chat-messages');
-  const d=document.createElement('div');d.className='msg ai';d.id='typing';
-  const phrases = ['Analyzing your resume...','Checking ATS compatibility...','Researching the role...','Crafting your response...','Reviewing your profile...','Thinking carefully...'];
-  const phrase = phrases[Math.floor(Math.random()*phrases.length)];
-  d.innerHTML=`<div class="msg-avatar">N</div><div class="typing-indicator"><div class="typing-bars"><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div></div><span class="typing-text">${phrase}</span></div>`;
+  var el=document.getElementById('chat-messages');
+  var d=document.createElement('div');
+  d.className='msg ai';d.id='typing';
+  var phrases=['Analyzing your resume...','Checking ATS compatibility...','Researching the role...','Crafting your response...','Reviewing your profile...','Thinking carefully...'];
+  var phrase=phrases[Math.floor(Math.random()*phrases.length)];
+  d.innerHTML='<div class="msg-avatar">N</div><div class="typing-indicator"><div class="typing-bars"><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div></div><span class="typing-text">'+phrase+'</span></div>';
   el.appendChild(d);el.scrollTop=el.scrollHeight;
 }
-function removeTyping(){const t=document.getElementById('typing');if(t)t.remove();}
 
-async function sendMessage(){
+function removeTyping(){var t=document.getElementById('typing');if(t)t.remove();}
+
+function sendMessage(){
   if(!currentUser)return showAuthModal();
-  const input=document.getElementById('chat-input');
-  const text=input.value.trim();
+  var input=document.getElementById('chat-input');
+  var text=input.value.trim();
   if((!text&&!pendingFiles.length)||isLoading)return;
-  const filesToSend=[...pendingFiles];pendingFiles=[];renderPreview();
+  var filesToSend=pendingFiles.slice();
+  pendingFiles=[];renderPreview();
   input.value='';input.style.height='auto';
-  isLoading=true;document.getElementById('send-btn').disabled=true;
+  isLoading=true;
+  document.getElementById('send-btn').disabled=true;
   addMessage('user',text||'(see attached file)',filesToSend);
-  const userContent=[];
-  for(const pf of filesToSend){
+  var userContent=[];
+  filesToSend.forEach(function(pf){
     if(pf.isImage)userContent.push({type:'image',source:{type:'base64',media_type:pf.mediaType,data:pf.base64}});
     else if(pf.isPDF)userContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:pf.base64}});
-  }
-  if(text)userContent.push({type:'text',text});
+  });
+  if(text)userContent.push({type:'text',text:text});
   else userContent.push({type:'text',text:'Please analyze the attached file and help me in the context of '+currentFeature+'.'});
   conversationHistory.push({role:'user',content:userContent});
   showTyping();
-  try{
-    const res=await fetch('/api/ai/chat',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
-      credentials:'include',
-      body:JSON.stringify({feature:currentFeature,messages:conversationHistory})
-    });
-    const data=await res.json();removeTyping();
-    if(res.status===403&&data.upgradeRequired){
-      addMessage('ai',data.error);showUpgradeBanner(data.error);
-    }else if(!res.ok){
-      addMessage('ai',data.error||'Something went wrong. Please try again.');
-    }else{
-      conversationHistory.push({role:'assistant',content:data.reply});
-      addMessage('ai',data.reply);updateUsageBadge(data.usage);if(currentFeature==='resume')showPDFButton();
+  fetch('/api/ai/chat',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
+    credentials:'include',
+    body:JSON.stringify({feature:currentFeature,messages:conversationHistory})
+  })
+  .then(function(r){return r.json().then(function(d){return{ok:r.ok,status:r.status,data:d};});})
+  .then(function(result){
+    removeTyping();
+    if(result.status===403&&result.data.upgradeRequired){
+      addMessage('ai',result.data.error);
+      showUpgradeBanner(result.data.error);
+    } else if(!result.ok){
+      addMessage('ai',result.data.error||'Something went wrong. Please try again.');
+    } else {
+      conversationHistory.push({role:'assistant',content:result.data.reply});
+      addMessage('ai',result.data.reply);
+      updateUsageBadge(result.data.usage);
+      if(currentFeature==='resume')showPDFButton();
     }
-  }catch{removeTyping();addMessage('ai','Connection issue \u2014 please try again.');}
-  isLoading=false;document.getElementById('send-btn').disabled=false;input.focus();
+  })
+  .catch(function(){removeTyping();addMessage('ai','Connection issue — please try again.');})
+  .finally(function(){isLoading=false;document.getElementById('send-btn').disabled=false;input.focus();});
 }
 
 function updateUsageBadge(usage){
   if(!usage||usage.remaining==='unlimited')return;
-  const badge=document.getElementById('usage-badge');
-  if(badge){badge.textContent=usage.remaining===0?'Limit reached':`${usage.remaining} left this month`;badge.style.color=usage.remaining<=1?'#ff6b6b':'rgba(255,255,255,.35)';}
+  var badge=document.getElementById('usage-badge');
+  if(badge){
+    badge.textContent=usage.remaining===0?'Limit reached':usage.remaining+' left this month';
+    badge.style.color=usage.remaining<=1?'#ff6b6b':'rgba(255,255,255,.35)';
+  }
 }
+
 function showUpgradeBanner(msg){
-  let banner=document.getElementById('upgrade-banner');
-  if(!banner){banner=document.createElement('div');banner.id='upgrade-banner';banner.style.cssText='background:#0f1a14;color:#fff;text-align:center;padding:12px 24px;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:16px;border-top:1px solid rgba(255,255,255,.08);';document.querySelector('.chat-layout').insertAdjacentElement('afterend',banner);}
-  banner.innerHTML=`<span>${msg}</span><button onclick="startCheckout('pro')" style="background:#7ed4a8;color:#0f1a14;border:none;padding:7px 16px;border-radius:4px;font-weight:600;cursor:pointer;font-size:.8rem;">Upgrade to Pro</button>`;
+  var existing=document.getElementById('upgrade-banner');
+  if(existing)return;
+  var banner=document.createElement('div');
+  banner.id='upgrade-banner';
+  banner.style.cssText='background:#0f1a14;color:#fff;text-align:center;padding:12px 24px;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:16px;border-top:1px solid rgba(255,255,255,.08);';
+  banner.innerHTML=msg+'<button onclick="startCheckout(\'pro\')" style="background:#7ed4a8;color:#0f1a14;border:none;padding:7px 16px;border-radius:4px;font-weight:600;cursor:pointer;font-size:.8rem;">Upgrade to Pro</button>';
+  document.querySelector('.chat-layout').insertAdjacentElement('afterend',banner);
 }
 
-
-// ── PDF RESUME GENERATION ──
-async function generateResumePDF() {
-  const btn = document.getElementById('pdf-btn');
-  if(btn) { btn.textContent = 'Generating PDF...'; btn.disabled = true; }
-
-  const messages = conversationHistory;
-  if(!messages || messages.length < 2) {
-    alert('Please complete a resume analysis first.');
-    if(btn) { btn.textContent = 'Download Resume as PDF'; btn.disabled = false; }
-    return;
-  }
-
-  // Build full resume from conversation
-  const res = await fetch('/api/ai/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-    credentials: 'include',
-    body: JSON.stringify({
-      feature: 'resume',
-      messages: [...messages, {
-        role: 'user',
-        content: [{ type: 'text', text: 'Now please write the complete rewritten resume in plain text format, ready to copy. Include all sections: Summary, Work Experience, Education, Skills, Certifications. Use the rewritten bullet points from your analysis. Format it cleanly with section headers in ALL CAPS and bullets starting with dashes. Do not include any commentary, just the resume itself.' }]
-      }]
-    })
-  });
-  const data = await res.json();
-  if(!data.reply) {
-    alert('Could not generate resume. Please try again.');
-    if(btn) { btn.textContent = 'Download Resume as PDF'; btn.disabled = false; }
-    return;
-  }
-
-  // Create printable PDF window
-  const win = window.open('', '_blank');
-  const resumeText = data.reply.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const printHTML = '<!DOCTYPE html><html><head><title>Resume - Nuvori AI</title>'
-    + '<style>body{font-family:Georgia,serif;max-width:750px;margin:40px auto;padding:0 40px;color:#111;line-height:1.6;font-size:11pt;}'
-    + 'pre{white-space:pre-wrap;font-family:Georgia,serif;font-size:11pt;line-height:1.7;}'
-    + '.powered{margin-top:40px;font-size:8pt;color:#999;text-align:center;}'
-    + '@media print{.powered{display:none;}}</style>'
-    + '<\/head><body>'
-    + '<pre>' + resumeText + '<\/pre>'
-    + '<div class="powered">Generated by Nuvori AI - nuvoriai.com<\/div>'
-    + '<\/body><\/html>';
-  win.document.write(printHTML);
-  win.document.close();
-  setTimeout(()=>win.print(), 800);
-
-  if(btn) { btn.textContent = 'Download Resume as PDF'; btn.disabled = false; }
+function showPDFButton(){
+  if(document.getElementById('pdf-btn-wrap'))return;
+  var wrap=document.createElement('div');
+  wrap.id='pdf-btn-wrap';
+  wrap.style.cssText='padding:12px 24px;border-top:1px solid var(--rule);background:var(--off);display:flex;align-items:center;gap:12px;';
+  wrap.innerHTML='<button onclick="generateResumePDF()" style="background:#0f1a14;color:#fff;border:none;padding:10px 20px;border-radius:4px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">Download Rebuilt Resume as PDF</button><span style="font-size:.75rem;color:var(--soft);">Nuvori will rebuild your full resume with all improvements</span>';
+  document.querySelector('.chat-input-wrap').insertAdjacentElement('beforebegin',wrap);
 }
 
-// Show PDF button after AI response in resume mode
-function showPDFButton() {
-  if(currentFeature !== 'resume') return;
-  let existing = document.getElementById('pdf-btn-wrap');
-  if(existing) return;
-  const wrap = document.createElement('div');
-  wrap.id = 'pdf-btn-wrap';
-  wrap.style.cssText = 'padding:12px 24px;border-top:1px solid var(--rule);background:var(--off);';
-  wrap.innerHTML = `<button id="pdf-btn" onclick="generateResumePDF()" style="background:#0f1a14;color:#fff;border:none;padding:10px 20px;border-radius:4px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:background .18s;" onmouseover="this.style.background='#2d6a4f'" onmouseout="this.style.background='#0f1a14'">Download Rebuilt Resume as PDF</button><span style="font-size:.75rem;color:var(--soft);margin-left:12px;">Nuvori will rebuild your full resume with all improvements</span>`;
-  document.querySelector('.chat-input-wrap').insertAdjacentElement('beforebegin', wrap);
+function generateResumePDF(){
+  if(!conversationHistory||conversationHistory.length<2){alert('Please complete a resume analysis first.');return;}
+  var btn=document.querySelector('#pdf-btn-wrap button');
+  if(btn){btn.textContent='Generating...';btn.disabled=true;}
+  var messages=conversationHistory.concat([{role:'user',content:[{type:'text',text:'Now please write the complete rewritten resume in clean plain text format ready to use. Include all sections: Summary, Work Experience, Education, Skills, Certifications. Use the rewritten bullets from your analysis. Format with section headers in ALL CAPS and bullets starting with dashes. Output the resume only, no commentary.'}]}]);
+  fetch('/api/ai/chat',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
+    credentials:'include',
+    body:JSON.stringify({feature:'resume',messages:messages})
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(!d.reply){alert('Could not generate resume. Please try again.');return;}
+    var win=window.open('','_blank');
+    var safeText=d.reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var html='<!DOCTYPE html><html><head><title>Resume - Nuvori AI</title>'
+      +'<style>body{font-family:Georgia,serif;max-width:750px;margin:40px auto;padding:0 40px;color:#111;line-height:1.7;font-size:11pt;}'
+      +'pre{white-space:pre-wrap;font-family:Georgia,serif;font-size:11pt;line-height:1.7;}'
+      +'.footer{margin-top:40px;font-size:8pt;color:#999;text-align:center;border-top:1px solid #eee;padding-top:12px;}'
+      +'@media print{.footer{display:none;}}</style></head><body>'
+      +'<pre>'+safeText+'</pre>'
+      +'<div class="footer">Generated by Nuvori AI &mdash; nuvoriai.com</div>'
+      +'</body></html>';
+    win.document.write(html);
+    win.document.close();
+    setTimeout(function(){win.print();},800);
+  })
+  .catch(function(){alert('Error generating PDF. Please try again.');})
+  .finally(function(){if(btn){btn.textContent='Download Rebuilt Resume as PDF';btn.disabled=false;}});
 }
 
-document.getElementById('chat-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
-document.getElementById('chat-input').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
-document.getElementById('auth-email').addEventListener('keydown',e=>{if(e.key==='Enter')submitAuth();});
-document.getElementById('auth-password').addEventListener('keydown',e=>{if(e.key==='Enter')submitAuth();});
-</script>
-
-<!-- LEGAL MODAL -->
-<div id="legal-modal" style="display:none;position:fixed;inset:0;z-index:2000;align-items:center;justify-content:center;">
-  <div onclick="document.getElementById('legal-modal').style.display='none'" style="position:absolute;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);"></div>
-  <div style="position:relative;z-index:1;background:#fff;border-radius:10px;width:100%;max-width:640px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,.2);margin:24px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 32px;border-bottom:1px solid #e2e2da;">
-      <div id="legal-title" style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:#0f0f0d;"></div>
-      <button onclick="document.getElementById('legal-modal').style.display='none'" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#9a9a8e;line-height:1;">&times;</button>
-    </div>
-    <div id="legal-body" style="padding:28px 32px;overflow-y:auto;font-size:.875rem;color:#5a5a52;line-height:1.8;"></div>
-  </div>
-</div>
-
-<script>
-const legalContent = {
-  terms: {
-    title: "Terms of Service",
-    body: `<p><strong>Last updated: June 2026</strong></p>
-<p style="margin-top:14px;">Welcome to Nuvori. By using our platform, you agree to these Terms of Service. Please read them carefully.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">1. Use of Service</h3>
-<p>Nuvori provides an AI-powered career coaching platform. You must be 18 or older to use Nuvori. You are responsible for maintaining the confidentiality of your account credentials and for all activity under your account.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">2. AI-Generated Content</h3>
-<p>Nuvori uses artificial intelligence to generate career advice, resume suggestions, cover letters, and other content. This content is provided for informational and guidance purposes only. Nuvori is not a licensed career counselor, attorney, or financial advisor. Results may vary. We do not guarantee employment outcomes.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">3. Subscriptions & Billing</h3>
-<p>Paid plans are billed monthly. You may cancel at any time through your account settings or by contacting support. Refunds are issued at our discretion for unused billing periods. Plan limits reset on the first of each month.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">4. Acceptable Use</h3>
-<p>You agree not to: misuse the platform, attempt to reverse-engineer our AI systems, upload harmful or illegal content, resell access to Nuvori, or violate any applicable laws. We reserve the right to terminate accounts that violate these terms.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">5. Limitation of Liability</h3>
-<p>Nuvori is provided "as is." We are not liable for any indirect, incidental, or consequential damages arising from your use of the platform. Our total liability shall not exceed the amount you paid us in the last 3 months.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">6. Changes to Terms</h3>
-<p>We may update these terms at any time. Continued use of Nuvori after changes constitutes acceptance of the new terms. We will notify users of material changes via email.</p>
-<p style="margin-top:20px;">Questions? Email us at <strong>legal@nuvori.ai</strong></p>`
-  },
-  privacy: {
-    title: "Privacy Policy",
-    body: `<p><strong>Last updated: June 2026</strong></p>
-<p style="margin-top:14px;">Your privacy matters to us. This policy explains what data we collect, how we use it, and your rights.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">1. Data We Collect</h3>
-<p>We collect: your email address and password (hashed), resume content and career information you share in chat, usage data (which features you use, how often), and payment information (processed securely by Stripe — we never store card numbers).</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">2. How We Use Your Data</h3>
-<p>We use your data to: provide and improve the Nuvori service, process payments, send account-related emails, personalize your experience, and monitor platform usage. We do not sell your personal data to third parties.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">3. AI & Data Processing</h3>
-<p>Content you share with Nuvori AI is sent to Anthropic's Claude API to generate responses. Anthropic's privacy policy governs their handling of this data. We do not use your conversations to train our own models.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">4. Data Retention</h3>
-<p>We retain your account data for as long as your account is active. You may request deletion of your data at any time by emailing privacy@nuvori.ai. We will delete your data within 30 days of your request.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">5. Cookies</h3>
-<p>We use essential cookies for authentication and session management. We do not use third-party advertising cookies.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">6. Your Rights</h3>
-<p>You have the right to access, correct, or delete your personal data. If you are in the EU, you have additional rights under GDPR. Contact us at privacy@nuvori.ai to exercise these rights.</p>
-<p style="margin-top:20px;">Questions? Email us at <strong>privacy@nuvori.ai</strong></p>`
-  },
-  ai: {
-    title: "AI Disclosure",
-    body: `<p><strong>Last updated: June 2026</strong></p>
-<p style="margin-top:14px;">Nuvori is committed to transparency about how we use artificial intelligence. Here's everything you should know.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">1. You Are Talking to an AI</h3>
-<p>Nuvori AI is an artificial intelligence system, not a human. All responses are generated by AI. While Nuvori AI is designed to be helpful and knowledgeable, it is not a licensed career counselor, recruiter, attorney, or financial advisor.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">2. Powered by Anthropic Claude</h3>
-<p>Nuvori AI is built on Claude, an AI model developed by Anthropic. Anthropic is an AI safety company. Claude is designed to be helpful, harmless, and honest. We use Claude's API to power all AI responses on our platform.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">3. AI Limitations</h3>
-<p>AI-generated content may sometimes be inaccurate, outdated, or not applicable to your specific situation. Always use your own judgment when acting on AI advice. We recommend verifying important information with qualified professionals.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">4. No Guarantee of Results</h3>
-<p>Nuvori AI provides career guidance and tools to improve your job search. However, we cannot guarantee employment outcomes, interview success, or salary increases. Results depend on many factors outside our control.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">5. FTC & Regulatory Compliance</h3>
-<p>In compliance with FTC guidelines, Nuvori clearly identifies AI-generated content. We never represent AI responses as coming from a human. If you ever ask whether you are speaking to a human or AI, Nuvori will always honestly disclose that it is an AI.</p>
-<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">6. Feedback</h3>
-<p>If you receive AI output that seems wrong, harmful, or inappropriate, please report it to feedback@nuvori.ai. Your reports help us improve.</p>
-<p style="margin-top:20px;">Questions? Email us at <strong>support@nuvori.ai</strong></p>`
-  }
+// ── LEGAL ──
+var legalContent={
+  terms:{title:'Terms of Service',body:'<p><strong>Last updated: June 2026</strong></p><p style="margin-top:14px;">Welcome to Nuvori. By using our platform, you agree to these Terms of Service.</p><h3 style="margin-top:20px;font-weight:700;">1. Use of Service</h3><p>Nuvori provides an AI-powered career coaching platform. You must be 18 or older to use Nuvori.</p><h3 style="margin-top:20px;font-weight:700;">2. AI-Generated Content</h3><p>Nuvori uses artificial intelligence to generate career advice. This content is for informational purposes only. Nuvori is not a licensed career counselor, attorney, or financial advisor. Results may vary.</p><h3 style="margin-top:20px;font-weight:700;">3. Subscriptions & Billing</h3><p>Paid plans are billed monthly. You may cancel at any time. Refunds are at our discretion for unused billing periods.</p><h3 style="margin-top:20px;font-weight:700;">4. Acceptable Use</h3><p>You agree not to misuse the platform, upload harmful content, or attempt to reverse-engineer our systems.</p><h3 style="margin-top:20px;font-weight:700;">5. Limitation of Liability</h3><p>Nuvori is provided "as is." Our total liability shall not exceed the amount you paid us in the last 3 months.</p><p style="margin-top:20px;">Questions? Email <strong>legal@nuvoriai.com</strong></p>'},
+  privacy:{title:'Privacy Policy',body:'<p><strong>Last updated: June 2026</strong></p><p style="margin-top:14px;">Your privacy matters to us.</p><h3 style="margin-top:20px;font-weight:700;">1. Data We Collect</h3><p>We collect your email, hashed password, resume content you share, usage data, and payment info processed by Stripe.</p><h3 style="margin-top:20px;font-weight:700;">2. How We Use It</h3><p>To provide Nuvori, process payments, and improve the service. We do not sell your data.</p><h3 style="margin-top:20px;font-weight:700;">3. AI Processing</h3><p>Content you share is sent to Anthropic\'s Claude API. Anthropic\'s privacy policy governs their handling of this data.</p><h3 style="margin-top:20px;font-weight:700;">4. Your Rights</h3><p>You may request deletion of your data at any time by emailing <strong>privacy@nuvoriai.com</strong>.</p>'},
+  ai:{title:'AI Disclosure',body:'<p><strong>Last updated: June 2026</strong></p><h3 style="margin-top:20px;font-weight:700;">1. You Are Talking to an AI</h3><p>Nuvori AI is an artificial intelligence system, not a human. It is not a licensed career counselor, recruiter, or advisor.</p><h3 style="margin-top:20px;font-weight:700;">2. Powered by Anthropic Claude</h3><p>Nuvori AI is built on Claude, developed by Anthropic PBC, an AI safety company.</p><h3 style="margin-top:20px;font-weight:700;">3. AI Limitations</h3><p>AI-generated content may sometimes be inaccurate. Always use your own judgment and verify important information.</p><h3 style="margin-top:20px;font-weight:700;">4. No Guarantee of Results</h3><p>Nuvori cannot guarantee employment outcomes. Results depend on many factors outside our control.</p><h3 style="margin-top:20px;font-weight:700;">5. FTC Compliance</h3><p>Nuvori clearly identifies AI-generated content and never represents responses as coming from a human.</p>'}
 };
 
-function showLegal(type) {
-  const modal = document.getElementById('legal-modal');
-  const title = document.getElementById('legal-title');
-  const body = document.getElementById('legal-body');
-  const c = legalContent[type];
-  title.textContent = c.title;
-  body.innerHTML = c.body;
-  modal.style.display = 'flex';
+function showLegal(type){
+  var c=legalContent[type];
+  document.getElementById('legal-title').textContent=c.title;
+  document.getElementById('legal-body').innerHTML=c.body;
+  document.getElementById('legal-modal').style.display='flex';
 }
-</script>
 
+document.getElementById('auth-email').addEventListener('keydown',function(e){if(e.key==='Enter')submitAuth();});
+document.getElementById('auth-password').addEventListener('keydown',function(e){if(e.key==='Enter')submitAuth();});
+</script>
 </body>
 </html>
