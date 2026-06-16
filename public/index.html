@@ -1,647 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LandIt — AI Career Coach</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nuvori — Your New Beginning Starts Here</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
-
-:root {
-  --white:   #ffffff;
-  --off:     #f7f7f5;
-  --rule:    #e4e4e0;
-  --ink:     #111110;
-  --mid:     #666662;
-  --soft:    #999994;
-  --accent:  #1a1a18;
-  --blue:    #1c3faa;
-  --font-display: 'DM Serif Display', Georgia, serif;
-  --font-body:    'DM Sans', system-ui, sans-serif;
-  --max: 1160px;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --white:#ffffff;
+  --off:#f8f7f4;
+  --ink:#0f0f0d;
+  --mid:#5a5a52;
+  --soft:#9a9a8e;
+  --rule:#e2e2da;
+  --green:#1a7a55;
+  --green-light:#e8f4ef;
+  --accent:#2d6a4f;
+  --font-serif:'Playfair Display',Georgia,serif;
+  --font-body:'Inter',system-ui,sans-serif;
 }
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--white);
-  color: var(--ink);
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:var(--white);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
 }
 
 /* ── NAV ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--rule);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 56px; height: 64px;
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 56px;height:68px;
+  transition:background .3s,backdrop-filter .3s,box-shadow .3s;
 }
-.logo {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  color: var(--ink);
-  letter-spacing: -0.3px;
+nav.scrolled{
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(16px);
+  box-shadow:0 1px 0 var(--rule);
 }
-.logo em { font-style: italic; color: var(--blue); }
-nav ul {
-  display: flex; gap: 36px; list-style: none;
+.nav-logo{
+  font-family:var(--font-serif);
+  font-size:1.6rem;font-weight:700;
+  color:var(--white);letter-spacing:-.5px;
+  transition:color .3s;
 }
-nav ul a {
-  font-size: .8rem; font-weight: 500;
-  letter-spacing: .08em; text-transform: uppercase;
-  color: var(--mid); text-decoration: none;
-  transition: color .18s;
+nav.scrolled .nav-logo{color:var(--ink);}
+nav ul{display:flex;gap:32px;list-style:none;}
+nav ul a{
+  font-size:.82rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
+  color:rgba(255,255,255,.8);text-decoration:none;transition:color .2s;
 }
-nav ul a:hover { color: var(--ink); }
-.nav-cta {
-  font-size: .8rem; font-weight: 600;
-  letter-spacing: .06em; text-transform: uppercase;
-  color: var(--white); background: var(--ink);
-  padding: 9px 22px; border-radius: 4px;
-  text-decoration: none; transition: background .18s;
+nav.scrolled ul a{color:var(--mid);}
+nav ul a:hover{color:var(--white);}
+nav.scrolled ul a:hover{color:var(--ink);}
+.nav-cta{
+  font-size:.8rem;font-weight:600;letter-spacing:.04em;
+  color:var(--white);background:var(--accent);
+  padding:10px 24px;border-radius:4px;text-decoration:none;
+  transition:background .2s,color .2s;
 }
-.nav-cta:hover { background: var(--blue); }
+nav.scrolled .nav-cta{background:var(--ink);color:var(--white);}
+.nav-cta:hover{opacity:.85;}
 
-/* ── HERO ── */
-.hero {
-  min-height: 100vh;
-  padding: 160px 56px 100px;
-  display: flex; flex-direction: column;
-  justify-content: center;
-  border-bottom: 1px solid var(--rule);
-  position: relative;
-  overflow: hidden;
+/* ── HERO — parallax ── */
+.hero{
+  position:relative;height:100vh;min-height:700px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;overflow:hidden;
 }
-.hero-eyebrow {
-  font-size: .75rem; font-weight: 500;
-  letter-spacing: .15em; text-transform: uppercase;
-  color: var(--soft); margin-bottom: 32px;
-  display: flex; align-items: center; gap: 12px;
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background:
+    linear-gradient(160deg,rgba(10,30,20,.82) 0%,rgba(15,40,28,.65) 60%,rgba(10,20,15,.8) 100%),
+    url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1800&q=80') center/cover no-repeat;
+  will-change:transform;
+  transform:translateY(0);
 }
-.hero-eyebrow::before {
-  content: '';
-  display: inline-block; width: 28px; height: 1px;
-  background: var(--soft);
+.hero-content{
+  position:relative;z-index:2;
+  max-width:820px;padding:0 24px;
 }
-.hero h1 {
-  font-family: var(--font-display);
-  font-size: clamp(3.2rem, 7.5vw, 6.5rem);
-  line-height: 1.0;
-  letter-spacing: -2px;
-  max-width: 820px;
-  margin-bottom: 40px;
-  color: var(--ink);
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.6);margin-bottom:28px;
 }
-.hero h1 em {
-  font-style: italic;
-  color: var(--blue);
+.hero-eyebrow::before,.hero-eyebrow::after{
+  content:'';display:inline-block;width:24px;height:1px;background:rgba(255,255,255,.3);
 }
-.hero-sub {
-  font-size: 1.1rem; font-weight: 400;
-  color: var(--mid); max-width: 480px;
-  line-height: 1.75; margin-bottom: 48px;
+.hero h1{
+  font-family:var(--font-serif);
+  font-size:clamp(3rem,8vw,6.5rem);
+  font-weight:900;line-height:1.02;letter-spacing:-2px;
+  color:var(--white);margin-bottom:28px;
 }
-.hero-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
-.btn-dark {
-  background: var(--ink); color: var(--white);
-  padding: 14px 32px; border-radius: 4px;
-  font-size: .875rem; font-weight: 600;
-  border: none; cursor: pointer; transition: background .18s;
-  letter-spacing: .02em; text-decoration: none; display: inline-block;
+.hero h1 em{font-style:italic;color:#7ed4a8;}
+.hero-sub{
+  font-size:1.1rem;color:rgba(255,255,255,.7);
+  line-height:1.75;max-width:520px;margin:0 auto 44px;font-weight:300;
 }
-.btn-dark:hover { background: var(--blue); }
-.btn-ghost {
-  background: transparent; color: var(--ink);
-  padding: 14px 32px; border-radius: 4px;
-  font-size: .875rem; font-weight: 500;
-  border: 1px solid var(--rule); cursor: pointer;
-  transition: border-color .18s, color .18s;
-  letter-spacing: .02em;
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.btn-hero-primary{
+  background:var(--white);color:var(--ink);
+  padding:15px 36px;border-radius:4px;
+  font-size:.9rem;font-weight:600;cursor:pointer;border:none;
+  transition:all .2s;letter-spacing:.02em;
 }
-.btn-ghost:hover { border-color: var(--ink); }
+.btn-hero-primary:hover{background:#e8f4ef;transform:translateY(-2px);}
+.btn-hero-ghost{
+  background:transparent;color:var(--white);
+  padding:15px 36px;border-radius:4px;
+  font-size:.9rem;font-weight:500;cursor:pointer;
+  border:1px solid rgba(255,255,255,.35);transition:all .2s;
+}
+.btn-hero-ghost:hover{border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.06);}
 
-.hero-stats {
-  display: flex; gap: 0; margin-top: 80px;
-  border-top: 1px solid var(--rule);
-  padding-top: 40px;
+/* hero stats bar */
+.hero-stats{
+  position:absolute;bottom:0;left:0;right:0;z-index:2;
+  display:flex;border-top:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.25);backdrop-filter:blur(8px);
 }
-.stat {
-  flex: 1; padding-right: 40px;
-  border-right: 1px solid var(--rule);
-  margin-right: 40px;
+.hero-stat{
+  flex:1;padding:22px 0;text-align:center;
+  border-right:1px solid rgba(255,255,255,.1);
 }
-.stat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
-.stat-num {
-  font-family: var(--font-display);
-  font-size: 2.6rem; line-height: 1;
-  color: var(--ink); margin-bottom: 6px;
+.hero-stat:last-child{border-right:none;}
+.hero-stat-num{
+  font-family:var(--font-serif);font-size:2rem;font-weight:700;
+  color:var(--white);line-height:1;margin-bottom:4px;
 }
-.stat-label {
-  font-size: .78rem; font-weight: 500;
-  letter-spacing: .08em; text-transform: uppercase;
-  color: var(--soft);
-}
+.hero-stat-label{font-size:.7rem;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;}
 
-/* ── SHARED LAYOUT ── */
-.section {
-  padding: 100px 56px;
-  border-bottom: 1px solid var(--rule);
+/* ── PARALLAX IMAGE SECTIONS ── */
+.parallax-section{
+  position:relative;height:500px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
 }
-.section-inner { max-width: var(--max); margin: 0 auto; }
-.section-alt { background: var(--off); }
-
-.eyebrow {
-  font-size: .72rem; font-weight: 500;
-  letter-spacing: .15em; text-transform: uppercase;
-  color: var(--soft); margin-bottom: 20px;
-  display: flex; align-items: center; gap: 10px;
+.parallax-bg{
+  position:absolute;inset:-20%;z-index:0;
+  background-size:cover;background-position:center;background-attachment:fixed;
 }
-.eyebrow::before {
-  content: ''; display: inline-block;
-  width: 20px; height: 1px; background: var(--soft);
+.parallax-overlay{
+  position:absolute;inset:0;z-index:1;
 }
-.section-heading {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3.2rem);
-  line-height: 1.1; letter-spacing: -1px;
-  color: var(--ink); margin-bottom: 18px;
+.parallax-content{
+  position:relative;z-index:2;
+  text-align:center;padding:0 24px;max-width:720px;
 }
-.section-heading em { font-style: italic; color: var(--blue); }
-.section-body {
-  font-size: 1rem; color: var(--mid);
-  line-height: 1.75; max-width: 520px;
+.parallax-content h2{
+  font-family:var(--font-serif);font-size:clamp(2.2rem,5vw,4rem);
+  font-weight:700;color:var(--white);letter-spacing:-1px;
+  line-height:1.1;margin-bottom:16px;
+}
+.parallax-content p{
+  font-size:1.05rem;color:rgba(255,255,255,.75);line-height:1.7;
 }
 
-/* ── FEATURES ── */
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0;
-  margin-top: 64px;
-  border-top: 1px solid var(--rule);
-  border-left: 1px solid var(--rule);
+/* ── STANDARD SECTIONS ── */
+.section{padding:100px 56px;border-bottom:1px solid var(--rule);}
+.section-alt{background:var(--off);}
+.section-inner{max-width:1140px;margin:0 auto;}
+.section-dark{background:var(--ink);border-bottom:none;}
+
+.eyebrow{
+  font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--soft);margin-bottom:18px;display:flex;align-items:center;gap:12px;
 }
-.feat-card {
-  padding: 36px 32px;
-  border-right: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  transition: background .18s;
+.eyebrow::before{content:'';width:20px;height:1px;background:var(--soft);}
+.eyebrow.light{color:rgba(255,255,255,.4);}
+.eyebrow.light::before{background:rgba(255,255,255,.3);}
+
+.section-heading{
+  font-family:var(--font-serif);
+  font-size:clamp(2rem,4vw,3.2rem);
+  font-weight:700;letter-spacing:-1px;line-height:1.1;
+  margin-bottom:18px;color:var(--ink);
 }
-.feat-card:hover { background: var(--off); }
-.feat-marker {
-  font-size: .68rem; font-weight: 600;
-  letter-spacing: .12em; text-transform: uppercase;
-  color: var(--soft); margin-bottom: 20px;
+.section-heading em{font-style:italic;color:var(--accent);}
+.section-heading.light{color:var(--white);}
+.section-heading.light em{color:#7ed4a8;}
+.section-body{font-size:1rem;color:var(--mid);line-height:1.8;max-width:540px;}
+.section-body.light{color:rgba(255,255,255,.6);}
+
+/* ── FEATURES GRID ── */
+.features-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border-top:1px solid var(--rule);border-left:1px solid var(--rule);
+  margin-top:60px;
 }
-.feat-card h3 {
-  font-family: var(--font-display);
-  font-size: 1.15rem; font-weight: 400;
-  color: var(--ink); margin-bottom: 10px;
-  line-height: 1.3;
+.feat-card{
+  padding:36px 32px;
+  border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  transition:background .18s;position:relative;
 }
-.feat-card p {
-  font-size: .875rem; color: var(--mid);
-  line-height: 1.7;
+.feat-card:hover{background:var(--green-light);}
+.feat-card:hover::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);
 }
+.feat-tag{
+  font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:14px;
+}
+.feat-card h3{
+  font-family:var(--font-serif);font-size:1.15rem;font-weight:700;
+  color:var(--ink);margin-bottom:10px;line-height:1.3;
+}
+.feat-card p{font-size:.875rem;color:var(--mid);line-height:1.7;}
 
 /* ── HOW IT WORKS ── */
-.steps {
-  margin-top: 64px;
-  display: flex; flex-direction: column;
+.steps{margin-top:60px;}
+.step{
+  display:grid;grid-template-columns:72px 1fr;gap:28px;
+  padding:36px 0;border-top:1px solid var(--rule);align-items:start;
 }
-.step {
-  display: grid;
-  grid-template-columns: 80px 1fr;
-  gap: 32px;
-  padding: 36px 0;
-  border-top: 1px solid var(--rule);
-  align-items: start;
+.step-num{
+  font-family:var(--font-serif);font-size:3rem;font-weight:900;
+  color:var(--rule);line-height:1;letter-spacing:-2px;
 }
-.step-n {
-  font-family: var(--font-display);
-  font-size: 1rem; font-style: italic;
-  color: var(--soft); padding-top: 4px;
+.step h3{
+  font-family:var(--font-serif);font-size:1.3rem;font-weight:700;
+  margin-bottom:10px;color:var(--ink);
 }
-.step-content h3 {
-  font-family: var(--font-display);
-  font-size: 1.35rem; font-weight: 400;
-  color: var(--ink); margin-bottom: 10px;
-}
-.step-content p {
-  font-size: .9rem; color: var(--mid); line-height: 1.75;
-  max-width: 560px;
-}
+.step p{font-size:.9rem;color:var(--mid);line-height:1.75;max-width:560px;}
 
-/* ── CHATBOT ── */
-.chat-wrap {
-  margin: 60px auto 0;
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  overflow: hidden;
-  background: var(--white);
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  grid-template-rows: auto 1fr auto;
-  min-height: 540px;
+/* ── CHAT SECTION ── */
+.chat-layout{
+  display:grid;grid-template-columns:260px 1fr;
+  border:1px solid var(--rule);border-radius:8px;overflow:hidden;
+  box-shadow:0 24px 80px rgba(0,0,0,.08);margin-top:60px;
+  background:var(--white);
 }
-.chat-topbar {
-  background: var(--ink);
-  padding: 16px 20px;
-  display: flex; align-items: center; justify-content: space-between;
-  grid-column: 1 / -1;
+.chat-sidebar{
+  background:#0f1a14;
+  display:flex;flex-direction:column;
+  min-width:200px;
 }
-.chat-topbar-left {
-  display: flex; align-items: center; gap: 10px;
+.chat-sidebar-header{
+  padding:20px 20px 16px;
+  border-bottom:1px solid rgba(255,255,255,.08);
 }
-.chat-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: rgba(255,255,255,.2);
+.ivy-brand{
+  font-family:var(--font-serif);font-size:1.1rem;font-weight:700;
+  color:var(--white);display:flex;align-items:center;gap:8px;
+  margin-bottom:4px;
 }
-.chat-dot.active { background: #4ade80; }
-.ivy-name {
-  font-size: .88rem; font-weight: 600; color: var(--white);
-  letter-spacing: .02em;
+.ivy-dot{
+  width:8px;height:8px;border-radius:50%;background:#4ade80;
+  box-shadow:0 0 6px #4ade80;
 }
-.ivy-sub {
-  font-size: .7rem; color: rgba(255,255,255,.38);
-  letter-spacing: .06em; text-transform: uppercase;
+.ivy-tagline{font-size:.7rem;color:rgba(255,255,255,.35);letter-spacing:.06em;}
+.sidebar-label{
+  font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.25);padding:20px 20px 8px;
 }
-
-/* sidebar */
-.chat-sidebar {
-  border-right: 1px solid var(--rule);
-  background: var(--off);
-  grid-row: 2 / 4;
-  display: flex; flex-direction: column;
-  overflow-y: auto;
+.feat-tab{
+  padding:11px 20px;font-size:.8rem;font-weight:400;
+  color:rgba(255,255,255,.5);background:transparent;
+  border:none;border-left:2px solid transparent;
+  cursor:pointer;text-align:left;transition:all .15s;
+  font-family:var(--font-body);
+  display:block;width:100%;white-space:nowrap;
 }
-.sidebar-label {
-  font-size: .65rem; font-weight: 600;
-  letter-spacing: .12em; text-transform: uppercase;
-  color: var(--soft); padding: 16px 16px 8px;
+.feat-tab:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.04);}
+.feat-tab.active{
+  color:var(--white);background:rgba(255,255,255,.07);
+  border-left-color:#4ade80;font-weight:500;
 }
-.feat-tab {
-  padding: 11px 16px;
-  font-size: .82rem; font-weight: 400;
-  color: var(--mid); background: transparent;
-  border: none; border-left: 2px solid transparent;
-  cursor: pointer; text-align: left;
-  transition: color .15s, background .15s, border-color .15s;
-  font-family: var(--font-body);
-  line-height: 1.3;
+.chat-main{display:flex;flex-direction:column;}
+.chat-topbar{
+  background:var(--off);border-bottom:1px solid var(--rule);
+  padding:14px 24px;display:flex;justify-content:space-between;align-items:center;
 }
-.feat-tab:hover { color: var(--ink); background: rgba(0,0,0,.03); }
-.feat-tab.active {
-  color: var(--ink); background: var(--white);
-  border-left-color: var(--ink);
-  font-weight: 600;
+.chat-topbar-title{font-size:.82rem;font-weight:600;color:var(--ink);}
+.chat-topbar-right{font-size:.7rem;color:var(--soft);letter-spacing:.06em;text-transform:uppercase;}
+.chat-messages{
+  flex:1;padding:24px;min-height:360px;max-height:440px;
+  overflow-y:auto;display:flex;flex-direction:column;gap:16px;
+  background:var(--white);
 }
-
-/* messages */
-.chat-messages {
-  padding: 24px;
-  overflow-y: auto;
-  display: flex; flex-direction: column; gap: 18px;
-  background: var(--white);
+.chat-messages::-webkit-scrollbar{width:3px;}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--rule);}
+.msg{display:flex;gap:10px;max-width:88%;animation:fadeUp .22s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.msg.user{align-self:flex-end;flex-direction:row-reverse;}
+.msg-avatar{
+  width:28px;height:28px;border-radius:4px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.68rem;font-weight:700;
 }
-.chat-messages::-webkit-scrollbar { width: 3px; }
-.chat-messages::-webkit-scrollbar-thumb { background: var(--rule); }
-
-.msg {
-  display: flex; gap: 10px;
-  max-width: 90%;
-  animation: fadeUp .22s ease;
+.msg.ai .msg-avatar{background:#0f1a14;color:#4ade80;}
+.msg.user .msg-avatar{background:var(--off);color:var(--ink);border:1px solid var(--rule);}
+.msg-bubble{
+  padding:12px 16px;border-radius:6px;font-size:.875rem;line-height:1.7;
 }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+.msg.ai .msg-bubble{background:var(--off);border:1px solid var(--rule);color:var(--ink);}
+.msg.user .msg-bubble{background:#0f1a14;color:var(--white);}
+.msg-bubble strong{font-weight:600;}
+.msg-bubble ul{padding-left:16px;margin-top:6px;}
+.msg-bubble li{margin-bottom:3px;}
+.typing-indicator{
+  display:flex;gap:4px;padding:12px 14px;
+  background:var(--off);border:1px solid var(--rule);
+  border-radius:6px;width:fit-content;
 }
-.msg.user { align-self: flex-end; flex-direction: row-reverse; }
-.msg-avatar {
-  width: 26px; height: 26px; border-radius: 3px;
-  flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: .68rem; font-weight: 700; letter-spacing: .02em;
+.typing-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--soft);animation:bounce .8s infinite;
 }
-.msg.ai   .msg-avatar { background: var(--ink); color: var(--white); }
-.msg.user .msg-avatar { background: var(--off); color: var(--ink); border: 1px solid var(--rule); }
-.msg-bubble {
-  padding: 12px 16px; border-radius: 4px;
-  font-size: .875rem; line-height: 1.7;
+.typing-dot:nth-child(2){animation-delay:.14s;}
+.typing-dot:nth-child(3){animation-delay:.28s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
+.chat-input-wrap{border-top:1px solid var(--rule);}
+.attach-preview{display:flex;flex-wrap:wrap;gap:8px;max-height:0;overflow:hidden;transition:all .2s;}
+.attach-preview.has-files{max-height:200px;padding:12px 16px 0;}
+.preview-item{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--off);border:1px solid var(--rule);border-radius:4px;
+  padding:5px 10px;font-size:.75rem;color:var(--mid);max-width:180px;
 }
-.msg.ai   .msg-bubble { background: var(--off); color: var(--ink); border: 1px solid var(--rule); }
-.msg.user .msg-bubble { background: var(--ink); color: var(--white); }
-.msg-bubble strong { font-weight: 600; }
-.msg.user .msg-bubble strong { font-weight: 700; }
-.msg-bubble ul { padding-left: 16px; margin-top: 6px; }
-.msg-bubble li { margin-bottom: 3px; }
-
-.typing-indicator {
-  display: flex; gap: 4px; padding: 12px 14px;
-  background: var(--off); border: 1px solid var(--rule);
-  border-radius: 4px; width: fit-content;
+.preview-item img{width:30px;height:30px;object-fit:cover;border-radius:2px;flex-shrink:0;}
+.preview-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100px;}
+.preview-remove{background:none;border:none;cursor:pointer;color:var(--soft);font-size:.85rem;padding:0;transition:color .15s;}
+.preview-remove:hover{color:var(--ink);}
+.chat-input-row{display:flex;}
+.attach-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:48px;flex-shrink:0;color:var(--soft);cursor:pointer;
+  border-right:1px solid var(--rule);transition:all .15s;
 }
-.typing-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--soft); animation: bounce .8s infinite;
+.attach-btn:hover{color:var(--ink);background:var(--off);}
+#chat-input{
+  flex:1;border:none;outline:none;padding:15px 18px;
+  font-size:.875rem;font-family:var(--font-body);color:var(--ink);
+  background:transparent;resize:none;min-height:50px;max-height:120px;line-height:1.5;
 }
-.typing-dot:nth-child(2) { animation-delay: .14s; }
-.typing-dot:nth-child(3) { animation-delay: .28s; }
-@keyframes bounce {
-  0%,60%,100% { transform: translateY(0); }
-  30%          { transform: translateY(-5px); }
+#chat-input::placeholder{color:var(--soft);}
+#send-btn{
+  border:none;border-left:1px solid var(--rule);
+  background:#0f1a14;color:var(--white);padding:0 24px;cursor:pointer;
+  font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  font-family:var(--font-body);transition:background .18s;flex-shrink:0;
 }
-
-.chat-input-wrap {
-  border-top: 1px solid var(--rule);
-  background: var(--white);
-  grid-column: 2;
-}
-#attachment-preview {
-  display: flex; flex-wrap: wrap; gap: 8px;
-  padding: 0;
-  max-height: 0; overflow: hidden;
-  transition: max-height .2s, padding .2s;
-}
-#attachment-preview.has-files {
-  max-height: 200px;
-  padding: 12px 16px 0;
-}
-.preview-item {
-  position: relative; display: inline-flex;
-  align-items: center; gap: 6px;
-  background: var(--off); border: 1px solid var(--rule);
-  border-radius: 4px; padding: 6px 10px;
-  font-size: .75rem; color: var(--mid);
-  max-width: 180px;
-}
-.preview-item img {
-  width: 32px; height: 32px; object-fit: cover;
-  border-radius: 2px; flex-shrink: 0;
-}
-.preview-item .preview-name {
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  max-width: 100px;
-}
-.preview-remove {
-  background: none; border: none; cursor: pointer;
-  color: var(--soft); font-size: .85rem; padding: 0;
-  flex-shrink: 0; line-height: 1;
-  transition: color .15s;
-}
-.preview-remove:hover { color: var(--ink); }
-.chat-input-row {
-  display: flex; gap: 0;
-}
-.attach-btn {
-  display: flex; align-items: center; justify-content: center;
-  width: 48px; flex-shrink: 0;
-  color: var(--soft); cursor: pointer;
-  border-right: 1px solid var(--rule);
-  transition: color .15s, background .15s;
-}
-.attach-btn:hover { color: var(--ink); background: var(--off); }
-#chat-input {
-  flex: 1;
-  border: none; outline: none;
-  padding: 16px 16px;
-  font-size: .875rem; font-family: var(--font-body);
-  color: var(--ink); background: transparent;
-  resize: none; min-height: 52px; max-height: 120px;
-  line-height: 1.5;
-}
-#chat-input::placeholder { color: var(--soft); }
-#send-btn {
-  border: none; border-left: 1px solid var(--rule);
-  background: var(--ink); color: var(--white);
-  padding: 0 24px; cursor: pointer;
-  font-size: .78rem; font-weight: 600;
-  letter-spacing: .06em; text-transform: uppercase;
-  font-family: var(--font-body);
-  transition: background .18s;
-  flex-shrink: 0;
-}
-#send-btn:hover { background: var(--blue); }
-#send-btn:disabled { background: var(--rule); color: var(--soft); cursor: not-allowed; }
+#send-btn:hover{background:var(--accent);}
+#send-btn:disabled{background:var(--rule);color:var(--soft);cursor:not-allowed;}
 
 /* ── PRICING ── */
-.pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0; margin-top: 64px;
-  border: 1px solid var(--rule);
-  border-radius: 4px; overflow: hidden;
+.pricing-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:24px;margin-top:60px;
 }
-.price-card {
-  padding: 40px 36px;
-  border-right: 1px solid var(--rule);
-  position: relative;
+.price-card{
+  background:var(--white);border:1px solid var(--rule);
+  border-radius:8px;padding:40px 36px;position:relative;
+  transition:transform .2s,box-shadow .2s;
 }
-.price-card:last-child { border-right: none; }
-.price-card.popular { background: var(--ink); }
-.price-tier {
-  font-size: .72rem; font-weight: 600;
-  letter-spacing: .12em; text-transform: uppercase;
-  color: var(--soft); margin-bottom: 24px;
+.price-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.08);}
+.price-card.popular{background:var(--ink);border-color:var(--ink);}
+.popular-badge{
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  background:var(--accent);color:var(--white);
+  padding:5px 20px;border-radius:100px;
+  font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;
 }
-.price-card.popular .price-tier { color: rgba(255,255,255,.45); }
-.price-amount {
-  font-family: var(--font-display);
-  font-size: 3rem; line-height: 1;
-  color: var(--ink); margin-bottom: 4px;
+.price-tier{
+  font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--soft);margin-bottom:20px;
 }
-.price-card.popular .price-amount { color: var(--white); }
-.price-per { font-size: .82rem; color: var(--soft); margin-bottom: 20px; }
-.price-card.popular .price-per { color: rgba(255,255,255,.4); }
-.price-desc {
-  font-size: .875rem; color: var(--mid);
-  margin-bottom: 28px; line-height: 1.6;
+.price-card.popular .price-tier{color:rgba(255,255,255,.4);}
+.price-amount{
+  font-family:var(--font-serif);font-size:3.2rem;font-weight:900;
+  color:var(--ink);line-height:1;margin-bottom:6px;
 }
-.price-card.popular .price-desc { color: rgba(255,255,255,.55); }
-.price-divider { border: none; border-top: 1px solid var(--rule); margin-bottom: 24px; }
-.price-card.popular .price-divider { border-color: rgba(255,255,255,.12); }
-.price-features { list-style: none; display: flex; flex-direction: column; gap: 11px; margin-bottom: 32px; }
-.price-features li {
-  font-size: .83rem; color: var(--mid);
-  display: flex; align-items: flex-start; gap: 10px; line-height: 1.4;
+.price-card.popular .price-amount{color:var(--white);}
+.price-per{font-size:.82rem;color:var(--soft);margin-bottom:16px;}
+.price-card.popular .price-per{color:rgba(255,255,255,.4);}
+.price-desc{font-size:.875rem;color:var(--mid);margin-bottom:28px;line-height:1.6;}
+.price-card.popular .price-desc{color:rgba(255,255,255,.55);}
+.price-divider{border:none;border-top:1px solid var(--rule);margin-bottom:24px;}
+.price-card.popular .price-divider{border-color:rgba(255,255,255,.1);}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:32px;}
+.price-features li{
+  font-size:.83rem;color:var(--mid);display:flex;align-items:flex-start;gap:10px;line-height:1.4;
 }
-.price-card.popular .price-features li { color: rgba(255,255,255,.65); }
-.price-features li::before { content: '—'; color: var(--soft); flex-shrink: 0; font-size: .75rem; margin-top: 1px; }
-.price-card.popular .price-features li::before { color: rgba(255,255,255,.3); }
-.price-btn {
-  width: 100%; padding: 12px 20px;
-  border-radius: 4px; font-size: .82rem;
-  font-weight: 600; letter-spacing: .04em;
-  cursor: pointer; transition: all .18s;
-  font-family: var(--font-body);
-  border: 1px solid var(--rule);
-  background: var(--white); color: var(--ink);
+.price-card.popular .price-features li{color:rgba(255,255,255,.65);}
+.price-features li::before{content:'✓';color:var(--accent);font-weight:700;flex-shrink:0;}
+.price-card.popular .price-features li::before{color:#7ed4a8;}
+.price-btn{
+  width:100%;padding:13px;border-radius:6px;
+  font-size:.85rem;font-weight:600;cursor:pointer;
+  border:1px solid var(--rule);background:var(--white);
+  color:var(--ink);transition:all .18s;font-family:var(--font-body);
 }
-.price-btn:hover { border-color: var(--ink); }
-.price-card.popular .price-btn {
-  background: var(--white); color: var(--ink); border-color: transparent;
+.price-btn:hover{border-color:var(--ink);}
+.price-card.popular .price-btn{background:var(--white);border-color:transparent;color:var(--ink);}
+.price-card.popular .price-btn:hover{background:var(--off);}
+
+/* ── TESTIMONIALS ── */
+.testimonials-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px;
 }
-.price-card.popular .price-btn:hover { background: var(--off); }
+.testimonial-card{
+  background:var(--white);border:1px solid var(--rule);
+  border-radius:8px;padding:32px;transition:transform .2s,box-shadow .2s;
+}
+.testimonial-card:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.06);}
+.testimonial-quote{
+  font-family:var(--font-serif);font-size:1rem;font-style:italic;
+  color:var(--ink);line-height:1.7;margin-bottom:24px;
+}
+.testimonial-author{display:flex;align-items:center;gap:12px;}
+.testimonial-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--green-light);border:2px solid var(--rule);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-serif);font-size:1rem;font-weight:700;color:var(--accent);
+  flex-shrink:0;
+}
+.testimonial-name{font-size:.85rem;font-weight:600;color:var(--ink);}
+.testimonial-role{font-size:.75rem;color:var(--soft);}
 
 /* ── FOOTER ── */
-footer {
-  padding: 60px 56px 40px;
-  border-top: 1px solid var(--rule);
+footer{
+  background:var(--ink);padding:72px 56px 40px;
 }
-.footer-top {
-  display: flex; justify-content: space-between;
-  align-items: flex-start; gap: 48px;
-  flex-wrap: wrap; padding-bottom: 48px;
-  border-bottom: 1px solid var(--rule);
-  margin-bottom: 32px;
+.footer-top{
+  display:flex;justify-content:space-between;gap:48px;flex-wrap:wrap;
+  padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:32px;
 }
-.footer-brand .logo { font-size: 1.2rem; margin-bottom: 8px; }
-.footer-brand p { font-size: .83rem; color: var(--soft); max-width: 220px; line-height: 1.6; }
-.footer-links { display: flex; gap: 64px; }
-.footer-col h5 {
-  font-size: .68rem; font-weight: 600;
-  letter-spacing: .14em; text-transform: uppercase;
-  color: var(--soft); margin-bottom: 16px;
+.footer-logo{
+  font-family:var(--font-serif);font-size:1.6rem;font-weight:700;
+  color:var(--white);margin-bottom:10px;
 }
-.footer-col a {
-  display: block; font-size: .83rem; color: var(--mid);
-  text-decoration: none; margin-bottom: 10px;
-  transition: color .15s;
+.footer-tagline{font-size:.85rem;color:rgba(255,255,255,.35);max-width:200px;line-height:1.6;}
+.footer-links{display:flex;gap:56px;flex-wrap:wrap;}
+.footer-col h5{
+  font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);margin-bottom:18px;
 }
-.footer-col a:hover { color: var(--ink); }
-.footer-bottom {
-  display: flex; justify-content: space-between;
-  align-items: center; flex-wrap: wrap; gap: 12px;
+.footer-col a{
+  display:block;font-size:.83rem;color:rgba(255,255,255,.5);
+  text-decoration:none;margin-bottom:10px;transition:color .15s;
 }
-.footer-bottom p { font-size: .78rem; color: var(--soft); }
-
-@media (max-width: 860px) {
-  nav { padding: 0 24px; }
-  nav ul { display: none; }
-  .hero { padding: 140px 24px 80px; }
-  .hero-stats { flex-direction: column; gap: 24px; }
-  .stat { border-right: none; border-bottom: 1px solid var(--rule); padding-bottom: 20px; margin-bottom: 4px; }
-  .section { padding: 72px 24px; }
-  .features-grid { grid-template-columns: 1fr; }
-  .pricing-grid { grid-template-columns: 1fr; }
-  .price-card { border-right: none; border-bottom: 1px solid var(--rule); }
-  footer { padding: 48px 24px 32px; }
-  .footer-links { gap: 32px; flex-wrap: wrap; }
+.footer-col a:hover{color:var(--white);}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:12px;
 }
+.footer-bottom p{font-size:.78rem;color:rgba(255,255,255,.25);}
 
 /* ── AUTH MODAL ── */
-#auth-modal {
-  position: fixed; inset: 0; z-index: 1000;
-  display: none; align-items: center; justify-content: center;
+#auth-modal{
+  position:fixed;inset:0;z-index:1000;
+  display:none;align-items:center;justify-content:center;
 }
-.modal-overlay {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);}
+.modal-box{
+  position:relative;z-index:1;
+  background:var(--white);border-radius:10px;padding:44px 40px;
+  width:100%;max-width:400px;
+  display:flex;flex-direction:column;gap:14px;
+  box-shadow:0 32px 80px rgba(0,0,0,.2);
 }
-.modal-box {
-  position: relative; z-index: 1;
-  background: var(--white); border: 1px solid var(--rule);
-  border-radius: 8px; padding: 40px 36px;
-  width: 100%; max-width: 400px;
-  display: flex; flex-direction: column; gap: 14px;
+.modal-logo{
+  font-family:var(--font-serif);font-size:1.5rem;font-weight:700;
+  color:var(--ink);margin-bottom:4px;
 }
-.modal-logo {
-  font-family: var(--font-display);
-  font-size: 1.4rem; font-weight: 400;
-  color: var(--ink); margin-bottom: 4px;
-  font-style: italic;
+.modal-tabs{display:flex;gap:0;border-bottom:1px solid var(--rule);margin-bottom:4px;}
+.modal-tab{
+  flex:1;padding:10px;background:none;border:none;
+  font-size:.82rem;font-weight:500;color:var(--soft);
+  cursor:pointer;border-bottom:2px solid transparent;font-family:var(--font-body);
+  transition:color .15s;
 }
-.modal-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--rule); margin-bottom: 4px; }
-.modal-tab {
-  flex: 1; padding: 10px; background: none; border: none;
-  font-size: .82rem; font-weight: 500; color: var(--soft);
-  cursor: pointer; border-bottom: 2px solid transparent;
-  font-family: var(--font-body); transition: color .15s;
+.modal-tab.active{color:var(--ink);border-bottom-color:var(--accent);font-weight:600;}
+.auth-error{
+  background:#fef2f2;border:1px solid #fecaca;color:#991b1b;
+  padding:10px 14px;border-radius:4px;font-size:.82rem;
 }
-.modal-tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 600; }
-.auth-error {
-  background: #fef2f2; border: 1px solid #fecaca;
-  color: #991b1b; padding: 10px 14px; border-radius: 4px;
-  font-size: .82rem;
+.modal-box input{
+  border:1px solid var(--rule);border-radius:4px;padding:12px 14px;
+  font-size:.9rem;font-family:var(--font-body);color:var(--ink);outline:none;
+  transition:border-color .15s;
 }
-.modal-box input {
-  border: 1px solid var(--rule); border-radius: 4px;
-  padding: 12px 14px; font-size: .9rem;
-  font-family: var(--font-body); color: var(--ink);
-  outline: none; transition: border-color .15s;
+.modal-box input:focus{border-color:var(--accent);}
+.modal-submit{
+  background:var(--ink);color:var(--white);border:none;border-radius:4px;
+  padding:13px;font-size:.88rem;font-weight:600;cursor:pointer;
+  font-family:var(--font-body);transition:background .18s;margin-top:4px;
 }
-.modal-box input:focus { border-color: var(--ink); }
-.modal-submit {
-  background: var(--ink); color: var(--white);
-  border: none; border-radius: 4px; padding: 13px;
-  font-size: .88rem; font-weight: 600; cursor: pointer;
-  font-family: var(--font-body); transition: background .18s;
-  margin-top: 4px;
-}
-.modal-submit:hover { background: var(--blue); }
-.modal-submit:disabled { background: var(--soft); cursor: not-allowed; }
-.modal-note { font-size: .72rem; color: var(--soft); text-align: center; line-height: 1.5; }
-.modal-note a { color: var(--mid); }
+.modal-submit:hover{background:var(--accent);}
+.modal-submit:disabled{background:var(--soft);cursor:not-allowed;}
+.modal-note{font-size:.72rem;color:var(--soft);text-align:center;line-height:1.5;}
+.modal-note a{color:var(--mid);}
 
 /* ── PLAN BADGE ── */
-#plan-badge {
-  display: none; font-size: .65rem; font-weight: 600;
-  letter-spacing: .1em; text-transform: uppercase;
-  background: var(--off); border: 1px solid var(--rule);
-  color: var(--soft); padding: 3px 8px; border-radius: 3px;
+#plan-badge{
+  display:none;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  background:rgba(126,212,168,.15);border:1px solid rgba(126,212,168,.3);
+  color:#7ed4a8;padding:3px 8px;border-radius:3px;
 }
-#usage-badge {
-  font-size: .7rem; color: var(--soft);
+#usage-badge{font-size:.7rem;color:rgba(255,255,255,.35);}
+
+@media(max-width:860px){
+  nav{padding:0 24px;}
+  nav ul{display:none;}
+  .section{padding:72px 24px;}
+  .features-grid{grid-template-columns:1fr;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .testimonials-grid{grid-template-columns:1fr;}
+  .chat-layout{grid-template-columns:1fr;grid-template-rows:auto auto;}
+  .chat-sidebar{display:none;}
+  footer{padding:48px 24px 32px;}
+  .footer-links{gap:32px;}
+  .hero-stats{display:none;}
 }
 </style>
 </head>
 <body>
 
 <!-- NAV -->
-<nav>
-  <div class="logo">Land<em>It</em></div>
+<nav id="main-nav">
+  <div class="nav-logo">Nuvori</div>
   <ul>
     <li><a href="#features">Features</a></li>
     <li><a href="#how">How it works</a></li>
-    <li><a href="#chat">Try it</a></li>
+    <li><a href="#chat">Try Nuvori AI</a></li>
     <li><a href="#pricing">Pricing</a></li>
   </ul>
-  <a href="#chat" class="nav-cta">Get started</a>
+  <a href="#chat" class="nav-cta">Get started free</a>
 </nav>
 
 <!-- HERO -->
-<section class="hero">
-  <div class="hero-eyebrow">AI Career Coach · Powered by Claude</div>
-  <h1>Stop applying.<br><em>Start landing.</em></h1>
-  <p class="hero-sub">LandIt rewrites your resume, preps you for interviews, researches companies, and coaches you from first application to signed offer.</p>
-  <div class="hero-actions">
-    <button class="btn-dark" onclick="document.getElementById('chat').scrollIntoView({behavior:'smooth'})">Try LandIt free</button>
-    <button class="btn-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">See all features</button>
+<section class="hero" id="home">
+  <div class="hero-bg" id="hero-parallax"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">AI Career Coach · Powered by Claude</div>
+    <h1>Your new beginning<br><em>starts here.</em></h1>
+    <p class="hero-sub">Nuvori is your AI-powered career coach that rewrites your resume, preps you for every interview, and guides you from first application to signed offer.</p>
+    <div class="hero-btns">
+      <button class="btn-hero-primary" onclick="document.getElementById('chat').scrollIntoView({behavior:'smooth'})">Try Nuvori AI — it's free</button>
+      <button class="btn-hero-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">See all features</button>
+    </div>
   </div>
   <div class="hero-stats">
-    <div class="stat">
-      <div class="stat-num">3×</div>
-      <div class="stat-label">More interviews</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">47%</div>
-      <div class="stat-label">Higher offer rate</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">12k+</div>
-      <div class="stat-label">Jobs landed</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">4.9</div>
-      <div class="stat-label">User rating</div>
-    </div>
+    <div class="hero-stat"><div class="hero-stat-num">3×</div><div class="hero-stat-label">More interviews</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">47%</div><div class="hero-stat-label">Higher offer rate</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">12k+</div><div class="hero-stat-label">New beginnings</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">4.9★</div><div class="hero-stat-label">User rating</div></div>
   </div>
 </section>
 
@@ -649,169 +559,167 @@ footer {
 <section class="section" id="features">
   <div class="section-inner">
     <div class="eyebrow">Everything you need</div>
-    <h2 class="section-heading">Your unfair advantage<br>in the job market</h2>
-    <p class="section-body">Every tool you need to go from job seeker to offer-holder, in one AI-powered platform.</p>
+    <h2 class="section-heading">Every tool to go from<br><em>searching to signed.</em></h2>
+    <p class="section-body">One AI coach. Ten powerful features. Everything from resume to your first 90 days on the job.</p>
     <div class="features-grid">
-      <div class="feat-card">
-        <div class="feat-marker">Resume</div>
-        <h3>Resume Review & Rewriting</h3>
-        <p>Upload your resume and a job description. AI scores your match, rewrites bullet points for ATS, and makes you impossible to skip.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-marker">Interview</div>
-        <h3>Mock Interview Coach</h3>
-        <p>Role-specific AI interviews with real-time feedback on STAR method, clarity, and confidence. Practice until you're ready.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-marker">Cover Letter</div>
-        <h3>Cover Letter Generator</h3>
-        <p>Tailored cover letters written in your voice, matched to the company's tone and culture in seconds.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-marker">Tracker</div>
-        <h3>Application Tracker</h3>
-        <p>Track every application, status, follow-up date, and resume version. Never lose track of an opportunity again.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-marker">LinkedIn</div>
-        <h3>LinkedIn Optimizer</h3>
-        <p>Rewritten headlines, summaries, and experience sections loaded with recruiter-magnet keywords.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-marker">Negotiation</div>
-        <h3>Salary Negotiation Coach</h3>
-        <p>AI plays the hiring manager. Roleplay offer negotiations until you can confidently ask for more and get it.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-marker">Analysis</div>
-        <h3>Job Description Decoder</h3>
-        <p>Paste any JD and AI reveals what they really mean, culture red flags, and exactly how to position yourself.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-marker">Skills</div>
-        <h3>Skills Gap Analyzer</h3>
-        <p>Compare your profile to your dream role. Get a precise list of certifications and skills that will get you there.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-marker">Research</div>
-        <h3>Company Research Briefing</h3>
-        <p>Enter any company and get an instant prep sheet: recent news, culture insights, likely interview questions, and key people to know.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-marker">Career</div>
-        <h3>Career Path Suggester</h3>
-        <p>Based on your skills and experience, AI maps realistic next roles and long-term career trajectories tailored to you.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-marker">Onboarding</div>
-        <h3>30/60/90 Day Plan</h3>
-        <p>Once you land the job, AI builds your first three-month plan so you impress from day one and never look back.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-marker">Outreach</div>
-        <h3>Cold Outreach Writer</h3>
-        <p>Personalized LinkedIn DMs and referral messages that feel human, not spammy — and actually get replies.</p>
-      </div>
+      <div class="feat-card"><div class="feat-tag">Resume</div><h3>Resume Review & Rewriting</h3><p>ATS keyword analysis, exact phrase mirroring, bullet point rewrites, and formatting checks — all scored against the job description.</p></div>
+      <div class="feat-card"><div class="feat-tag">Interview</div><h3>Mock Interview Coach</h3><p>Role-specific questions, real-time STAR method feedback, and increasing difficulty until you're truly ready.</p></div>
+      <div class="feat-card"><div class="feat-tag">Cover Letter</div><h3>Cover Letter Generator</h3><p>Tailored, human-sounding cover letters written in your voice and matched to the company's culture in seconds.</p></div>
+      <div class="feat-card"><div class="feat-tag">Research</div><h3>Company Research Briefing</h3><p>Instant prep sheet for any company — culture, recent news, likely interview questions, and key people to know.</p></div>
+      <div class="feat-card"><div class="feat-tag">Career</div><h3>Career Path Suggester</h3><p>AI maps your realistic next roles and long-term trajectories based on your skills, experience, and goals.</p></div>
+      <div class="feat-card"><div class="feat-tag">Negotiation</div><h3>Salary Negotiation Coach</h3><p>Roleplay with an AI hiring manager until you can confidently ask for more — and actually get it.</p></div>
+      <div class="feat-card"><div class="feat-tag">Analysis</div><h3>Job Description Decoder</h3><p>Paste any JD and Nuvori reveals what they really mean, red flags hidden in the text, and how to position yourself.</p></div>
+      <div class="feat-card"><div class="feat-tag">Skills</div><h3>Skills Gap Analyzer</h3><p>Compare your profile to your dream role. Get a prioritized plan to close every gap as fast as possible.</p></div>
+      <div class="feat-card"><div class="feat-tag">LinkedIn</div><h3>LinkedIn Optimizer</h3><p>Rewritten headlines, summaries, and experience sections packed with recruiter-magnet keywords.</p></div>
+      <div class="feat-card"><div class="feat-tag">Outreach</div><h3>Cold Outreach Writer</h3><p>Personalized LinkedIn DMs and referral requests that feel genuine — and actually get replies.</p></div>
+      <div class="feat-card"><div class="feat-tag">Tracker</div><h3>Application Tracker</h3><p>Log every application, status, follow-up date, and resume version. Never lose track of an opportunity again.</p></div>
+      <div class="feat-card"><div class="feat-tag">Onboarding</div><h3>30/60/90 Day Plan</h3><p>Once you land the job, Nuvori builds your first three-month plan so you impress from day one.</p></div>
     </div>
   </div>
 </section>
+
+<!-- PARALLAX BREAK 1 -->
+<div class="parallax-section">
+  <div class="parallax-bg" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600&q=80');"></div>
+  <div class="parallax-overlay" style="background:linear-gradient(135deg,rgba(10,30,20,.85),rgba(15,50,35,.75));"></div>
+  <div class="parallax-content">
+    <h2>Meet <em style="font-style:italic;color:#7ed4a8;">Nuvori AI</em> — your career coach</h2>
+    <p>Available 24/7. Never judgmental. Always in your corner. Nuvori AI is powered by Anthropic Claude — the most thoughtful AI available — and trained to know exactly what hiring managers want.</p>
+  </div>
+</div>
 
 <!-- HOW IT WORKS -->
 <section class="section section-alt" id="how">
   <div class="section-inner">
     <div class="eyebrow">How it works</div>
-    <h2 class="section-heading">From lost to hired<br>in four steps</h2>
+    <h2 class="section-heading">From stuck to signed<br><em>in four steps.</em></h2>
     <div class="steps">
       <div class="step">
-        <div class="step-n">One</div>
-        <div class="step-content">
-          <h3>Tell LandIt about your situation</h3>
-          <p>Share your current resume, your target role, and where you are in your job search. LandIt builds a personalized strategy from day one.</p>
+        <div class="step-num">01</div>
+        <div>
+          <h3>Tell Nuvori where you are</h3>
+          <p>Share your resume, your target role, and where you're at in your search. Nuvori AI builds a personalized strategy from your very first message.</p>
         </div>
       </div>
       <div class="step">
-        <div class="step-n">Two</div>
-        <div class="step-content">
+        <div class="step-num">02</div>
+        <div>
           <h3>Optimize every piece of your application</h3>
-          <p>Rewrite your resume for each job, generate tailored cover letters, and polish your LinkedIn — all in minutes, not hours.</p>
+          <p>Rewrite your resume for each role, generate tailored cover letters, and polish your LinkedIn — all in minutes, not hours.</p>
         </div>
       </div>
       <div class="step">
-        <div class="step-n">Three</div>
-        <div class="step-content">
+        <div class="step-num">03</div>
+        <div>
           <h3>Prepare like a professional for every interview</h3>
-          <p>Run mock interviews, decode the company's culture, and walk in already knowing what questions are coming and exactly how to answer them.</p>
+          <p>Run mock interviews, decode the company culture, and walk in already knowing what questions are coming and exactly how to answer them.</p>
         </div>
       </div>
       <div class="step">
-        <div class="step-n">Four</div>
-        <div class="step-content">
+        <div class="step-num">04</div>
+        <div>
           <h3>Negotiate your offer and hit the ground running</h3>
-          <p>Practice salary negotiation until it's second nature, compare offers side by side, and start your new role with a 90-day plan ready to go.</p>
+          <p>Practice salary negotiation until it's second nature, compare offers side by side, and start your new role with a 90-day plan already built.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CHATBOT -->
+<!-- PARALLAX BREAK 2 -->
+<div class="parallax-section">
+  <div class="parallax-bg" style="background-image:url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1600&q=80');"></div>
+  <div class="parallax-overlay" style="background:linear-gradient(135deg,rgba(15,26,20,.88),rgba(20,50,35,.78));"></div>
+  <div class="parallax-content">
+    <h2>"I went from 0 callbacks to 3 offers in 6 weeks."</h2>
+    <p>Nuvori users report 3× more interview requests after letting Nuvori AI rewrite their resume and coach them through the application process.</p>
+  </div>
+</div>
+
+<!-- CHAT / TRY IVY -->
 <section class="section" id="chat">
   <div class="section-inner">
     <div class="eyebrow">AI Career Coach</div>
-    <h2 class="section-heading">Meet <em>Ivy</em></h2>
-    <p class="section-body">Your personal AI career coach, powered by Anthropic Claude. Pick what you need help with and start talking.</p>
-    <div class="chat-wrap">
-      <div class="chat-topbar">
-        <div class="chat-topbar-left">
-          <div class="chat-dot active"></div>
-          <div>
-            <div class="ivy-name">Ivy — LandIt AI</div>
+    <h2 class="section-heading">Try <em>Nuvori AI</em> right now</h2>
+    <p class="section-body">Pick what you need help with and start chatting. Powered by Anthropic Claude.</p>
+    <div class="chat-layout">
+      <div class="chat-sidebar">
+        <div class="chat-sidebar-header">
+          <div class="ivy-brand"><span class="ivy-dot"></span>Nuvori AI</div>
+          <div class="ivy-plan" id="plan-badge"></div>
+          <div class="ivy-tagline">Powered by Claude · <span id="usage-badge"></span></div>
+        </div>
+        <div class="sidebar-label">What can I help with?</div>
+        <div id="feature-tabs" style="display:flex;flex-direction:column;width:100%;">
+          <button class="feat-tab active" data-feature="resume">Resume Review</button>
+          <button class="feat-tab" data-feature="interview">Mock Interview</button>
+          <button class="feat-tab" data-feature="coverletter">Cover Letter</button>
+          <button class="feat-tab" data-feature="company">Company Research</button>
+          <button class="feat-tab" data-feature="career">Career Path</button>
+          <button class="feat-tab" data-feature="salary">Salary Coach</button>
+          <button class="feat-tab" data-feature="decoder">JD Decoder</button>
+          <button class="feat-tab" data-feature="skills">Skills Gap</button>
+          <button class="feat-tab" data-feature="outreach">Cold Outreach</button>
+          <button class="feat-tab" data-feature="plan">30/60/90 Plan</button>
+        </div>
+      </div>
+      <div class="chat-main">
+        <div class="chat-topbar">
+          <div class="chat-topbar-title">Nuvori AI — Your Career Coach</div>
+          <div class="chat-topbar-right">Nuvori.ai</div>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-wrap">
+          <div class="attach-preview" id="attachment-preview"></div>
+          <div class="chat-input-row">
+            <label for="file-upload" class="attach-btn" title="Attach image or file">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.41 17.41a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+            </label>
+            <input type="file" id="file-upload" accept="image/*,.pdf" style="display:none" multiple/>
+            <textarea id="chat-input" placeholder="Message Nuvori…" rows="1"></textarea>
+            <button id="send-btn" onclick="sendMessage()">Send</button>
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;"><span id="plan-badge"></span><span id="usage-badge"></span><div class="ivy-sub">Powered by Claude</div></div>
       </div>
-      <div class="chat-sidebar" id="feature-tabs">
-        <div class="sidebar-label">What can I help with?</div>
-        <button class="feat-tab active" data-feature="resume">Resume Review</button>
-        <button class="feat-tab" data-feature="interview">Mock Interview</button>
-        <button class="feat-tab" data-feature="coverletter">Cover Letter</button>
-        <button class="feat-tab" data-feature="company">Company Research</button>
-        <button class="feat-tab" data-feature="career">Career Path</button>
-        <button class="feat-tab" data-feature="salary">Salary Coach</button>
-        <button class="feat-tab" data-feature="decoder">JD Decoder</button>
-        <button class="feat-tab" data-feature="skills">Skills Gap</button>
-        <button class="feat-tab" data-feature="outreach">Cold Outreach</button>
-        <button class="feat-tab" data-feature="plan">30/60/90 Plan</button>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section section-alt">
+  <div class="section-inner">
+    <div class="eyebrow">Real stories</div>
+    <h2 class="section-heading">People who found their<br><em>new beginning.</em></h2>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-quote">"Nuvori AI rewrote my resume in 10 minutes and I got a callback from Google the next week. I had been applying for 4 months with nothing."</div>
+        <div class="testimonial-author"><div class="testimonial-avatar">M</div><div><div class="testimonial-name">Marcus T.</div><div class="testimonial-role">Software Engineer · Hired at Google</div></div></div>
       </div>
-      <div class="chat-messages" id="chat-messages"></div>
-      <div class="chat-input-wrap">
-        <div id="attachment-preview"></div>
-        <div class="chat-input-row">
-          <label for="file-upload" class="attach-btn" title="Attach image or file">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.41 17.41a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-          </label>
-          <input type="file" id="file-upload" accept="image/*,.pdf" style="display:none" multiple />
-          <textarea id="chat-input" placeholder="Message Ivy…" rows="1"></textarea>
-          <button id="send-btn" onclick="sendMessage()">Send</button>
-        </div>
+      <div class="testimonial-card">
+        <div class="testimonial-quote">"The salary negotiation roleplay was a game changer. I walked in confident and came out with $18k more than their initial offer."</div>
+        <div class="testimonial-author"><div class="testimonial-avatar">S</div><div><div class="testimonial-name">Sarah K.</div><div class="testimonial-role">Product Manager · 18k salary increase</div></div></div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-quote">"I was changing careers at 38 with no tech background. Nuvori built me a 6-month plan and I landed my first UX role 5 months later."</div>
+        <div class="testimonial-author"><div class="testimonial-avatar">D</div><div><div class="testimonial-name">Diana R.</div><div class="testimonial-role">UX Designer · Career changer</div></div></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- PRICING -->
-<section class="section section-alt" id="pricing">
+<section class="section" id="pricing">
   <div class="section-inner">
     <div class="eyebrow">Pricing</div>
-    <h2 class="section-heading">Invest in your career</h2>
-    <p class="section-body">One month of LandIt costs less than one hour with a career coach — and it never sleeps.</p>
+    <h2 class="section-heading">Invest in your<br><em>new beginning.</em></h2>
+    <p class="section-body">One month of Nuvori costs less than one hour with a career coach — and Nuvori never sleeps.</p>
     <div class="pricing-grid">
       <div class="price-card">
         <div class="price-tier">Starter</div>
         <div class="price-amount">$0</div>
-        <div class="price-per">per month</div>
-        <div class="price-desc">Try LandIt with no commitment.</div>
-        <hr class="price-divider">
+        <div class="price-per">per month, forever free</div>
+        <div class="price-desc">Try Nuvori with no commitment.</div>
+        <hr class="price-divider"/>
         <ul class="price-features">
           <li>1 resume review per month</li>
           <li>3 cover letters</li>
@@ -819,14 +727,15 @@ footer {
           <li>Company research (3 searches)</li>
           <li>Application tracker (10 jobs)</li>
         </ul>
-        <button class="price-btn">Get started free</button>
+        <button class="price-btn" onclick="showAuthModal('signup')">Get started free</button>
       </div>
       <div class="price-card popular">
+        <div class="popular-badge">Most Popular</div>
         <div class="price-tier">Pro</div>
         <div class="price-amount">$19</div>
         <div class="price-per">per month</div>
         <div class="price-desc">Everything you need to land the role.</div>
-        <hr class="price-divider">
+        <hr class="price-divider"/>
         <ul class="price-features">
           <li>Unlimited resume rewrites</li>
           <li>Unlimited cover letters</li>
@@ -838,14 +747,14 @@ footer {
           <li>Career path suggester</li>
           <li>Cold outreach writer</li>
         </ul>
-        <button class="price-btn">Start Pro free</button>
+        <button class="price-btn" onclick="startCheckout('pro')">Start Pro free</button>
       </div>
       <div class="price-card">
         <div class="price-tier">Teams</div>
         <div class="price-amount">$49</div>
         <div class="price-per">per month</div>
         <div class="price-desc">For bootcamps and career programs.</div>
-        <hr class="price-divider">
+        <hr class="price-divider"/>
         <ul class="price-features">
           <li>Everything in Pro</li>
           <li>Up to 25 team seats</li>
@@ -854,462 +763,444 @@ footer {
           <li>White-label option</li>
           <li>Priority support</li>
         </ul>
-        <button class="price-btn">Contact sales</button>
+        <button class="price-btn" onclick="startCheckout('teams')">Contact sales</button>
       </div>
     </div>
   </div>
 </section>
 
+<!-- PARALLAX CTA -->
+<div class="parallax-section" style="height:400px;">
+  <div class="parallax-bg" style="background-image:url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1600&q=80');"></div>
+  <div class="parallax-overlay" style="background:linear-gradient(135deg,rgba(10,30,20,.9),rgba(15,50,35,.85));"></div>
+  <div class="parallax-content">
+    <h2>Your new beginning<br>is one conversation away.</h2>
+    <p style="margin-bottom:32px;">Join thousands of job seekers who found their next chapter with Nuvori.</p>
+    <button class="btn-hero-primary" onclick="document.getElementById('chat').scrollIntoView({behavior:'smooth'})">Start with Nuvori AI</button>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-top">
-    <div class="footer-brand">
-      <div class="logo">Land<em>It</em></div>
-      <p>Your AI career coach, available around the clock.</p>
+    <div>
+      <div class="footer-logo">Nuvori</div>
+      <p class="footer-tagline">Your new beginning starts here. AI-powered career coaching, available 24/7.</p>
     </div>
     <div class="footer-links">
       <div class="footer-col">
         <h5>Product</h5>
-        <a href="#">Features</a>
-        <a href="#">Pricing</a>
-        <a href="#">Changelog</a>
-        <a href="#">Roadmap</a>
+        <a href="#">Features</a><a href="#">Pricing</a><a href="#">Changelog</a><a href="#">Roadmap</a>
       </div>
       <div class="footer-col">
         <h5>Company</h5>
-        <a href="#">About</a>
-        <a href="#">Blog</a>
-        <a href="#">Careers</a>
-        <a href="#">Press</a>
+        <a href="#">About</a><a href="#">Blog</a><a href="#">Careers</a><a href="#">Press</a>
       </div>
       <div class="footer-col">
         <h5>Legal</h5>
-        <a href="#">Privacy</a>
-        <a href="#">Terms</a>
-        <a href="#">Cookies</a>
+        <a href="#" onclick="showLegal('privacy');return false;">Privacy Policy</a><a href="#" onclick="showLegal('terms');return false;">Terms of Service</a><a href="#" onclick="showLegal('ai');return false;">AI Disclosure</a>
       </div>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2026 LandIt. All rights reserved.</p>
+    <p>© 2026 Nuvori. All rights reserved.</p>
     <p>Powered by Anthropic Claude</p>
   </div>
 </footer>
 
+<!-- AUTH MODAL -->
+<div id="auth-modal">
+  <div class="modal-overlay" onclick="closeAuthIfLoggedIn()"></div>
+  <div class="modal-box">
+    <div class="modal-logo">Nuvori</div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Sign in</button>
+      <button class="modal-tab" id="tab-signup" onclick="switchTab('signup')">Create account</button>
+    </div>
+    <div id="auth-error" class="auth-error" style="display:none"></div>
+    <input type="email" id="auth-email" placeholder="Email address" autocomplete="email"/>
+    <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password"/>
+    <button class="modal-submit" id="auth-submit" onclick="submitAuth()">Sign in</button>
+    <p class="modal-note">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+  </div>
+</div>
+
 <script>
+// ── PARALLAX ──
+function handleParallax(){
+  const bg = document.getElementById('hero-parallax');
+  if(bg) bg.style.transform = `translateY(${window.scrollY * 0.45}px)`;
+}
+window.addEventListener('scroll', handleParallax, {passive:true});
+
+// ── NAV scroll ──
+const nav = document.getElementById('main-nav');
+window.addEventListener('scroll', ()=>{
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+}, {passive:true});
+
+// ── SMOOTH NAV ──
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', e=>{
+    e.preventDefault();
+    const el = document.querySelector(a.getAttribute('href'));
+    if(el) el.scrollIntoView({behavior:'smooth'});
+  });
+});
+
+// ── FEATURE PROMPTS ──
 const featurePrompts = {
-  resume: `You are LandIt's Resume Coach. Help users improve their resumes. Ask for their current resume content and target job description, then provide specific ATS-friendly rewrites, bullet point improvements, and keyword suggestions. Be specific, actionable, and encouraging.`,
-  interview: `You are LandIt's Mock Interview Coach. Conduct realistic job interviews. Ask the user what role they're interviewing for, then ask them one interview question at a time. After each answer, give detailed feedback on their STAR method, specificity, and delivery.`,
-  coverletter: `You are LandIt's Cover Letter Writer. Help users craft compelling, tailored cover letters. Ask for their target role, company, key experience, and what excites them about the role. Then write a polished, personalized cover letter.`,
-  company: `You are LandIt's Company Research Analyst. When a user gives you a company name, provide a comprehensive briefing: company overview, recent news, culture and values, typical interview process, key executives, and tips for standing out. Be thorough and structured.`,
-  career: `You are LandIt's Career Path Advisor. Help users map their career trajectory. Ask about their current role, years of experience, skills, interests, and goals. Then suggest realistic next roles, long-term paths, skills to develop, and timelines.`,
-  salary: `You are LandIt's Salary Negotiation Coach. Help users negotiate better compensation. Roleplay as a hiring manager making an offer, then coach the user through countering effectively. Share specific scripts, tactics, and data points.`,
-  decoder: `You are LandIt's Job Description Decoder. When a user pastes a job description, analyze it deeply: explain what buzzwords really mean, identify green and red flags, reveal what the culture is likely like, and explain what skills are truly essential vs. nice-to-have.`,
-  skills: `You are LandIt's Skills Gap Analyzer. Ask the user for their current skills and their target role. Then provide a detailed gap analysis: what they have, what's missing, which certifications would help most, and a prioritized action plan.`,
-  outreach: `You are LandIt's Networking Coach. Help users write personalized LinkedIn messages, cold emails, and referral requests. Ask who they're reaching out to and why, then craft messages that feel human and actually get replies.`,
-  plan: `You are LandIt's Onboarding Coach. Help users build a 30/60/90 day plan for a new job. Ask about their role, team, and goals. Create a structured plan that will help them build relationships, deliver quick wins, and establish themselves as a top performer.`
+  resume:`You are Nuvori, an expert AI Resume Coach and ATS optimization specialist. Your job is to make the user's resume beat ATS systems and impress human recruiters.
+
+When a user shares their resume and job description, follow this process:
+
+STEP 1 — ATS KEYWORD ANALYSIS: Extract the top 12-15 EXACT keywords/phrases from the JD (skills, tools, titles, certs, methodologies). ATS matches exact phrases — "cross-functional collaboration" differs from "worked with teams."
+
+STEP 2 — ATS MATCH SCORE: Give an honest 0-100% score of how well the resume currently matches the JD. Explain briefly.
+
+STEP 3 — MISSING KEYWORDS: List every important JD keyword absent from the resume. Rank by importance.
+
+STEP 4 — REWRITTEN BULLETS: Rewrite experience bullets to: mirror EXACT JD phrases (word for word), start with strong action verbs (Led, Drove, Built, Reduced, Increased, Launched), include measurable results (%, $, time, team size), stay under 2 lines, naturally embed missing keywords.
+
+STEP 5 — ATS FORMATTING AUDIT: Flag these ATS killers: tables or multi-column layouts, images or graphics, non-standard section headers (must be: Summary, Work Experience, Education, Skills, Certifications), inconsistent dates (use: Jan 2022 – Mar 2024), acronyms without expansion on first use, headers/footers, text boxes.
+
+STEP 6 — JOB TITLE OPTIMIZATION: If the user's title differs from the JD target title, advise how to adjust it. ATS filters by title keyword.
+
+STEP 7 — KEYWORD DENSITY: Confirm top 5 JD keywords each appear at least once naturally.
+
+Target: a resume scoring 80%+ on any ATS while reading naturally to humans. Be specific, direct, and encouraging.`,
+  interview:`You are Nuvori, an expert AI Mock Interview Coach. Ask what role the user is interviewing for, then ask one interview question at a time. After each answer give detailed feedback on STAR method, specificity, and delivery. Gradually increase difficulty. After 5+ questions offer a summary score and top 3 improvements. Be encouraging but honest.`,
+  coverletter:`You are Nuvori, an expert AI Cover Letter Writer. Ask for: target role, company name, key experience, and what excites them. Write a cover letter with a compelling hook (not "I am applying for..."), mirroring JD language, 2-3 specific achievements with numbers, genuine company knowledge, confident close. Under 400 words. Offer to adjust tone after the first draft.`,
+  company:`You are Nuvori, an expert AI Company Research Analyst. When given a company name, provide a comprehensive briefing: Company Overview, Recent News, Culture & Values, Interview Process, Likely Interview Questions (5-7), Key People, Green & Red Flags, and How to Stand Out. Be thorough.`,
+  career:`You are Nuvori, an expert AI Career Path Advisor. Ask about current role, years of experience, skills, industry, goals, and income targets. Provide: immediate next role, 2-3 year path, 5-year vision, skills to prioritize, worthwhile certifications, salary trajectory, and alternative paths. Be realistic and honest.`,
+  salary:`You are Nuvori, an expert AI Salary Negotiation Coach. Either roleplay as a hiring manager making an offer, or help with a real offer. When roleplaying, react authentically to counters. Teach: anchoring high, silence as a tool, asking for time, bundling compensation, getting it in writing.`,
+  decoder:`You are Nuvori, an expert AI Job Description Decoder. Analyze JDs with honesty: What They Actually Want, Must-Have vs Nice-to-Have, Keyword Density, Culture Signals, Red Flags, Green Flags, Compensation Reality, and How to Position Yourself. Be direct — job seekers need the truth.`,
+  skills:`You are Nuvori, an expert AI Skills Gap Analyzer. Ask for current skills/resume, target role, and timeline. Deliver: Current Strengths, Critical Gaps, Nice-to-Have Gaps, Priority Action Plan, Specific Resources (courses/certs), Realistic Timeline, and Shortcut Opportunities. Be specific about timelines.`,
+  outreach:`You are Nuvori, an expert AI Networking Coach. Help write outreach messages that get replies. Ask who they're contacting, the platform, and their goal. Write messages under 150 words, reference something specific, state the ask clearly, sound human, have a specific easy CTA. Provide 2-3 versions. Help with follow-ups too.`,
+  plan:`You are Nuvori, an expert AI Onboarding Coach. Build a 30/60/90 day plan. Ask about role, company, team size, manager style, goals, known challenges. Structure as: Days 1-30 (Listen & Learn), Days 31-60 (Contribute), Days 61-90 (Lead). Make it specific to their role and industry.`
 };
 
 const featureWelcomes = {
-  resume: "Hey, I'm Ivy! I'm here to make your resume impossible to ignore. Paste your current resume and the job description you're going for, and I'll rewrite it to beat ATS filters and catch a recruiter's eye.",
-  interview: "Hey, I'm Ivy! Think of me as your personal interview coach. Tell me what role you're interviewing for and I'll put you through the real questions — then give you honest, specific feedback on every answer.",
-  coverletter: "Hey, I'm Ivy! Cover letters are my thing. Tell me the role, the company, and what genuinely excites you about this opportunity — and I'll write you something that actually gets read.",
-  company: "Hey, I'm Ivy! Walking into an interview blind is never a good look. Tell me which company you're researching and I'll brief you on everything — their culture, recent news, who's who, and what questions they're likely to ask.",
-  career: "Hey, I'm Ivy! Not sure where your career is headed? Let's figure it out together. Tell me where you are right now — your role, experience, and what you're hoping for — and I'll map out what's realistically possible for you.",
-  salary: "Hey, I'm Ivy! Most people leave money on the table because they don't practice negotiating. I can roleplay as a hiring manager making you an offer so you can practice pushing back — or help you with a real offer you've received.",
-  decoder: "Hey, I'm Ivy! Job descriptions are often full of jargon that hides what they actually want. Paste one below and I'll break it down — the real requirements, the red flags, and exactly how to position yourself to stand out.",
-  skills: "Hey, I'm Ivy! Let's be honest about where you stand. Share your current skills and the role you're targeting, and I'll tell you exactly what's missing and how to close the gap as fast as possible.",
-  outreach: "Hey, I'm Ivy! Cold outreach is awkward — until you know what to say. Tell me who you're trying to reach and why, and I'll write you a message that feels genuine and actually gets a reply.",
-  plan: "Hey, I'm Ivy! Landing the job is just the beginning. Tell me about your new role and company, and I'll build you a 30/60/90 day plan so you show up ready to make a real impression from week one."
+  resume:"Hey, I'm Nuvori! I'm here to make your resume impossible to ignore. Paste your current resume and the job description you're targeting, and I'll rewrite it to beat ATS filters and catch a recruiter's eye.",
+  interview:"Hey, I'm Nuvori! Think of me as your personal interview coach. Tell me what role you're interviewing for and I'll put you through the real questions — then give you honest, specific feedback on every answer.",
+  coverletter:"Hey, I'm Nuvori! Cover letters are my thing. Tell me the role, the company, and what genuinely excites you about this opportunity — and I'll write you something that actually gets read.",
+  company:"Hey, I'm Nuvori! Walking into an interview blind is never a good look. Tell me which company you're researching and I'll brief you on everything — culture, recent news, who's who, and what questions they're likely to ask.",
+  career:"Hey, I'm Nuvori! Not sure where your career is headed? Let's figure it out together. Tell me where you are right now — your role, experience, and what you're hoping for — and I'll map out what's realistically possible.",
+  salary:"Hey, I'm Nuvori! Most people leave money on the table because they don't practice negotiating. I can roleplay as a hiring manager making you an offer so you can practice pushing back — or help you with a real offer you've received.",
+  decoder:"Hey, I'm Nuvori! Job descriptions are full of jargon that hides what they actually want. Paste one below and I'll break it down — the real requirements, the red flags, and exactly how to position yourself to stand out.",
+  skills:"Hey, I'm Nuvori! Let's be honest about where you stand. Share your current skills and the role you're targeting, and I'll tell you exactly what's missing and how to close the gap as fast as possible.",
+  outreach:"Hey, I'm Nuvori! Cold outreach is awkward — until you know what to say. Tell me who you're trying to reach and why, and I'll write you a message that feels genuine and actually gets a reply.",
+  plan:"Hey, I'm Nuvori! Landing the job is just the beginning. Tell me about your new role and company, and I'll build you a 30/60/90 day plan so you show up ready to make a real impression from week one."
 };
 
-let currentFeature = 'resume';
-let conversationHistory = [];
-let isLoading = false;
-let pendingFiles = []; // { file, base64, mediaType, isImage }
-
-window.addEventListener('load', () => setFeature('resume'));
-
-document.getElementById('feature-tabs').addEventListener('click', e => {
-  const tab = e.target.closest('.feat-tab');
-  if (!tab) return;
-  const f = tab.dataset.feature;
-  if (f === currentFeature) return;
-  document.querySelectorAll('.feat-tab').forEach(t => t.classList.remove('active'));
-  tab.classList.add('active');
-  setFeature(f);
-});
-
-function setFeature(feature) {
-  currentFeature = feature;
-  conversationHistory = [];
-  pendingFiles = [];
-  document.getElementById('chat-messages').innerHTML = '';
-  renderPreview();
-  addMessage('ai', featureWelcomes[feature]);
-}
-
-// ── FILE HANDLING ──
-document.getElementById('file-upload').addEventListener('change', async function() {
-  const files = Array.from(this.files);
-  for (const file of files) {
-    const isImage = file.type.startsWith('image/');
-    const isPDF = file.type === 'application/pdf';
-    if (!isImage && !isPDF) continue;
-    const base64 = await toBase64(file);
-    pendingFiles.push({ file, base64, mediaType: file.type, isImage, isPDF });
-  }
-  this.value = '';
-  renderPreview();
-});
-
-// Drag-and-drop onto chat messages
-const chatMessages = document.getElementById('chat-messages');
-chatMessages.addEventListener('dragover', e => { e.preventDefault(); chatMessages.style.background = 'var(--off)'; });
-chatMessages.addEventListener('dragleave', () => { chatMessages.style.background = ''; });
-chatMessages.addEventListener('drop', async e => {
-  e.preventDefault();
-  chatMessages.style.background = '';
-  const files = Array.from(e.dataTransfer.files);
-  for (const file of files) {
-    const isImage = file.type.startsWith('image/');
-    const isPDF = file.type === 'application/pdf';
-    if (!isImage && !isPDF) continue;
-    const base64 = await toBase64(file);
-    pendingFiles.push({ file, base64, mediaType: file.type, isImage, isPDF });
-  }
-  renderPreview();
-});
-
-// Paste images directly
-document.getElementById('chat-input').addEventListener('paste', async e => {
-  const items = Array.from(e.clipboardData.items);
-  for (const item of items) {
-    if (!item.type.startsWith('image/')) continue;
-    const file = item.getAsFile();
-    const base64 = await toBase64(file);
-    pendingFiles.push({ file, base64, mediaType: file.type, isImage: true });
-  }
-  if (pendingFiles.length) renderPreview();
-});
-
-function toBase64(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = () => res(r.result.split(',')[1]);
-    r.onerror = rej;
-    r.readAsDataURL(file);
-  });
-}
-
-function renderPreview() {
-  const el = document.getElementById('attachment-preview');
-  el.innerHTML = '';
-  if (!pendingFiles.length) { el.classList.remove('has-files'); return; }
-  el.classList.add('has-files');
-  pendingFiles.forEach((pf, i) => {
-    const item = document.createElement('div');
-    item.className = 'preview-item';
-    if (pf.isImage) {
-      item.innerHTML = `<img src="data:${pf.mediaType};base64,${pf.base64}" alt=""/>`;
-    } else {
-      item.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>`;
-    }
-    item.innerHTML += `<span class="preview-name">${pf.file.name}</span>
-      <button class="preview-remove" onclick="removeFile(${i})">×</button>`;
-    el.appendChild(item);
-  });
-}
-
-function removeFile(i) {
-  pendingFiles.splice(i, 1);
-  renderPreview();
-}
-
-// ── MESSAGES ──
-function addMessage(role, text, attachments) {
-  const el = document.getElementById('chat-messages');
-  const div = document.createElement('div');
-  div.className = `msg ${role}`;
-  let attachHTML = '';
-  if (attachments && attachments.length) {
-    attachHTML = '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">';
-    attachments.forEach(a => {
-      if (a.isImage) {
-        attachHTML += `<img src="data:${a.mediaType};base64,${a.base64}" style="max-width:180px;max-height:140px;border-radius:3px;object-fit:cover;" />`;
-      } else {
-        attachHTML += `<div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border-radius:3px;padding:5px 10px;font-size:.75rem;">`
-          + `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>`
-          + `${a.file.name}</div>`;
-      }
-    });
-    attachHTML += '</div>';
-  }
-  div.innerHTML = `
-    <div class="msg-avatar">${role === 'ai' ? 'Ivy' : 'You'}</div>
-    <div class="msg-bubble">${attachHTML}${fmt(text)}</div>
-  `;
-  el.appendChild(div);
-  el.scrollTop = el.scrollHeight;
-}
-
-function fmt(t) {
-  return t
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/^### (.*?)$/gm, '<strong style="display:block;margin-top:10px">$1</strong>')
-    .replace(/^## (.*?)$/gm, '<strong style="display:block;margin-top:12px;font-size:.95rem">$1</strong>')
-    .replace(/^- (.*?)$/gm, '<li>$1</li>')
-    .replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>')
-    .replace(/\n/g, '<br>');
-}
-
-function showTyping() {
-  const el = document.getElementById('chat-messages');
-  const d = document.createElement('div');
-  d.className = 'msg ai'; d.id = 'typing';
-  d.innerHTML = `<div class="msg-avatar">Ivy</div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
-  el.appendChild(d);
-  el.scrollTop = el.scrollHeight;
-}
-
-function removeTyping() {
-  const t = document.getElementById('typing');
-  if (t) t.remove();
-}
-
-// ── AUTH STATE ──
-let authToken = localStorage.getItem('landit_token') || null;
+// ── AUTH ──
+let authToken = localStorage.getItem('nuvori_token') || null;
 let currentUser = null;
+let authMode = 'login';
 
-async function initAuth() {
-  if (!authToken) return showAuthModal();
-  try {
-    const res = await fetch('/api/auth/me', {
-      headers: { 'Authorization': 'Bearer ' + authToken }
-    });
-    if (!res.ok) { authToken = null; localStorage.removeItem('landit_token'); return showAuthModal(); }
+async function initAuth(){
+  if(!authToken) return;
+  try{
+    const res = await fetch('/api/auth/me',{headers:{'Authorization':'Bearer '+authToken}});
+    if(!res.ok){authToken=null;localStorage.removeItem('nuvori_token');return;}
     const data = await res.json();
     currentUser = data.user;
     updateAuthUI();
-  } catch { showAuthModal(); }
+  }catch{}
 }
 
-function updateAuthUI() {
+function updateAuthUI(){
   const navCta = document.querySelector('.nav-cta');
-  if (currentUser && navCta) {
-    navCta.textContent = currentUser.plan === 'starter' ? 'Upgrade to Pro' : 'Dashboard';
-    navCta.href = currentUser.plan === 'starter' ? '#pricing' : '#';
+  if(currentUser && navCta){
+    navCta.textContent = currentUser.plan==='starter'?'Upgrade to Pro':'Dashboard';
   }
-  // Show plan badge in chat
   const badge = document.getElementById('plan-badge');
-  if (badge && currentUser) {
-    badge.textContent = currentUser.plan.charAt(0).toUpperCase() + currentUser.plan.slice(1);
+  if(badge && currentUser){
+    badge.textContent = currentUser.plan.charAt(0).toUpperCase()+currentUser.plan.slice(1)+' Plan';
     badge.style.display = 'inline-block';
   }
 }
 
-function showAuthModal(mode = 'login') {
-  let modal = document.getElementById('auth-modal');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'auth-modal';
-    modal.innerHTML = `
-      <div class="modal-overlay" onclick="closeAuthIfLoggedIn()"></div>
-      <div class="modal-box">
-        <div class="modal-logo">LandIt</div>
-        <div class="modal-tabs">
-          <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Sign in</button>
-          <button class="modal-tab" id="tab-signup" onclick="switchTab('signup')">Create account</button>
-        </div>
-        <div id="auth-error" class="auth-error" style="display:none"></div>
-        <input type="email" id="auth-email" placeholder="Email address" autocomplete="email" />
-        <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password" />
-        <button class="modal-submit" id="auth-submit" onclick="submitAuth()">Sign in</button>
-        <p class="modal-note">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
-      </div>
-    `;
-    document.body.appendChild(modal);
-    document.getElementById('auth-email').addEventListener('keydown', e => { if (e.key === 'Enter') submitAuth(); });
-    document.getElementById('auth-password').addEventListener('keydown', e => { if (e.key === 'Enter') submitAuth(); });
-  }
-  modal.style.display = 'flex';
-  switchTab(mode);
+function showAuthModal(mode='login'){
+  document.getElementById('auth-modal').style.display='flex';
+  switchTab(mode||'login');
 }
-
-function closeAuthIfLoggedIn() {
-  if (currentUser) document.getElementById('auth-modal').style.display = 'none';
+function closeAuthIfLoggedIn(){if(currentUser)document.getElementById('auth-modal').style.display='none';}
+function switchTab(mode){
+  authMode=mode;
+  document.getElementById('tab-login').classList.toggle('active',mode==='login');
+  document.getElementById('tab-signup').classList.toggle('active',mode==='signup');
+  document.getElementById('auth-submit').textContent=mode==='login'?'Sign in':'Create account';
+  document.getElementById('auth-error').style.display='none';
 }
-
-let authMode = 'login';
-function switchTab(mode) {
-  authMode = mode;
-  document.getElementById('tab-login').classList.toggle('active', mode === 'login');
-  document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
-  document.getElementById('auth-submit').textContent = mode === 'login' ? 'Sign in' : 'Create account';
-  document.getElementById('auth-error').style.display = 'none';
-}
-
-async function submitAuth() {
-  const email    = document.getElementById('auth-email').value.trim();
-  const password = document.getElementById('auth-password').value;
-  const errEl    = document.getElementById('auth-error');
-  const btn      = document.getElementById('auth-submit');
-
-  if (!email || !password) { showAuthError('Please enter your email and password.'); return; }
-
-  btn.disabled = true; btn.textContent = 'Please wait…';
-
-  try {
-    const res = await fetch(`/api/auth/${authMode}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ email, password })
+async function submitAuth(){
+  const email=document.getElementById('auth-email').value.trim();
+  const password=document.getElementById('auth-password').value;
+  const btn=document.getElementById('auth-submit');
+  if(!email||!password){showAuthError('Please enter your email and password.');return;}
+  btn.disabled=true;btn.textContent='Please wait\u2026';
+  try{
+    const res=await fetch(`/api/auth/${authMode}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',
+      body:JSON.stringify({email,password})
     });
-    const data = await res.json();
-    if (!res.ok) { showAuthError(data.error || 'Something went wrong.'); btn.disabled = false; btn.textContent = authMode === 'login' ? 'Sign in' : 'Create account'; return; }
-
-    authToken = data.token;
-    currentUser = data.user;
-    localStorage.setItem('landit_token', authToken);
-    document.getElementById('auth-modal').style.display = 'none';
+    const data=await res.json();
+    if(!res.ok){showAuthError(data.error||'Something went wrong.');btn.disabled=false;btn.textContent=authMode==='login'?'Sign in':'Create account';return;}
+    authToken=data.token;currentUser=data.user;
+    localStorage.setItem('nuvori_token',authToken);
+    document.getElementById('auth-modal').style.display='none';
     updateAuthUI();
-  } catch {
-    showAuthError('Connection error. Please try again.');
-    btn.disabled = false;
-    btn.textContent = authMode === 'login' ? 'Sign in' : 'Create account';
-  }
+  }catch{showAuthError('Connection error. Please try again.');btn.disabled=false;btn.textContent=authMode==='login'?'Sign in':'Create account';}
 }
+function showAuthError(msg){const el=document.getElementById('auth-error');el.textContent=msg;el.style.display='block';}
 
-function showAuthError(msg) {
-  const el = document.getElementById('auth-error');
-  el.textContent = msg; el.style.display = 'block';
-}
-
-// ── UPGRADE helpers ──
-async function startCheckout(plan) {
-  if (!currentUser) return showAuthModal();
-  try {
-    const res = await fetch('/api/payments/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-      credentials: 'include',
-      body: JSON.stringify({ plan })
+async function startCheckout(plan){
+  if(!currentUser)return showAuthModal();
+  try{
+    const res=await fetch('/api/payments/checkout',{
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
+      credentials:'include',body:JSON.stringify({plan})
     });
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
-  } catch { alert('Could not start checkout. Please try again.'); }
+    const data=await res.json();
+    if(data.url)window.location.href=data.url;
+  }catch{alert('Could not start checkout. Please try again.');}
 }
 
-// Wire up pricing buttons
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.price-btn').forEach(btn => {
-    const card = btn.closest('.price-card');
-    const tier = card?.querySelector('.price-tier')?.textContent?.toLowerCase();
-    if (tier === 'starter') btn.onclick = () => showAuthModal('signup');
-    if (tier === 'pro')     btn.onclick = () => startCheckout('pro');
-    if (tier === 'teams')   btn.onclick = () => startCheckout('teams');
-  });
-  initAuth();
+// ── CHAT ──
+let currentFeature='resume';
+let conversationHistory=[];
+let isLoading=false;
+let pendingFiles=[];
+
+window.addEventListener('load',()=>{setFeature('resume');initAuth();});
+
+document.getElementById('feature-tabs').addEventListener('click',e=>{
+  const tab=e.target.closest('.feat-tab');
+  if(!tab)return;
+  const f=tab.dataset.feature;
+  if(f===currentFeature)return;
+  document.querySelectorAll('.feat-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  setFeature(f);
 });
 
-// ── SEND MESSAGE (via backend) ──
-async function sendMessage() {
-  if (!currentUser) return showAuthModal();
+function setFeature(f){
+  currentFeature=f;conversationHistory=[];pendingFiles=[];
+  document.getElementById('chat-messages').innerHTML='';
+  renderPreview();addMessage('ai',featureWelcomes[f]);
+}
 
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim();
-  if ((!text && !pendingFiles.length) || isLoading) return;
-
-  const filesToSend = [...pendingFiles];
-  pendingFiles = [];
+// file handling
+document.getElementById('file-upload').addEventListener('change',async function(){
+  for(const file of Array.from(this.files)){
+    const isImage=file.type.startsWith('image/');
+    const isPDF=file.type==='application/pdf';
+    if(!isImage&&!isPDF)continue;
+    const base64=await toBase64(file);
+    pendingFiles.push({file,base64,mediaType:file.type,isImage,isPDF});
+  }
+  this.value='';renderPreview();
+});
+document.getElementById('chat-messages').addEventListener('dragover',e=>{e.preventDefault();});
+document.getElementById('chat-messages').addEventListener('drop',async e=>{
+  e.preventDefault();
+  for(const file of Array.from(e.dataTransfer.files)){
+    const isImage=file.type.startsWith('image/');const isPDF=file.type==='application/pdf';
+    if(!isImage&&!isPDF)continue;
+    const base64=await toBase64(file);pendingFiles.push({file,base64,mediaType:file.type,isImage,isPDF});
+  }
   renderPreview();
-  input.value = ''; input.style.height = 'auto';
-  isLoading = true;
-  document.getElementById('send-btn').disabled = true;
-
-  addMessage('user', text || '(see attached file)', filesToSend);
-
-  // Build content array
-  const userContent = [];
-  for (const pf of filesToSend) {
-    if (pf.isImage) {
-      userContent.push({ type: 'image', source: { type: 'base64', media_type: pf.mediaType, data: pf.base64 } });
-    } else if (pf.isPDF) {
-      userContent.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pf.base64 } });
-    }
-  }
-  if (text) userContent.push({ type: 'text', text });
-  else userContent.push({ type: 'text', text: 'Please analyze the attached file and help me with it in the context of ' + currentFeature + '.' });
-
-  conversationHistory.push({ role: 'user', content: userContent });
-  showTyping();
-
-  try {
-    const res = await fetch('/api/ai/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-      credentials: 'include',
-      body: JSON.stringify({ feature: currentFeature, messages: conversationHistory })
-    });
-    const data = await res.json();
-
-    removeTyping();
-
-    if (res.status === 403 && data.upgradeRequired) {
-      addMessage('ai', data.error + ' [Upgrade to Pro](' + '#pricing' + ') to continue.');
-      showUpgradeBanner(data.error);
-    } else if (!res.ok) {
-      addMessage('ai', data.error || 'Something went wrong. Please try again.');
-    } else {
-      conversationHistory.push({ role: 'assistant', content: data.reply });
-      addMessage('ai', data.reply);
-      updateUsageBadge(data.usage);
-    }
-  } catch {
-    removeTyping();
-    addMessage('ai', 'Connection issue — please try again.');
-  }
-  isLoading = false;
-  document.getElementById('send-btn').disabled = false;
-  input.focus();
-}
-
-function updateUsageBadge(usage) {
-  if (!usage || usage.remaining === 'unlimited') return;
-  const badge = document.getElementById('usage-badge');
-  if (badge) {
-    badge.textContent = usage.remaining === 0 ? 'Limit reached' : `${usage.remaining} left this month`;
-    badge.style.color = usage.remaining <= 1 ? '#c0392b' : 'var(--soft)';
-  }
-}
-
-function showUpgradeBanner(message) {
-  let banner = document.getElementById('upgrade-banner');
-  if (!banner) {
-    banner = document.createElement('div');
-    banner.id = 'upgrade-banner';
-    banner.style.cssText = 'background:var(--ink);color:#fff;text-align:center;padding:12px 24px;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:16px;';
-    document.querySelector('.chat-wrap').insertAdjacentElement('afterend', banner);
-  }
-  banner.innerHTML = `<span>${message}</span><button onclick="startCheckout('pro')" style="background:#fff;color:var(--ink);border:none;padding:7px 16px;border-radius:4px;font-weight:600;cursor:pointer;font-size:.8rem;">Upgrade to Pro →</button>`;
-}
-
-document.getElementById('chat-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 });
-document.getElementById('chat-input').addEventListener('input', function() {
-  this.style.height = 'auto';
-  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+document.getElementById('chat-input').addEventListener('paste',async e=>{
+  for(const item of Array.from(e.clipboardData.items)){
+    if(!item.type.startsWith('image/'))continue;
+    const file=item.getAsFile();const base64=await toBase64(file);
+    pendingFiles.push({file,base64,mediaType:file.type,isImage:true});
+  }
+  if(pendingFiles.length)renderPreview();
 });
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    e.preventDefault();
-    const el = document.querySelector(a.getAttribute('href'));
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+function toBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});}
+function renderPreview(){
+  const el=document.getElementById('attachment-preview');
+  el.innerHTML='';
+  if(!pendingFiles.length){el.classList.remove('has-files');return;}
+  el.classList.add('has-files');
+  pendingFiles.forEach((pf,i)=>{
+    const item=document.createElement('div');item.className='preview-item';
+    if(pf.isImage)item.innerHTML=`<img src="data:${pf.mediaType};base64,${pf.base64}" alt=""/>`;
+    else item.innerHTML=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>`;
+    item.innerHTML+=`<span class="preview-name">${pf.file.name}</span><button class="preview-remove" onclick="removeFile(${i})">\u00d7</button>`;
+    el.appendChild(item);
   });
-});
+}
+function removeFile(i){pendingFiles.splice(i,1);renderPreview();}
+
+function addMessage(role,text,attachments){
+  const el=document.getElementById('chat-messages');
+  const div=document.createElement('div');div.className=`msg ${role}`;
+  let attachHTML='';
+  if(attachments&&attachments.length){
+    attachHTML='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">';
+    attachments.forEach(a=>{
+      if(a.isImage)attachHTML+=`<img src="data:${a.mediaType};base64,${a.base64}" style="max-width:160px;max-height:120px;border-radius:4px;object-fit:cover;"/>`;
+      else attachHTML+=`<div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:4px;padding:4px 10px;font-size:.75rem;">${a.file.name}</div>`;
+    });
+    attachHTML+='</div>';
+  }
+  div.innerHTML=`<div class="msg-avatar">${role==='ai'?'N':'You'}</div><div class="msg-bubble">${attachHTML}${fmt(text)}</div>`;
+  el.appendChild(div);el.scrollTop=el.scrollHeight;
+}
+function fmt(t){
+  return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/^### (.*?)$/gm,'<strong style="display:block;margin-top:10px">$1</strong>')
+    .replace(/^- (.*?)$/gm,'<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>')
+    .replace(/\n/g,'<br>');
+}
+function showTyping(){
+  const el=document.getElementById('chat-messages');
+  const d=document.createElement('div');d.className='msg ai';d.id='typing';
+  d.innerHTML=`<div class="msg-avatar">N</div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+function removeTyping(){const t=document.getElementById('typing');if(t)t.remove();}
+
+async function sendMessage(){
+  if(!currentUser)return showAuthModal();
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim();
+  if((!text&&!pendingFiles.length)||isLoading)return;
+  const filesToSend=[...pendingFiles];pendingFiles=[];renderPreview();
+  input.value='';input.style.height='auto';
+  isLoading=true;document.getElementById('send-btn').disabled=true;
+  addMessage('user',text||'(see attached file)',filesToSend);
+  const userContent=[];
+  for(const pf of filesToSend){
+    if(pf.isImage)userContent.push({type:'image',source:{type:'base64',media_type:pf.mediaType,data:pf.base64}});
+    else if(pf.isPDF)userContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:pf.base64}});
+  }
+  if(text)userContent.push({type:'text',text});
+  else userContent.push({type:'text',text:'Please analyze the attached file and help me in the context of '+currentFeature+'.'});
+  conversationHistory.push({role:'user',content:userContent});
+  showTyping();
+  try{
+    const res=await fetch('/api/ai/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
+      credentials:'include',
+      body:JSON.stringify({feature:currentFeature,messages:conversationHistory})
+    });
+    const data=await res.json();removeTyping();
+    if(res.status===403&&data.upgradeRequired){
+      addMessage('ai',data.error);showUpgradeBanner(data.error);
+    }else if(!res.ok){
+      addMessage('ai',data.error||'Something went wrong. Please try again.');
+    }else{
+      conversationHistory.push({role:'assistant',content:data.reply});
+      addMessage('ai',data.reply);updateUsageBadge(data.usage);
+    }
+  }catch{removeTyping();addMessage('ai','Connection issue \u2014 please try again.');}
+  isLoading=false;document.getElementById('send-btn').disabled=false;input.focus();
+}
+
+function updateUsageBadge(usage){
+  if(!usage||usage.remaining==='unlimited')return;
+  const badge=document.getElementById('usage-badge');
+  if(badge){badge.textContent=usage.remaining===0?'Limit reached':`${usage.remaining} left this month`;badge.style.color=usage.remaining<=1?'#ff6b6b':'rgba(255,255,255,.35)';}
+}
+function showUpgradeBanner(msg){
+  let banner=document.getElementById('upgrade-banner');
+  if(!banner){banner=document.createElement('div');banner.id='upgrade-banner';banner.style.cssText='background:#0f1a14;color:#fff;text-align:center;padding:12px 24px;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:16px;border-top:1px solid rgba(255,255,255,.08);';document.querySelector('.chat-layout').insertAdjacentElement('afterend',banner);}
+  banner.innerHTML=`<span>${msg}</span><button onclick="startCheckout('pro')" style="background:#7ed4a8;color:#0f1a14;border:none;padding:7px 16px;border-radius:4px;font-weight:600;cursor:pointer;font-size:.8rem;">Upgrade to Pro</button>`;
+}
+
+document.getElementById('chat-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
+document.getElementById('chat-input').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
+document.getElementById('auth-email').addEventListener('keydown',e=>{if(e.key==='Enter')submitAuth();});
+document.getElementById('auth-password').addEventListener('keydown',e=>{if(e.key==='Enter')submitAuth();});
 </script>
+
+<!-- LEGAL MODAL -->
+<div id="legal-modal" style="display:none;position:fixed;inset:0;z-index:2000;align-items:center;justify-content:center;">
+  <div onclick="document.getElementById('legal-modal').style.display='none'" style="position:absolute;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);"></div>
+  <div style="position:relative;z-index:1;background:#fff;border-radius:10px;width:100%;max-width:640px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,.2);margin:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 32px;border-bottom:1px solid #e2e2da;">
+      <div id="legal-title" style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:#0f0f0d;"></div>
+      <button onclick="document.getElementById('legal-modal').style.display='none'" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#9a9a8e;line-height:1;">&times;</button>
+    </div>
+    <div id="legal-body" style="padding:28px 32px;overflow-y:auto;font-size:.875rem;color:#5a5a52;line-height:1.8;"></div>
+  </div>
+</div>
+
+<script>
+const legalContent = {
+  terms: {
+    title: "Terms of Service",
+    body: `<p><strong>Last updated: June 2026</strong></p>
+<p style="margin-top:14px;">Welcome to Nuvori. By using our platform, you agree to these Terms of Service. Please read them carefully.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">1. Use of Service</h3>
+<p>Nuvori provides an AI-powered career coaching platform. You must be 18 or older to use Nuvori. You are responsible for maintaining the confidentiality of your account credentials and for all activity under your account.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">2. AI-Generated Content</h3>
+<p>Nuvori uses artificial intelligence to generate career advice, resume suggestions, cover letters, and other content. This content is provided for informational and guidance purposes only. Nuvori is not a licensed career counselor, attorney, or financial advisor. Results may vary. We do not guarantee employment outcomes.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">3. Subscriptions & Billing</h3>
+<p>Paid plans are billed monthly. You may cancel at any time through your account settings or by contacting support. Refunds are issued at our discretion for unused billing periods. Plan limits reset on the first of each month.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">4. Acceptable Use</h3>
+<p>You agree not to: misuse the platform, attempt to reverse-engineer our AI systems, upload harmful or illegal content, resell access to Nuvori, or violate any applicable laws. We reserve the right to terminate accounts that violate these terms.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">5. Limitation of Liability</h3>
+<p>Nuvori is provided "as is." We are not liable for any indirect, incidental, or consequential damages arising from your use of the platform. Our total liability shall not exceed the amount you paid us in the last 3 months.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">6. Changes to Terms</h3>
+<p>We may update these terms at any time. Continued use of Nuvori after changes constitutes acceptance of the new terms. We will notify users of material changes via email.</p>
+<p style="margin-top:20px;">Questions? Email us at <strong>legal@nuvori.ai</strong></p>`
+  },
+  privacy: {
+    title: "Privacy Policy",
+    body: `<p><strong>Last updated: June 2026</strong></p>
+<p style="margin-top:14px;">Your privacy matters to us. This policy explains what data we collect, how we use it, and your rights.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">1. Data We Collect</h3>
+<p>We collect: your email address and password (hashed), resume content and career information you share in chat, usage data (which features you use, how often), and payment information (processed securely by Stripe — we never store card numbers).</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">2. How We Use Your Data</h3>
+<p>We use your data to: provide and improve the Nuvori service, process payments, send account-related emails, personalize your experience, and monitor platform usage. We do not sell your personal data to third parties.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">3. AI & Data Processing</h3>
+<p>Content you share with Nuvori AI is sent to Anthropic's Claude API to generate responses. Anthropic's privacy policy governs their handling of this data. We do not use your conversations to train our own models.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">4. Data Retention</h3>
+<p>We retain your account data for as long as your account is active. You may request deletion of your data at any time by emailing privacy@nuvori.ai. We will delete your data within 30 days of your request.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">5. Cookies</h3>
+<p>We use essential cookies for authentication and session management. We do not use third-party advertising cookies.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">6. Your Rights</h3>
+<p>You have the right to access, correct, or delete your personal data. If you are in the EU, you have additional rights under GDPR. Contact us at privacy@nuvori.ai to exercise these rights.</p>
+<p style="margin-top:20px;">Questions? Email us at <strong>privacy@nuvori.ai</strong></p>`
+  },
+  ai: {
+    title: "AI Disclosure",
+    body: `<p><strong>Last updated: June 2026</strong></p>
+<p style="margin-top:14px;">Nuvori is committed to transparency about how we use artificial intelligence. Here's everything you should know.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">1. You Are Talking to an AI</h3>
+<p>Nuvori AI is an artificial intelligence system, not a human. All responses are generated by AI. While Nuvori AI is designed to be helpful and knowledgeable, it is not a licensed career counselor, recruiter, attorney, or financial advisor.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">2. Powered by Anthropic Claude</h3>
+<p>Nuvori AI is built on Claude, an AI model developed by Anthropic. Anthropic is an AI safety company. Claude is designed to be helpful, harmless, and honest. We use Claude's API to power all AI responses on our platform.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">3. AI Limitations</h3>
+<p>AI-generated content may sometimes be inaccurate, outdated, or not applicable to your specific situation. Always use your own judgment when acting on AI advice. We recommend verifying important information with qualified professionals.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">4. No Guarantee of Results</h3>
+<p>Nuvori AI provides career guidance and tools to improve your job search. However, we cannot guarantee employment outcomes, interview success, or salary increases. Results depend on many factors outside our control.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">5. FTC & Regulatory Compliance</h3>
+<p>In compliance with FTC guidelines, Nuvori clearly identifies AI-generated content. We never represent AI responses as coming from a human. If you ever ask whether you are speaking to a human or AI, Nuvori will always honestly disclose that it is an AI.</p>
+<h3 style="margin-top:20px;font-family:'Playfair Display',serif;color:#0f0f0d;">6. Feedback</h3>
+<p>If you receive AI output that seems wrong, harmful, or inappropriate, please report it to feedback@nuvori.ai. Your reports help us improve.</p>
+<p style="margin-top:20px;">Questions? Email us at <strong>support@nuvori.ai</strong></p>`
+  }
+};
+
+function showLegal(type) {
+  const modal = document.getElementById('legal-modal');
+  const title = document.getElementById('legal-title');
+  const body = document.getElementById('legal-body');
+  const c = legalContent[type];
+  title.textContent = c.title;
+  body.innerHTML = c.body;
+  modal.style.display = 'flex';
+}
+</script>
+
 </body>
 </html>
