@@ -988,6 +988,8 @@ function setFeature(f){
   currentFeature=f;conversationHistory=[];pendingFiles=[];
   document.getElementById('chat-messages').innerHTML='';
   renderPreview();addMessage('ai',featureWelcomes[f]);
+  const pdfBtn = document.getElementById('pdf-btn-wrap');
+  if(pdfBtn) pdfBtn.remove();
 }
 
 // file handling
@@ -1047,21 +1049,34 @@ function addMessage(role,text,attachments){
     });
     attachHTML+='</div>';
   }
-  div.innerHTML=`<div class="msg-avatar">${role==='ai'?'N':'You'}</div><div class="msg-bubble">${attachHTML}${fmt(text)}</div>`;
+  const formatted = fmt(text);
+  div.innerHTML=`<div class="msg-avatar">${role==='ai'?'N':'You'}</div><div class="msg-bubble">${attachHTML}<p style="margin:0">${formatted}</p></div>`;
   el.appendChild(div);el.scrollTop=el.scrollHeight;
 }
 function fmt(t){
-  return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+  return t
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/&lt;strong&gt;/g,'<strong>').replace(/&lt;\/strong&gt;/g,'</strong>')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
     .replace(/\*(.*?)\*/g,'<em>$1</em>')
-    .replace(/^### (.*?)$/gm,'<strong style="display:block;margin-top:10px">$1</strong>')
-    .replace(/^- (.*?)$/gm,'<li>$1</li>')
-    .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>')
+    .replace(/^#### (.*?)$/gm,'<div style="font-weight:600;margin-top:16px;margin-bottom:4px;font-size:.9rem;color:var(--ink)">$1</div>')
+    .replace(/^### (.*?)$/gm,'<div style="font-weight:600;margin-top:20px;margin-bottom:6px;font-size:.95rem;color:var(--ink);border-bottom:1px solid var(--rule);padding-bottom:4px">$1</div>')
+    .replace(/^## (.*?)$/gm,'<div style="font-family:var(--font-serif);font-size:1.05rem;font-weight:700;margin-top:24px;margin-bottom:8px;color:var(--ink)">$1</div>')
+    .replace(/^---$/gm,'<hr style="border:none;border-top:1px solid var(--rule);margin:16px 0;">')
+    .replace(/^- (.*?)$/gm,'<li style="margin-bottom:4px;padding-left:4px">$1</li>')
+    .replace(/^\d+\. (.*?)$/gm,'<li style="margin-bottom:4px;list-style-type:decimal;padding-left:4px">$1</li>')
+    .replace(/(<li[\s\S]*?<\/li>
+?)+/g,'<ul style="padding-left:20px;margin:8px 0">$&</ul>')
+    .replace(/`([^`]+)`/g,'<code style="background:var(--off);padding:1px 5px;border-radius:3px;font-size:.85em;font-family:monospace">$1</code>')
+    .replace(/\n\n/g,'</p><p style="margin-top:10px">')
     .replace(/\n/g,'<br>');
 }
 function showTyping(){
   const el=document.getElementById('chat-messages');
   const d=document.createElement('div');d.className='msg ai';d.id='typing';
-  d.innerHTML=`<div class="msg-avatar">N</div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  const phrases = ['Analyzing your resume...','Checking ATS compatibility...','Researching the role...','Crafting your response...','Reviewing your profile...','Thinking carefully...'];
+  const phrase = phrases[Math.floor(Math.random()*phrases.length)];
+  d.innerHTML=`<div class="msg-avatar">N</div><div class="typing-indicator"><div class="typing-bars"><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div></div><span class="typing-text">${phrase}</span></div>`;
   el.appendChild(d);el.scrollTop=el.scrollHeight;
 }
 function removeTyping(){const t=document.getElementById('typing');if(t)t.remove();}
@@ -1098,7 +1113,7 @@ async function sendMessage(){
       addMessage('ai',data.error||'Something went wrong. Please try again.');
     }else{
       conversationHistory.push({role:'assistant',content:data.reply});
-      addMessage('ai',data.reply);updateUsageBadge(data.usage);
+      addMessage('ai',data.reply);updateUsageBadge(data.usage);if(currentFeature==='resume')showPDFButton();
     }
   }catch{removeTyping();addMessage('ai','Connection issue \u2014 please try again.');}
   isLoading=false;document.getElementById('send-btn').disabled=false;input.focus();
@@ -1113,6 +1128,78 @@ function showUpgradeBanner(msg){
   let banner=document.getElementById('upgrade-banner');
   if(!banner){banner=document.createElement('div');banner.id='upgrade-banner';banner.style.cssText='background:#0f1a14;color:#fff;text-align:center;padding:12px 24px;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:16px;border-top:1px solid rgba(255,255,255,.08);';document.querySelector('.chat-layout').insertAdjacentElement('afterend',banner);}
   banner.innerHTML=`<span>${msg}</span><button onclick="startCheckout('pro')" style="background:#7ed4a8;color:#0f1a14;border:none;padding:7px 16px;border-radius:4px;font-weight:600;cursor:pointer;font-size:.8rem;">Upgrade to Pro</button>`;
+}
+
+
+// ── PDF RESUME GENERATION ──
+async function generateResumePDF() {
+  const btn = document.getElementById('pdf-btn');
+  if(btn) { btn.textContent = 'Generating PDF...'; btn.disabled = true; }
+
+  const messages = conversationHistory;
+  if(!messages || messages.length < 2) {
+    alert('Please complete a resume analysis first.');
+    if(btn) { btn.textContent = 'Download Resume as PDF'; btn.disabled = false; }
+    return;
+  }
+
+  // Build full resume from conversation
+  const res = await fetch('/api/ai/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+    credentials: 'include',
+    body: JSON.stringify({
+      feature: 'resume',
+      messages: [...messages, {
+        role: 'user',
+        content: [{ type: 'text', text: 'Now please write the complete rewritten resume in plain text format, ready to copy. Include all sections: Summary, Work Experience, Education, Skills, Certifications. Use the rewritten bullet points from your analysis. Format it cleanly with section headers in ALL CAPS and bullets starting with dashes. Do not include any commentary, just the resume itself.' }]
+      }]
+    })
+  });
+  const data = await res.json();
+  if(!data.reply) {
+    alert('Could not generate resume. Please try again.');
+    if(btn) { btn.textContent = 'Download Resume as PDF'; btn.disabled = false; }
+    return;
+  }
+
+  // Create printable PDF window
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<title>Resume — Nuvori AI</title>
+<style>
+  body { font-family: 'Georgia', serif; max-width: 750px; margin: 40px auto; padding: 0 40px; color: #111; line-height: 1.6; font-size: 11pt; }
+  h1 { font-size: 22pt; margin-bottom: 4px; }
+  .section { margin-top: 20px; }
+  .section-title { font-size: 10pt; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; border-bottom: 1px solid #111; padding-bottom: 3px; margin-bottom: 10px; }
+  p { margin: 4px 0; }
+  .powered { margin-top: 40px; font-size: 8pt; color: #999; text-align: center; }
+  @media print { body { margin: 20px; } .powered { display: none; } }
+</style>
+</head>
+<body>
+<pre style="white-space:pre-wrap;font-family:Georgia,serif;font-size:11pt;line-height:1.7">${data.reply.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
+<div class="powered">Generated by Nuvori AI — nuvoriai.com</div>
+<script>window.onload = function(){ window.print(); }</script>
+</body>
+</html>`);
+  win.document.close();
+
+  if(btn) { btn.textContent = 'Download Resume as PDF'; btn.disabled = false; }
+}
+
+// Show PDF button after AI response in resume mode
+function showPDFButton() {
+  if(currentFeature !== 'resume') return;
+  let existing = document.getElementById('pdf-btn-wrap');
+  if(existing) return;
+  const wrap = document.createElement('div');
+  wrap.id = 'pdf-btn-wrap';
+  wrap.style.cssText = 'padding:12px 24px;border-top:1px solid var(--rule);background:var(--off);';
+  wrap.innerHTML = `<button id="pdf-btn" onclick="generateResumePDF()" style="background:#0f1a14;color:#fff;border:none;padding:10px 20px;border-radius:4px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:background .18s;" onmouseover="this.style.background='#2d6a4f'" onmouseout="this.style.background='#0f1a14'">Download Rebuilt Resume as PDF</button><span style="font-size:.75rem;color:var(--soft);margin-left:12px;">Nuvori will rebuild your full resume with all improvements</span>`;
+  document.querySelector('.chat-input-wrap').insertAdjacentElement('beforebegin', wrap);
 }
 
 document.getElementById('chat-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});

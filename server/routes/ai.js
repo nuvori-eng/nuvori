@@ -219,7 +219,7 @@ router.post('/chat', requireAuth, async (req, res) => {
     // Call Claude
     const response = await claude.messages.create({
       model:      'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system:     SYSTEM_PROMPTS[feature],
       messages:   trimmedMessages,
     });
