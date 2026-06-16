@@ -672,10 +672,10 @@ footer{
         <div class="chat-input-wrap">
           <div class="attach-preview" id="attachment-preview"></div>
           <div class="chat-input-row">
-            <label for="file-upload" class="attach-btn" title="Attach image or file">
+            <button type="button" class="attach-btn" title="Attach image or PDF" onclick="document.getElementById('file-upload').click()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.41 17.41a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-            </label>
-            <input type="file" id="file-upload" accept="image/*,.pdf" style="display:none" multiple/>
+            </button>
+            <input type="file" id="file-upload" accept="image/*,.pdf" style="position:fixed;left:-9999px;opacity:0;" multiple/>
             <textarea id="chat-input" placeholder="Message Nuvori…" rows="1"></textarea>
             <button id="send-btn" onclick="sendMessage()">Send</button>
           </div>
@@ -993,15 +993,30 @@ function setFeature(f){
 }
 
 // file handling
-document.getElementById('file-upload').addEventListener('change',async function(){
-  for(const file of Array.from(this.files)){
+document.getElementById('file-upload').addEventListener('change',async function(e){
+  console.log('File input changed:', this.files);
+  const files = Array.from(this.files);
+  console.log('Files selected:', files.length);
+  for(const file of files){
+    console.log('Processing file:', file.name, file.type, file.size);
     const isImage=file.type.startsWith('image/');
     const isPDF=file.type==='application/pdf';
-    if(!isImage&&!isPDF)continue;
-    const base64=await toBase64(file);
-    pendingFiles.push({file,base64,mediaType:file.type,isImage,isPDF});
+    if(!isImage&&!isPDF){
+      console.log('Skipping non-image/PDF file:', file.type);
+      continue;
+    }
+    try {
+      const base64=await toBase64(file);
+      console.log('File converted to base64, length:', base64.length);
+      pendingFiles.push({file,base64,mediaType:file.type,isImage,isPDF});
+      console.log('Pending files now:', pendingFiles.length);
+    } catch(err) {
+      console.error('Error converting file:', err);
+    }
   }
-  this.value='';renderPreview();
+  this.value='';
+  renderPreview();
+  console.log('Preview rendered, pendingFiles:', pendingFiles.length);
 });
 document.getElementById('chat-messages').addEventListener('dragover',e=>{e.preventDefault();});
 document.getElementById('chat-messages').addEventListener('drop',async e=>{
@@ -1024,17 +1039,41 @@ document.getElementById('chat-input').addEventListener('paste',async e=>{
 function toBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});}
 function renderPreview(){
   const el=document.getElementById('attachment-preview');
+  if(!el){ console.error('attachment-preview not found'); return; }
   el.innerHTML='';
-  if(!pendingFiles.length){el.classList.remove('has-files');return;}
+  if(!pendingFiles.length){
+    el.classList.remove('has-files');
+    el.style.cssText='';
+    return;
+  }
   el.classList.add('has-files');
+  el.style.cssText='display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;border-bottom:1px solid var(--rule);background:var(--off);';
   pendingFiles.forEach((pf,i)=>{
-    const item=document.createElement('div');item.className='preview-item';
-    if(pf.isImage)item.innerHTML=`<img src="data:${pf.mediaType};base64,${pf.base64}" alt=""/>`;
-    else item.innerHTML=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>`;
-    item.innerHTML+=`<span class="preview-name">${pf.file.name}</span><button class="preview-remove" onclick="removeFile(${i})">\u00d7</button>`;
+    const item=document.createElement('div');
+    item.style.cssText='display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--rule);border-radius:4px;padding:6px 10px;font-size:.75rem;color:var(--mid);max-width:220px;';
+    if(pf.isImage){
+      const img=document.createElement('img');
+      img.src='data:'+pf.mediaType+';base64,'+pf.base64;
+      img.style.cssText='width:28px;height:28px;object-fit:cover;border-radius:2px;flex-shrink:0;';
+      item.appendChild(img);
+    } else {
+      const icon=document.createElement('span');
+      icon.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>';
+      item.appendChild(icon);
+    }
+    const name=document.createElement('span');
+    name.style.cssText='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;';
+    name.textContent=pf.file.name;
+    const btn=document.createElement('button');
+    btn.style.cssText='background:none;border:none;cursor:pointer;color:var(--soft);font-size:1rem;padding:0 0 0 4px;line-height:1;flex-shrink:0;';
+    btn.textContent='×';
+    btn.onclick=(()=>{const idx=i;return()=>removeFile(idx);})();
+    item.appendChild(name);
+    item.appendChild(btn);
     el.appendChild(item);
   });
 }
+
 function removeFile(i){pendingFiles.splice(i,1);renderPreview();}
 
 function addMessage(role,text,attachments){
