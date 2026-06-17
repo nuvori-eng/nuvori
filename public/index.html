@@ -235,7 +235,7 @@ footer{background:var(--ink);padding:72px 56px 40px;}
     <li><a href="#chat">Try Nuvori AI</a></li>
     <li><a href="#pricing">Pricing</a></li>
   </ul>
-  <a href="#chat" class="nav-cta" id="nav-cta-btn">Start for Free</a>
+  <a href="#" class="nav-cta" id="nav-cta-btn" onclick="handleNavCta(event)">Get started free</a>
 </nav>
 <section class="hero" id="home">
   <div class="hero-bg" id="hero-parallax"></div>
@@ -495,31 +495,55 @@ var currentUser=null;
 var authMode='login';
 
 function initAuth(){
+  // Always update nav immediately based on token presence
+  updateNavState();
   if(!authToken)return;
   fetch('/api/auth/me',{headers:{'Authorization':'Bearer '+authToken}})
     .then(function(r){return r.json();})
     .then(function(d){
       if(d.user){currentUser=d.user;updateAuthUI();}
-      else{authToken=null;localStorage.removeItem('nuvori_token');}
+      else{authToken=null;localStorage.removeItem('nuvori_token');updateNavState();}
     })
-    .catch(function(){authToken=null;localStorage.removeItem('nuvori_token');});
+    .catch(function(){authToken=null;localStorage.removeItem('nuvori_token');updateNavState();});
+}
+
+function updateNavState(){
+  var btn=document.getElementById('nav-cta-btn');
+  if(!btn)return;
+  if(!authToken){
+    btn.textContent='Get started free';
+    btn.href='#';
+  }
+}
+
+function handleNavCta(e){
+  e.preventDefault();
+  if(currentUser){
+    showAccountModal();
+  } else {
+    showAuthModal('signup');
+  }
 }
 
 function updateAuthUI(){
   var btn=document.getElementById('nav-cta-btn');
   if(currentUser&&btn){
-    if(currentUser.plan==='starter'){
-      btn.textContent='Upgrade to Pro';
-      btn.onclick=function(){startCheckout('pro');};
-    } else {
-      btn.textContent='My Account';
-      btn.onclick=function(){showAccountModal();};
-    }
+    // Always show My Account when logged in
+    btn.textContent='My Account';
+    btn.href='#';
+    btn.onclick=function(e){e.preventDefault();showAccountModal();};
+    btn.style.background='';
   }
   var badge=document.getElementById('plan-badge');
   if(badge&&currentUser){
     badge.textContent=currentUser.plan.charAt(0).toUpperCase()+currentUser.plan.slice(1)+' Plan';
     badge.style.display='inline-block';
+  }
+  // Also update the hero button
+  var heroBtn=document.querySelector('.btn-hero-primary');
+  if(heroBtn&&currentUser){
+    heroBtn.textContent='Open Nuvori AI';
+    heroBtn.onclick=function(){document.getElementById('chat').scrollIntoView({behavior:'smooth'});};
   }
 }
 
@@ -574,13 +598,20 @@ function showAccountModal(){
 function logOut(){
   authToken=null;currentUser=null;
   localStorage.removeItem('nuvori_token');
-  document.getElementById('account-modal').style.display='none';
+  var modal=document.getElementById('account-modal');
+  if(modal)modal.style.display='none';
   var btn=document.getElementById('nav-cta-btn');
-  if(btn){btn.textContent='Get started free';btn.onclick=null;}
+  if(btn){btn.textContent='Get started free';}
   var badge=document.getElementById('plan-badge');
   if(badge)badge.style.display='none';
+  // Reset hero button
+  var heroBtn=document.querySelector('.btn-hero-primary');
+  if(heroBtn){heroBtn.textContent="Try Nuvori AI — it's free";}
   featureHistories={};featureMessages={};
-  setFeature('resume');
+  conversationHistory=[];
+  var msgs=document.getElementById('chat-messages');
+  if(msgs){msgs.innerHTML='';}
+  addMessage('ai',featureWelcomes[currentFeature]);
 }
 
 function openBillingPortal(){
@@ -635,6 +666,7 @@ function submitAuth(){
     localStorage.setItem('nuvori_token',authToken);
     document.getElementById('auth-modal').style.display='none';
     updateAuthUI();
+    updateNavState();
   })
   .catch(function(){
     showAuthError('Connection error. Please try again.');
@@ -949,7 +981,10 @@ function showTyping(){
 function removeTyping(){var t=document.getElementById('typing');if(t)t.remove();}
 
 function sendMessage(){
-  if(!currentUser)return showAuthModal();
+  if(!currentUser){
+    showAuthModal('signup');
+    return;
+  }
   var input=document.getElementById('chat-input');
   var text=input.value.trim();
   if((!text&&!pendingFiles.length)||isLoading)return;
