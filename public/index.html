@@ -411,8 +411,9 @@ footer{background:var(--ink);padding:72px 56px 40px;}
   <div class="footer-bottom"><p>© 2026 Nuvori. All rights reserved.</p><p>Powered by Anthropic Claude</p></div>
 </footer>
 <div id="auth-modal">
-  <div class="modal-overlay" onclick="closeAuthIfLoggedIn()"></div>
-  <div class="modal-box">
+  <div class="modal-overlay" onclick="closeAuthModal()"></div>
+  <div class="modal-box" style="position:relative;">
+    <button onclick="closeAuthModal()" aria-label="Close" style="position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;color:var(--soft);font-size:1.4rem;line-height:1;padding:4px;">&times;</button>
     <div class="modal-logo">Nuvori</div>
     <div class="modal-tabs">
       <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Sign in</button>
@@ -501,6 +502,11 @@ function closeAuthIfLoggedIn() {
     var modal = document.getElementById('auth-modal');
     if(modal) modal.style.display = 'none';
   }
+}
+
+function closeAuthModal() {
+  var modal = document.getElementById('auth-modal');
+  if(modal) modal.style.display = 'none';
 }
 
 function switchTab(mode) {
