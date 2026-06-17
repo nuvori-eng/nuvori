@@ -581,26 +581,65 @@ function showAccountModal() {
   modal.style.cssText = 'position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;';
   var planLabel = currentUser.plan.charAt(0).toUpperCase() + currentUser.plan.slice(1);
   var planColor = currentUser.plan === 'pro' ? '#2d6a4f' : currentUser.plan === 'teams' ? '#1a5a8f' : '#666';
-  var upgradeSection = currentUser.plan === 'starter'
-    ? '<div style="background:#e8f4ef;border:1px solid #b8dfc9;border-radius:8px;padding:16px;margin-bottom:16px;"><div style="font-size:.875rem;font-weight:600;color:#1a5a3a;margin-bottom:6px;">Upgrade to Pro</div><div style="font-size:.82rem;color:#2d6a4f;margin-bottom:12px;">Get unlimited access to all features for $19/month.</div><button onclick="document.getElementById('account-modal').style.display='none';startCheckout('pro')" style="background:#2d6a4f;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;">Upgrade to Pro — $19/mo</button></div>'
-    : '<div style="background:#f8f7f4;border-radius:8px;padding:16px;margin-bottom:16px;"><div style="font-size:.875rem;font-weight:600;color:#0f0f0d;margin-bottom:6px;">Manage Subscription</div><button onclick="openBillingPortal()" style="background:#0f1a14;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;">Manage Billing</button></div>';
-  modal.innerHTML =
-    '<div onclick="document.getElementById('account-modal').style.display='none'" style="position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);"></div>' +
-    '<div style="position:relative;z-index:1;background:#fff;border-radius:10px;padding:36px;width:100%;max-width:440px;box-shadow:0 32px 80px rgba(0,0,0,.2);margin:24px;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">' +
-        '<div style="font-family:Georgia,serif;font-size:1.4rem;font-weight:700;">My Account</div>' +
-        '<button onclick="document.getElementById('account-modal').style.display='none'" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#9a9a8e;">&times;</button>' +
-      '</div>' +
-      '<div style="background:#f8f7f4;border-radius:8px;padding:18px;margin-bottom:16px;">' +
-        '<div style="font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#9a9a8e;margin-bottom:12px;">Account Details</div>' +
-        '<div style="font-size:.875rem;display:flex;justify-content:space-between;margin-bottom:10px;"><span style="color:#5a5a52;">Email</span><span style="font-weight:500;">' + currentUser.email + '</span></div>' +
-        '<div style="border-top:1px solid #e2e2da;padding-top:10px;font-size:.875rem;display:flex;justify-content:space-between;margin-bottom:10px;"><span style="color:#5a5a52;">Plan</span><span style="background:' + planColor + ';color:#fff;padding:2px 10px;border-radius:100px;font-size:.75rem;font-weight:600;">' + planLabel + '</span></div>' +
-        '<div style="border-top:1px solid #e2e2da;padding-top:10px;font-size:.875rem;display:flex;justify-content:space-between;"><span style="color:#5a5a52;">Member since</span><span>' + new Date(currentUser.createdAt).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) + '</span></div>' +
-      '</div>' +
-      upgradeSection +
-      '<button onclick="logOut()" style="width:100%;padding:10px;border-radius:6px;font-size:.82rem;font-weight:500;cursor:pointer;border:1px solid #e2e2da;background:transparent;color:#9a9a8e;">Sign out</button>' +
-    '</div>';
+  var upgradeSection;
+  if(currentUser.plan === 'starter') {
+    upgradeSection = '<div style="background:#e8f4ef;border:1px solid #b8dfc9;border-radius:8px;padding:16px;margin-bottom:16px;">' +
+      '<div style="font-size:.875rem;font-weight:600;color:#1a5a3a;margin-bottom:6px;">Upgrade to Pro</div>' +
+      '<div style="font-size:.82rem;color:#2d6a4f;margin-bottom:12px;">Get unlimited access to all features for $19/month.</div>' +
+      '<button id="upgrade-pro-btn" style="background:#2d6a4f;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;">Upgrade to Pro — $19/mo</button>' +
+      '</div>';
+  } else {
+    upgradeSection = '<div style="background:#f8f7f4;border-radius:8px;padding:16px;margin-bottom:16px;">' +
+      '<div style="font-size:.875rem;font-weight:600;color:#0f0f0d;margin-bottom:6px;">Manage Subscription</div>' +
+      '<button id="billing-portal-btn" style="background:#0f1a14;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;">Manage Billing</button>' +
+      '</div>';
+  }
+  // Build modal using DOM methods to avoid quote conflicts
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);cursor:pointer;';
+  overlay.addEventListener('click', function(){ modal.remove(); });
+
+  var box = document.createElement('div');
+  box.style.cssText = 'position:relative;z-index:1;background:#fff;border-radius:10px;padding:36px;width:100%;max-width:440px;box-shadow:0 32px 80px rgba(0,0,0,.2);margin:24px;';
+
+  var header = document.createElement('div');
+  header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;';
+  header.innerHTML = '<div style="font-family:Georgia,serif;font-size:1.4rem;font-weight:700;">My Account</div>';
+  var closeBtn = document.createElement('button');
+  closeBtn.innerHTML = '&times;';
+  closeBtn.style.cssText = 'background:none;border:none;font-size:1.4rem;cursor:pointer;color:#9a9a8e;';
+  closeBtn.addEventListener('click', function(){ modal.remove(); });
+  header.appendChild(closeBtn);
+
+  var details = document.createElement('div');
+  details.style.cssText = 'background:#f8f7f4;border-radius:8px;padding:18px;margin-bottom:16px;';
+  details.innerHTML =
+    '<div style="font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#9a9a8e;margin-bottom:12px;">Account Details</div>' +
+    '<div style="font-size:.875rem;display:flex;justify-content:space-between;margin-bottom:10px;"><span style="color:#5a5a52;">Email</span><span style="font-weight:500;">' + currentUser.email + '</span></div>' +
+    '<div style="border-top:1px solid #e2e2da;padding-top:10px;font-size:.875rem;display:flex;justify-content:space-between;margin-bottom:10px;"><span style="color:#5a5a52;">Plan</span><span style="background:' + planColor + ';color:#fff;padding:2px 10px;border-radius:100px;font-size:.75rem;font-weight:600;">' + planLabel + '</span></div>' +
+    '<div style="border-top:1px solid #e2e2da;padding-top:10px;font-size:.875rem;display:flex;justify-content:space-between;"><span style="color:#5a5a52;">Member since</span><span>' + new Date(currentUser.createdAt).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) + '</span></div>';
+
+  var upgradeDiv = document.createElement('div');
+  upgradeDiv.innerHTML = upgradeSection;
+
+  var signOutBtn = document.createElement('button');
+  signOutBtn.textContent = 'Sign out';
+  signOutBtn.style.cssText = 'width:100%;padding:10px;border-radius:6px;font-size:.82rem;font-weight:500;cursor:pointer;border:1px solid #e2e2da;background:transparent;color:#9a9a8e;margin-top:8px;';
+  signOutBtn.addEventListener('click', logOut);
+
+  box.appendChild(header);
+  box.appendChild(details);
+  box.appendChild(upgradeDiv);
+  box.appendChild(signOutBtn);
+  modal.appendChild(overlay);
+  modal.appendChild(box);
   document.body.appendChild(modal);
+
+  // Wire up buttons inside upgradeSection
+  var upgradeProBtn = document.getElementById('upgrade-pro-btn');
+  if(upgradeProBtn) upgradeProBtn.addEventListener('click', function(){ modal.remove(); startCheckout('pro'); });
+  var billingBtn = document.getElementById('billing-portal-btn');
+  if(billingBtn) billingBtn.addEventListener('click', openBillingPortal);
 }
 
 function logOut() {
@@ -770,8 +809,7 @@ function addMessage(role, text, attachments) {
 }
 
 function formatMessage(text) {
-  var lines = text.split('
-');
+  var lines = text.split('\n');
   var result = [];
   var inUl = false, inOl = false;
   for(var i = 0; i < lines.length; i++) {
@@ -887,7 +925,14 @@ function showUpgradeBanner(msg) {
   var banner = document.createElement('div');
   banner.id = 'upgrade-banner';
   banner.style.cssText = 'background:#0f1a14;color:#fff;text-align:center;padding:12px 24px;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:16px;border-top:1px solid rgba(255,255,255,.08);';
-  banner.innerHTML = '<span>' + msg + '</span><button onclick="startCheckout('pro')" style="background:#7ed4a8;color:#0f1a14;border:none;padding:7px 16px;border-radius:4px;font-weight:600;cursor:pointer;font-size:.8rem;">Upgrade to Pro</button>';
+  var upgradeBtn = document.createElement('button');
+  upgradeBtn.textContent = 'Upgrade to Pro';
+  upgradeBtn.style.cssText = 'background:#7ed4a8;color:#0f1a14;border:none;padding:7px 16px;border-radius:4px;font-weight:600;cursor:pointer;font-size:.8rem;';
+  upgradeBtn.addEventListener('click', function(){ startCheckout('pro'); });
+  var msgSpan = document.createElement('span');
+  msgSpan.textContent = msg;
+  banner.appendChild(msgSpan);
+  banner.appendChild(upgradeBtn);
   var layout = document.querySelector('.chat-layout');
   if(layout) layout.insertAdjacentElement('afterend', banner);
 }
@@ -930,7 +975,7 @@ function generateResumePDF() {
 // ── LEGAL ──
 var legalContent = {
   terms: {title:'Terms of Service',body:'<p><strong>Last updated: June 2026</strong></p><p style="margin-top:14px;">Welcome to Nuvori. By using our platform, you agree to these Terms of Service.</p><h3 style="margin-top:20px;font-weight:700;">1. Use of Service</h3><p>Nuvori provides an AI-powered career coaching platform. You must be 18 or older.</p><h3 style="margin-top:20px;font-weight:700;">2. AI-Generated Content</h3><p>Nuvori uses AI to generate career advice for informational purposes only. We are not a licensed career counselor or advisor. Results may vary.</p><h3 style="margin-top:20px;font-weight:700;">3. Billing</h3><p>Paid plans are billed monthly. Cancel anytime.</p><h3 style="margin-top:20px;font-weight:700;">4. Liability</h3><p>Nuvori is provided as-is. Our liability shall not exceed the amount you paid in the last 3 months.</p><p style="margin-top:16px;">Questions? <strong>legal@nuvoriai.com</strong></p>'},
-  privacy: {title:'Privacy Policy',body:'<p><strong>Last updated: June 2026</strong></p><h3 style="margin-top:20px;font-weight:700;">Data We Collect</h3><p>Email, hashed password, resume content you share, usage data, and payment info processed by Stripe.</p><h3 style="margin-top:20px;font-weight:700;">How We Use It</h3><p>To provide Nuvori, process payments, and improve the service. We do not sell your data.</p><h3 style="margin-top:20px;font-weight:700;">AI Processing</h3><p>Content you share is sent to Anthropic's Claude API. We do not use your data to train models.</p><h3 style="margin-top:20px;font-weight:700;">Your Rights</h3><p>Request deletion anytime: <strong>privacy@nuvoriai.com</strong></p>'},
+  privacy: {title:'Privacy Policy',body:'<p><strong>Last updated: June 2026</strong></p><h3 style="margin-top:20px;font-weight:700;">Data We Collect</h3><p>Email, hashed password, resume content you share, usage data, and payment info processed by Stripe.</p><h3 style="margin-top:20px;font-weight:700;">How We Use It</h3><p>To provide Nuvori, process payments, and improve the service. We do not sell your data.</p><h3 style="margin-top:20px;font-weight:700;">AI Processing</h3><p>Content you share is sent to Anthropic Claude API. We do not use your data to train models.</p><h3 style="margin-top:20px;font-weight:700;">Your Rights</h3><p>Request deletion anytime: <strong>privacy@nuvoriai.com</strong></p>'},
   ai: {title:'AI Disclosure',body:'<p><strong>Last updated: June 2026</strong></p><h3 style="margin-top:20px;font-weight:700;">You Are Talking to an AI</h3><p>Nuvori AI is an artificial intelligence, not a human. It is not a licensed career counselor or advisor.</p><h3 style="margin-top:20px;font-weight:700;">Powered by Anthropic Claude</h3><p>Nuvori AI is built on Claude, developed by Anthropic PBC.</p><h3 style="margin-top:20px;font-weight:700;">No Guarantee of Results</h3><p>Nuvori cannot guarantee employment outcomes. Results depend on many factors outside our control.</p><h3 style="margin-top:20px;font-weight:700;">FTC Compliance</h3><p>Nuvori clearly identifies AI-generated content and never represents responses as coming from a human.</p>'}
 };
 
@@ -1039,6 +1084,6 @@ document.addEventListener('DOMContentLoaded', function() {
   setFeature('resume');
   initAuth();
 });
-</script></script>
+</script>
 </body>
 </html>
