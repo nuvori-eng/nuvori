@@ -75,6 +75,12 @@ nav.scrolled .nav-cta{background:var(--ink);color:var(--white);border:none;curso
 .step h3{font-family:var(--font-serif);font-size:1.3rem;font-weight:700;margin-bottom:10px;color:var(--ink);}
 .step p{font-size:.9rem;color:var(--mid);line-height:1.75;max-width:560px;}
 .chat-layout{display:grid;grid-template-columns:220px 1fr;border:1px solid var(--rule);border-radius:8px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.08);margin-top:60px;background:var(--white);}
+.chat-layout.expanded{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1000;margin-top:0;border:none;border-radius:0;box-shadow:none;width:100%;height:100%;}
+.chat-layout.expanded .chat-messages{max-height:none;min-height:0;}
+.chat-collapse-btn{display:none;background:transparent;border:none;color:var(--soft);cursor:pointer;padding:4px;border-radius:4px;align-items:center;justify-content:center;}
+.chat-collapse-btn:hover{background:var(--off);color:var(--ink);}
+.chat-layout.expanded .chat-collapse-btn{display:flex;}
+body.chat-expanded-active{overflow:hidden;}
 .chat-sidebar{background:#0f1a14;display:flex;flex-direction:column;min-width:220px;}
 .chat-sidebar-header{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
 .ivy-brand{font-family:var(--font-serif);font-size:1.1rem;font-weight:700;color:var(--white);display:flex;align-items:center;gap:8px;margin-bottom:4px;}
@@ -359,7 +365,12 @@ footer{background:var(--ink);padding:72px 56px 40px;}
       <div class="chat-main">
         <div class="chat-topbar">
           <div class="chat-topbar-title">Nuvori AI — Your Career Coach</div>
-          <div class="chat-topbar-right">Nuvori.ai</div>
+          <div class="chat-topbar-right">
+            <button class="chat-collapse-btn" id="chat-collapse-btn" title="Exit full screen">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="M14 10l7-7"/><path d="M3 21l7-7"/></svg>
+            </button>
+            <span>Nuvori.ai</span>
+          </div>
         </div>
         <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input-wrap">
@@ -757,10 +768,62 @@ function initAuth() {
   fetch('/api/auth/me', {headers: {'Authorization': 'Bearer ' + authToken}})
     .then(function(r){ return r.json(); })
     .then(function(d) {
-      if(d.user) { currentUser = d.user; updateAuthUI(); }
+      if(d.user) { currentUser = d.user; updateAuthUI(); loadSavedConversations(); }
       else { authToken = null; localStorage.removeItem('nuvori_token'); }
     })
     .catch(function() { authToken = null; localStorage.removeItem('nuvori_token'); });
+}
+
+function loadSavedConversations() {
+  fetch('/api/ai/conversations', {headers: {'Authorization': 'Bearer ' + authToken}})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d) {
+      if(!d || !d.conversations) return;
+      Object.keys(d.conversations).forEach(function(feature) {
+        var saved = d.conversations[feature];
+        if(saved && saved.length > 0) {
+          featureHistories[feature] = saved;
+          featureMessages[feature] = renderHistoryToHTML(saved);
+        }
+      });
+      // Re-render whichever feature tab is currently showing, now that we have its saved history
+      if(featureHistories[currentFeature] && featureHistories[currentFeature].length > 0) {
+        conversationHistory = featureHistories[currentFeature].slice();
+        var msgEl = document.getElementById('chat-messages');
+        if(msgEl) {
+          msgEl.innerHTML = featureMessages[currentFeature] || '';
+          msgEl.scrollTop = msgEl.scrollHeight;
+        }
+        expandChat();
+      }
+    })
+    .catch(function() {});
+}
+
+function renderHistoryToHTML(messages) {
+  var container = document.createElement('div');
+  messages.forEach(function(m) {
+    var text = '';
+    if(typeof m.content === 'string') {
+      text = m.content;
+    } else if(Array.isArray(m.content)) {
+      text = m.content.filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; }).join(' ');
+    }
+    var uiRole = m.role === 'assistant' ? 'ai' : 'user';
+    var div = document.createElement('div');
+    div.className = 'msg ' + uiRole;
+    var avatar = document.createElement('div');
+    avatar.className = 'msg-avatar';
+    if(uiRole === 'ai') avatar.innerHTML = getFeatureIcon(currentFeature, 15);
+    else avatar.textContent = 'You';
+    var bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.innerHTML = formatMessage(text);
+    div.appendChild(avatar);
+    div.appendChild(bubble);
+    container.appendChild(div);
+  });
+  return container.innerHTML;
 }
 
 // ── GOOGLE SIGN-IN ──
@@ -1030,6 +1093,22 @@ function getFeatureIcon(f, size) {
 }
 
 // ── CHAT ──
+function expandChat() {
+  var layout = document.querySelector('.chat-layout');
+  if(layout && !layout.classList.contains('expanded')) {
+    layout.classList.add('expanded');
+    document.body.classList.add('chat-expanded-active');
+  }
+}
+
+function collapseChat() {
+  var layout = document.querySelector('.chat-layout');
+  if(layout) {
+    layout.classList.remove('expanded');
+    document.body.classList.remove('chat-expanded-active');
+  }
+}
+
 function setFeature(f) {
   if(currentFeature && currentFeature !== f) {
     featureHistories[currentFeature] = conversationHistory.slice();
@@ -1174,6 +1253,7 @@ function sendMessage() {
   var input = document.getElementById('chat-input');
   var text = input.value.trim();
   if((!text && !pendingFiles.length) || isLoading) return;
+  expandChat();
   var filesToSend = pendingFiles.slice();
   pendingFiles = []; renderPreview();
   input.value = ''; input.style.height = 'auto';
@@ -1343,6 +1423,16 @@ function showLegal(type) {
 
 // ── DOM READY ── everything that touches the DOM goes here
 document.addEventListener('DOMContentLoaded', function() {
+
+  // Chat fullscreen collapse button + Escape key
+  var collapseBtn = document.getElementById('chat-collapse-btn');
+  if(collapseBtn) collapseBtn.addEventListener('click', collapseChat);
+  document.addEventListener('keydown', function(e) {
+    if(e.key === 'Escape') {
+      var layout = document.querySelector('.chat-layout');
+      if(layout && layout.classList.contains('expanded')) collapseChat();
+    }
+  });
 
   // Smooth scroll for nav links (skip nav-cta-btn)
   document.querySelectorAll('a[href^="#"]').forEach(function(a) {
