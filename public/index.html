@@ -82,7 +82,9 @@ nav.scrolled .nav-cta{background:var(--ink);color:var(--white);border:none;curso
 .ivy-tagline{font-size:.7rem;color:rgba(255,255,255,.35);letter-spacing:.06em;}
 .sidebar-label{font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:20px 20px 8px;}
 #feature-tabs{display:flex;flex-direction:column;width:100%;}
-.feat-tab{padding:11px 20px;font-size:.8rem;font-weight:400;color:rgba(255,255,255,.5);background:transparent;border:none;border-left:2px solid transparent;cursor:pointer;text-align:left;transition:all .15s;font-family:var(--font-body);display:block;width:100%;white-space:nowrap;}
+.feat-tab{padding:11px 20px;font-size:.8rem;font-weight:400;color:rgba(255,255,255,.5);background:transparent;border:none;border-left:2px solid transparent;cursor:pointer;text-align:left;transition:all .15s;font-family:var(--font-body);display:flex;align-items:center;gap:9px;width:100%;white-space:nowrap;}
+.feat-tab-icon{display:inline-flex;flex-shrink:0;color:#4ade80;}
+.feat-tab-icon svg{display:block;}
 .feat-tab:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.04);}
 .feat-tab.active{color:var(--white);background:rgba(255,255,255,.07);border-left-color:#4ade80;font-weight:500;}
 .chat-main{display:flex;flex-direction:column;}
@@ -227,6 +229,27 @@ footer{background:var(--ink);padding:72px 56px 40px;}
   .chat-sidebar{display:none;}
   footer{padding:48px 24px 32px;}
 }
+@keyframes fi-check{0%,70%,100%{stroke-dashoffset:24;}85%{stroke-dashoffset:0;}}
+@keyframes fi-blink{0%,40%,100%{opacity:1;}45%,55%{opacity:.3;}}
+@keyframes fi-mail{0%,100%{transform:translateY(0);}50%{transform:translateY(-2px);}}
+@keyframes fi-scan{0%{transform:translate(0,0);}50%{transform:translate(3px,3px);}100%{transform:translate(0,0);}}
+@keyframes fi-grow{0%{stroke-dashoffset:40;}60%,100%{stroke-dashoffset:0;}}
+@keyframes fi-coin{0%,100%{transform:scaleX(1);}50%{transform:scaleX(.85);}}
+@keyframes fi-search{0%,100%{transform:translate(0,0) rotate(0deg);}50%{transform:translate(1.5px,1.5px) rotate(8deg);}}
+@keyframes fi-pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+@keyframes fi-fly{0%{transform:translate(0,0);opacity:1;}80%{transform:translate(5px,-3px);opacity:1;}100%{transform:translate(7px,-4px);opacity:0;}}
+@keyframes fi-ring{0%{opacity:.3;}50%{opacity:1;}100%{opacity:.3;}}
+.fi-mail{transform-origin:12px 9px;animation:fi-mail 2.2s ease-in-out infinite;}
+.fi-scan{animation:fi-scan 2.4s ease-in-out infinite;}
+.fi-grow{stroke-dasharray:40;animation:fi-grow 2.6s ease-out infinite;}
+.fi-coin{animation:fi-coin 2.8s ease-in-out infinite;}
+.fi-search{transform-origin:16px 16px;animation:fi-search 2.4s ease-in-out infinite;}
+.fi-pulse{animation:fi-pulse 2.4s ease-in-out infinite;}
+.fi-fly{animation:fi-fly 2.2s ease-in infinite;}
+.fi-ring1{animation:fi-ring 2.4s ease-in-out infinite;}
+.fi-ring2{animation:fi-ring 2.4s ease-in-out infinite .4s;}
+.fi-check{stroke-dasharray:24;stroke-dashoffset:24;animation:fi-check 3s ease-in-out infinite;}
+.fi-blink{animation:fi-blink 2.6s ease-in-out infinite;}
 </style>
 </head>
 <body>
@@ -321,16 +344,16 @@ footer{background:var(--ink);padding:72px 56px 40px;}
         </div>
         <div class="sidebar-label">What can I help with?</div>
         <div id="feature-tabs">
-          <button class="feat-tab active" data-feature="resume">Resume Review</button>
-          <button class="feat-tab" data-feature="interview">Mock Interview</button>
-          <button class="feat-tab" data-feature="coverletter">Cover Letter</button>
-          <button class="feat-tab" data-feature="company">Company Research</button>
-          <button class="feat-tab" data-feature="career">Career Path</button>
-          <button class="feat-tab" data-feature="salary">Salary Coach</button>
-          <button class="feat-tab" data-feature="decoder">JD Decoder</button>
-          <button class="feat-tab" data-feature="skills">Skills Gap</button>
-          <button class="feat-tab" data-feature="outreach">Cold Outreach</button>
-          <button class="feat-tab" data-feature="plan">30/60/90 Plan</button>
+          <button class="feat-tab active" data-feature="resume"><span class="feat-tab-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="6" y="3" width="12" height="18" rx="1"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="11.5" x2="15" y2="11.5"/><line x1="9" y1="15" x2="12.5" y2="15"/></svg></span>Resume Review</button>
+          <button class="feat-tab" data-feature="interview"><span class="feat-tab-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="10" r="4.5"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/></svg></span>Mock Interview</button>
+          <button class="feat-tab" data-feature="coverletter"><span class="feat-tab-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 6l9 7 9-7"/></svg></span>Cover Letter</button>
+          <button class="feat-tab" data-feature="company"><span class="feat-tab-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="9" width="9" height="12"/><rect x="13" y="3" width="7" height="18"/><circle cx="17.5" cy="9.5" r="2"/><line x1="19" y1="11" x2="21" y2="13"/></svg></span>Company Research</button>
+          <button class="feat-tab" data-feature="career"><span class="feat-tab-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 19c2 0 3-6 6-6s2 4 5-2 4-5 4-5" stroke-linecap="round"/><circle cx="18" cy="6" r="1.4" fill="currentColor" stroke="none"/></svg></span>Career Path</button>
+          <button class="feat-tab" data-feature="salary"><span class="feat-tab-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="M14 9c-1-1-4-1-4 1s2 1.5 4 2 1 3-1 3-3-0.5-3-1.5"/></svg></span>Salary Coach</button>
+          <button class="feat-tab" data-feature="decoder"><span class="feat-tab-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="3" width="10" height="14" rx="1"/><line x1="8" y1="7" x2="12" y2="7"/><line x1="8" y1="10" x2="12" y2="10"/><circle cx="16" cy="16" r="3.2"/><line x1="18.4" y1="18.4" x2="21" y2="21"/></svg></span>JD Decoder</button>
+          <button class="feat-tab" data-feature="skills"><span class="feat-tab-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M11 8v3l2 1.5"/><path d="M17 5c2 2 2 4 1 6" stroke-linecap="round"/></svg></span>Skills Gap</button>
+          <button class="feat-tab" data-feature="outreach"><span class="feat-tab-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="11" height="9" rx="1"/><path d="M3 7l5.5 4L14 7"/><path d="M16 13h5M18.3 10.7L21 13l-2.7 2.3"/></svg></span>Cold Outreach</button>
+          <button class="feat-tab" data-feature="plan"><span class="feat-tab-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="2"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="9"/></svg></span>30/60/90 Plan</button>
         </div>
       </div>
       <div class="chat-main">
@@ -987,6 +1010,25 @@ function renderPreview() {
   });
 }
 
+var featureIcons = {
+  resume:      '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="6" y="3" width="12" height="18" rx="1"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="11.5" x2="15" y2="11.5"/><path class="fi-check" d="M9 15.5 L11 17.5 L15.5 13"/></svg>',
+  interview:   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="10" r="4.5"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/><circle class="fi-blink" cx="10" cy="9.5" r=".6" fill="currentColor" stroke="none"/><circle class="fi-blink" cx="14" cy="9.5" r=".6" fill="currentColor" stroke="none"/></svg>',
+  coverletter: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="1"/><path class="fi-mail" d="M3 6l9 7 9-7"/></svg>',
+  company:     '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="9" width="9" height="12"/><rect x="13" y="3" width="7" height="18"/><g class="fi-scan"><circle cx="17.5" cy="9.5" r="2"/><line x1="19" y1="11" x2="21" y2="13"/></g></svg>',
+  career:      '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><path class="fi-grow" d="M3 19c2 0 3-6 6-6s2 4 5-2 4-5 4-5" stroke-linecap="round"/><circle cx="18" cy="6" r="1.4" fill="currentColor" stroke="none"/></svg>',
+  salary:      '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" class="fi-coin"><circle cx="12" cy="12" r="8"/><path d="M14 9c-1-1-4-1-4 1s2 1.5 4 2 1 3-1 3-3-0.5-3-1.5"/></svg>',
+  decoder:     '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="3" width="10" height="14" rx="1"/><line x1="8" y1="7" x2="12" y2="7"/><line x1="8" y1="10" x2="12" y2="10"/><g class="fi-search"><circle cx="16" cy="16" r="3.2"/><line x1="18.4" y1="18.4" x2="21" y2="21"/></g></svg>',
+  skills:      '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><circle class="fi-pulse" cx="11" cy="11" r="7"/><path d="M11 8v3l2 1.5"/><path d="M17 5c2 2 2 4 1 6" stroke-linecap="round"/></svg>',
+  outreach:    '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="11" height="9" rx="1"/><path d="M3 7l5.5 4L14 7"/><g class="fi-fly"><path d="M16 13h5M18.3 10.7L21 13l-2.7 2.3"/></g></svg>',
+  plan:        '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="2"/><circle class="fi-ring1" cx="12" cy="12" r="5.5"/><circle class="fi-ring2" cx="12" cy="12" r="9"/></svg>'
+};
+
+function getFeatureIcon(f, size) {
+  var svg = featureIcons[f] || featureIcons.resume;
+  if(size) svg = svg.replace('width="14" height="14"', 'width="' + size + '" height="' + size + '"');
+  return svg;
+}
+
 // ── CHAT ──
 function setFeature(f) {
   if(currentFeature && currentFeature !== f) {
@@ -1019,7 +1061,11 @@ function addMessage(role, text, attachments) {
   div.className = 'msg ' + role;
   var avatar = document.createElement('div');
   avatar.className = 'msg-avatar';
-  avatar.textContent = role === 'ai' ? 'N' : 'You';
+  if(role === 'ai') {
+    avatar.innerHTML = getFeatureIcon(currentFeature, 15);
+  } else {
+    avatar.textContent = 'You';
+  }
   var bubble = document.createElement('div');
   bubble.className = 'msg-bubble';
   if(attachments && attachments.length) {
@@ -1095,7 +1141,25 @@ function showTyping() {
   d.className = 'msg ai'; d.id = 'typing';
   var phrases = ['Analyzing your resume...','Checking ATS compatibility...','Researching the role...','Crafting your response...','Reviewing your profile...','Thinking carefully...'];
   var phrase = phrases[Math.floor(Math.random() * phrases.length)];
-  d.innerHTML = '<div class="msg-avatar">N</div><div class="typing-indicator"><div class="typing-bars"><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div></div><span class="typing-text">' + phrase + '</span></div>';
+  var avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.innerHTML = getFeatureIcon(currentFeature, 15);
+  var indicator = document.createElement('div');
+  indicator.className = 'typing-indicator';
+  var bars = document.createElement('div');
+  bars.className = 'typing-bars';
+  for(var i = 0; i < 5; i++) {
+    var bar = document.createElement('div');
+    bar.className = 'typing-bar';
+    bars.appendChild(bar);
+  }
+  var text = document.createElement('span');
+  text.className = 'typing-text';
+  text.textContent = phrase;
+  indicator.appendChild(bars);
+  indicator.appendChild(text);
+  d.appendChild(avatar);
+  d.appendChild(indicator);
   el.appendChild(d);
   el.scrollTop = el.scrollHeight;
 }
@@ -1157,6 +1221,22 @@ function updateUsageBadge(usage) {
     badge.textContent = usage.remaining === 0 ? 'Limit reached' : usage.remaining + ' left this month';
     badge.style.color = usage.remaining <= 1 ? '#ff6b6b' : 'rgba(255,255,255,.35)';
   }
+}
+
+function showVerifyBanner(msg, success) {
+  var existing = document.getElementById('verify-banner');
+  if(existing) existing.remove();
+  var banner = document.createElement('div');
+  banner.id = 'verify-banner';
+  banner.style.cssText = 'background:' + (success ? '#1a5a3a' : '#7a2d2d') + ';color:#fff;text-align:center;padding:12px 24px;font-size:.85rem;position:fixed;top:0;left:0;right:0;z-index:2000;';
+  banner.textContent = msg;
+  var closeBtn = document.createElement('button');
+  closeBtn.textContent = '\u00d7';
+  closeBtn.style.cssText = 'background:none;border:none;color:#fff;font-size:1.1rem;cursor:pointer;margin-left:14px;vertical-align:middle;';
+  closeBtn.addEventListener('click', function(){ banner.remove(); });
+  banner.appendChild(closeBtn);
+  document.body.insertBefore(banner, document.body.firstChild);
+  setTimeout(function(){ if(banner.parentNode) banner.remove(); }, 8000);
 }
 
 function showUpgradeBanner(msg) {
@@ -1363,6 +1443,28 @@ document.addEventListener('DOMContentLoaded', function() {
   var resetToken = urlParams.get('reset_token');
   if(resetToken) {
     showResetPasswordModal(resetToken);
+  }
+
+  var verifyToken = urlParams.get('verify_token');
+  if(verifyToken) {
+    fetch('/api/auth/verify-email', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({token: verifyToken})
+    })
+    .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,data:d}; }); })
+    .then(function(result) {
+      var url = new URL(window.location.href);
+      url.searchParams.delete('verify_token');
+      window.history.replaceState({}, '', url.toString());
+      if(result.ok) {
+        if(currentUser) currentUser.emailVerified = true;
+        showVerifyBanner('Email verified! Your account is fully set up.', true);
+      } else {
+        showVerifyBanner(result.data.error || 'Could not verify email.', false);
+      }
+    })
+    .catch(function(){});
   }
 
   // Initialize chat and auth
