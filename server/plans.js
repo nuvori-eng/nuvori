@@ -77,6 +77,21 @@ const PLANS = {
 };
 
 /**
+ * Find the cheapest plan that actually unlocks a given feature (unlimited or
+ * has a usage allowance), so upgrade messages point to the right tier instead
+ * of assuming Core is always the next step up from Starter.
+ */
+function cheapestPlanThatUnlocks(feature, currentPlanKey) {
+  const order = ['starter', 'core', 'pro'];
+  const currentIndex = order.indexOf(currentPlanKey);
+  for (let i = currentIndex + 1; i < order.length; i++) {
+    const candidate = PLANS[order[i]];
+    if (candidate.limits[feature] !== 0) return candidate.name;
+  }
+  return 'Pro'; // fallback — Pro unlocks everything
+}
+
+/**
  * Check if a user can use a feature given their plan and current usage.
  * Returns { allowed: bool, reason: string, remaining: number|'unlimited' }
  */
@@ -89,7 +104,7 @@ function checkLimit(user, feature) {
 
   // Feature fully locked on this plan
   if (limit === 0) {
-    const nextPlan = user.plan === 'starter' ? 'Core' : 'Pro';
+    const nextPlan = cheapestPlanThatUnlocks(feature, user.plan);
     return {
       allowed: false,
       remaining: 0,
@@ -102,7 +117,7 @@ function checkLimit(user, feature) {
   const remaining = Math.max(0, limit - used);
 
   if (used >= limit) {
-    const nextPlan = user.plan === 'starter' ? 'Core' : 'Pro';
+    const nextPlan = cheapestPlanThatUnlocks(feature, user.plan);
     return {
       allowed: false,
       remaining: 0,
