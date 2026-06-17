@@ -174,7 +174,7 @@ router.post('/forgot-password', async (req, res) => {
     const resetUrl = `${process.env.FRONTEND_URL}/?reset_token=${resetToken}`;
 
     await resend.emails.send({
-      from: 'Nuvori <onboarding@resend.dev>',
+      from: 'Nuvori <noreply@nuvoriai.com>',
       to: user.email,
       subject: 'Reset your Nuvori password',
       html: `

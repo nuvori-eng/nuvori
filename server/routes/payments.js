@@ -14,13 +14,13 @@ router.post('/checkout', requireAuth, async (req, res) => {
   try {
     const { plan } = req.body;
 
-    if (!['pro', 'teams'].includes(plan)) {
+    if (!['core', 'pro'].includes(plan)) {
       return res.status(400).json({ error: 'Invalid plan.' });
     }
 
     const priceId = plan === 'pro'
       ? process.env.STRIPE_PRICE_PRO
-      : process.env.STRIPE_PRICE_TEAMS;
+      : process.env.STRIPE_PRICE_CORE;
 
     if (!priceId) {
       return res.status(500).json({ error: 'Stripe price ID not configured.' });

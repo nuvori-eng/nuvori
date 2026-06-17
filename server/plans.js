@@ -7,18 +7,18 @@ const PLANS = {
   starter: {
     name:       'Starter',
     price:      0,
-    // -1 means unlimited, any positive number is the monthly cap
+    // -1 means unlimited, any positive number is the monthly cap, 0 means locked
     limits: {
       resume:      1,
-      coverletter: 3,
-      interview:   5,
-      company:     3,
-      career:      2,
-      salary:      2,
-      decoder:     3,
-      skills:      2,
-      outreach:    3,
-      plan:        1,
+      coverletter: 1,
+      interview:   0,
+      company:     0,
+      career:      0,
+      salary:      0,
+      decoder:     1,
+      skills:      0,
+      outreach:    0,
+      plan:        0,
     },
     features: {
       fileUpload:       true,
@@ -28,9 +28,32 @@ const PLANS = {
     }
   },
 
+  core: {
+    name:  'Core',
+    price: 19,
+    limits: {
+      resume:      5,
+      coverletter: -1,
+      interview:   0,
+      company:     -1,
+      career:      0,
+      salary:      0,
+      decoder:     -1,
+      skills:      -1,
+      outreach:    0,
+      plan:        0,
+    },
+    features: {
+      fileUpload:       true,
+      linkedinOptimize: false,
+      atsScoring:       true,
+      teamSeats:        1,
+    }
+  },
+
   pro: {
     name:  'Pro',
-    price: 19,
+    price: 39,
     limits: {
       resume:      -1,
       coverletter: -1,
@@ -48,31 +71,6 @@ const PLANS = {
       linkedinOptimize: true,
       atsScoring:       true,
       teamSeats:        1,
-    }
-  },
-
-  teams: {
-    name:  'Teams',
-    price: 49,
-    limits: {
-      resume:      -1,
-      coverletter: -1,
-      interview:   -1,
-      company:     -1,
-      career:      -1,
-      salary:      -1,
-      decoder:     -1,
-      skills:      -1,
-      outreach:    -1,
-      plan:        -1,
-    },
-    features: {
-      fileUpload:       true,
-      linkedinOptimize: true,
-      atsScoring:       true,
-      teamSeats:        25,
-      adminDashboard:   true,
-      whiteLabel:       true,
     }
   }
 
@@ -89,15 +87,26 @@ function checkLimit(user, feature) {
   // Unlimited
   if (limit === -1) return { allowed: true, remaining: 'unlimited' };
 
+  // Feature fully locked on this plan
+  if (limit === 0) {
+    const nextPlan = user.plan === 'starter' ? 'Core' : 'Pro';
+    return {
+      allowed: false,
+      remaining: 0,
+      reason: `This feature isn't included on the ${plan.name} plan. Upgrade to ${nextPlan} to unlock it.`
+    };
+  }
+
   const usage   = user.usage?.[feature] || { count: 0 };
   const used    = usage.count || 0;
   const remaining = Math.max(0, limit - used);
 
   if (used >= limit) {
+    const nextPlan = user.plan === 'starter' ? 'Core' : 'Pro';
     return {
       allowed: false,
       remaining: 0,
-      reason: `You've used all ${limit} ${feature} session${limit !== 1 ? 's' : ''} on the ${plan.name} plan this month. Upgrade to Pro for unlimited access.`
+      reason: `You've used all ${limit} ${feature} session${limit !== 1 ? 's' : ''} on the ${plan.name} plan this month. Upgrade to ${nextPlan} for more access.`
     };
   }
 

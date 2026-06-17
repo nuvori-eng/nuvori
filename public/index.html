@@ -157,7 +157,7 @@ nav.scrolled .nav-cta{background:var(--ink);color:var(--white);border:none;curso
   border-color:#0f1a14;
   background:var(--white);
 }
-.pricing-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:60px;max-width:700px;margin-left:auto;margin-right:auto;}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px;max-width:1000px;margin-left:auto;margin-right:auto;}
 .price-card{background:var(--white);border:1px solid var(--rule);border-radius:8px;padding:40px 36px;position:relative;transition:transform .2s,box-shadow .2s;}
 .price-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.08);}
 .price-card.popular{background:var(--ink);border-color:var(--ink);}
@@ -378,15 +378,21 @@ footer{background:var(--ink);padding:72px 56px 40px;}
       <div class="price-card">
         <div class="price-tier">Starter</div><div class="price-amount">$0</div><div class="price-per">per month, forever free</div>
         <div class="price-desc">Try Nuvori with no commitment.</div><hr class="price-divider"/>
-        <ul class="price-features"><li>1 resume review per month</li><li>3 cover letters</li><li>5 mock interview sessions</li><li>Company research (3 searches)</li><li>Application tracker (10 jobs)</li></ul>
+        <ul class="price-features"><li>1 resume rewrite per month</li><li>1 cover letter</li><li>Basic JD analysis</li><li>No interview, negotiation, or LinkedIn tools</li></ul>
         <button class="price-btn" onclick="showAuthModal('signup')">Start for Free</button>
       </div>
       <div class="price-card popular">
         <div class="popular-badge">Most Popular</div>
-        <div class="price-tier">Pro</div><div class="price-amount">$19</div><div class="price-per">per month</div>
+        <div class="price-tier">Core</div><div class="price-amount">$19</div><div class="price-per">per month</div>
+        <div class="price-desc">For an active job search.</div><hr class="price-divider"/>
+        <ul class="price-features"><li>5 resume rewrites per month</li><li>ATS keyword analysis</li><li>Unlimited cover letters</li><li>Unlimited JD decoder</li><li>Unlimited skills gap analyzer</li><li>Unlimited company research</li></ul>
+        <button class="price-btn" onclick="startCheckout('core')">Get Core — $19/mo</button>
+      </div>
+      <div class="price-card">
+        <div class="price-tier">Pro</div><div class="price-amount">$39</div><div class="price-per">per month</div>
         <div class="price-desc">Everything you need to land the role.</div><hr class="price-divider"/>
-        <ul class="price-features"><li>Unlimited resume rewrites</li><li>Unlimited cover letters</li><li>Unlimited mock interviews</li><li>Salary negotiation coach</li><li>Skills gap analyzer</li><li>LinkedIn optimizer</li><li>Unlimited company research</li><li>Career path suggester</li><li>Cold outreach writer</li></ul>
-        <button class="price-btn" onclick="startCheckout('pro')">Get Pro — $19/mo</button>
+        <ul class="price-features"><li>Unlimited resume rewrites</li><li>Mock interview coach with STAR feedback</li><li>Salary negotiation coach</li><li>LinkedIn optimizer</li><li>Cold outreach writer</li><li>Career path suggester</li><li>30/60/90 day plan builder</li></ul>
+        <button class="price-btn" onclick="startCheckout('pro')">Get Pro — $39/mo</button>
       </div>
         </div>
 </section>
@@ -803,13 +809,21 @@ function showAccountModal() {
   modal.id = 'account-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;';
   var planLabel = currentUser.plan.charAt(0).toUpperCase() + currentUser.plan.slice(1);
-  var planColor = currentUser.plan === 'pro' ? '#2d6a4f' : currentUser.plan === 'teams' ? '#1a5a8f' : '#666';
+  var planColor = currentUser.plan === 'pro' ? '#2d6a4f' : currentUser.plan === 'core' ? '#1a5a8f' : '#666';
   var upgradeSection;
   if(currentUser.plan === 'starter') {
     upgradeSection = '<div style="background:#e8f4ef;border:1px solid #b8dfc9;border-radius:8px;padding:16px;margin-bottom:16px;">' +
+      '<div style="font-size:.875rem;font-weight:600;color:#1a5a3a;margin-bottom:6px;">Upgrade your plan</div>' +
+      '<div style="font-size:.82rem;color:#2d6a4f;margin-bottom:12px;">Get more resume rewrites and unlock ATS analysis, cover letters, and more.</div>' +
+      '<button id="upgrade-core-btn" style="background:#2d6a4f;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;margin-bottom:8px;">Upgrade to Core — $19/mo</button>' +
+      '<button id="upgrade-pro-btn" style="background:transparent;color:#2d6a4f;border:1px solid #2d6a4f;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;">Upgrade to Pro — $39/mo</button>' +
+      '</div>';
+  } else if(currentUser.plan === 'core') {
+    upgradeSection = '<div style="background:#e8f4ef;border:1px solid #b8dfc9;border-radius:8px;padding:16px;margin-bottom:16px;">' +
       '<div style="font-size:.875rem;font-weight:600;color:#1a5a3a;margin-bottom:6px;">Upgrade to Pro</div>' +
-      '<div style="font-size:.82rem;color:#2d6a4f;margin-bottom:12px;">Get unlimited access to all features for $19/month.</div>' +
-      '<button id="upgrade-pro-btn" style="background:#2d6a4f;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;">Upgrade to Pro — $19/mo</button>' +
+      '<div style="font-size:.82rem;color:#2d6a4f;margin-bottom:12px;">Unlock mock interviews, salary negotiation, LinkedIn optimizer, and unlimited everything.</div>' +
+      '<button id="upgrade-pro-btn" style="background:#2d6a4f;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;margin-bottom:10px;">Upgrade to Pro — $39/mo</button>' +
+      '<button id="billing-portal-btn" style="background:transparent;color:#5a5a52;border:1px solid #e2e2da;padding:9px 20px;border-radius:6px;font-size:.8rem;font-weight:500;cursor:pointer;width:100%;">Manage Billing</button>' +
       '</div>';
   } else {
     upgradeSection = '<div style="background:#f8f7f4;border-radius:8px;padding:16px;margin-bottom:16px;">' +
@@ -859,6 +873,8 @@ function showAccountModal() {
   document.body.appendChild(modal);
 
   // Wire up buttons inside upgradeSection
+  var upgradeCoreBtn = document.getElementById('upgrade-core-btn');
+  if(upgradeCoreBtn) upgradeCoreBtn.addEventListener('click', function(){ modal.remove(); startCheckout('core'); });
   var upgradeProBtn = document.getElementById('upgrade-pro-btn');
   if(upgradeProBtn) upgradeProBtn.addEventListener('click', function(){ modal.remove(); startCheckout('pro'); });
   var billingBtn = document.getElementById('billing-portal-btn');
