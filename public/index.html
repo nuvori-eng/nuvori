@@ -456,6 +456,7 @@ document.querySelectorAll('a[href^="#"]').forEach(function(a){
   a.addEventListener('click',function(e){
     var target=a.getAttribute('href');
     if(target==="#")return;
+    if(a.id==='nav-cta-btn')return;
     e.preventDefault();
     var el=document.querySelector(target);
     if(el) el.scrollIntoView({behavior:'smooth'});
