@@ -1188,12 +1188,29 @@ function sendMessage() {
   if(text) userContent.push({type:'text',text:text});
   else userContent.push({type:'text',text:'Please analyze the attached file in the context of ' + currentFeature + '.'});
   conversationHistory.push({role:'user',content:userContent});
+
+  // Strip raw file data from older turns before sending, so attachments aren't
+  // re-uploaded on every single message (causes large/slow requests over time).
+  var historyForRequest = conversationHistory.map(function(m, idx) {
+    if(idx === conversationHistory.length - 1) return m;
+    if(Array.isArray(m.content)) {
+      var stripped = m.content.map(function(block) {
+        if(block.type === 'image' || block.type === 'document') {
+          return {type:'text', text:'[attached file already reviewed earlier in this conversation]'};
+        }
+        return block;
+      });
+      return {role:m.role, content:stripped};
+    }
+    return m;
+  });
+
   showTyping();
   fetch('/api/ai/chat', {
     method: 'POST',
     headers: {'Content-Type':'application/json','Authorization':'Bearer ' + authToken},
     credentials: 'include',
-    body: JSON.stringify({feature: currentFeature, messages: conversationHistory})
+    body: JSON.stringify({feature: currentFeature, messages: historyForRequest})
   })
   .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,status:r.status,data:d}; }); })
   .then(function(result) {
@@ -1273,7 +1290,19 @@ function generateResumePDF() {
   if(!conversationHistory || conversationHistory.length < 2) { alert('Please complete a resume analysis first.'); return; }
   var btn = document.querySelector('#pdf-btn-wrap button');
   if(btn) { btn.textContent = 'Generating...'; btn.disabled = true; }
-  var messages = conversationHistory.concat([{role:'user',content:[{type:'text',text:'Now write the complete rewritten resume in clean plain text. Include all sections: Summary, Work Experience, Education, Skills, Certifications. Use the rewritten bullets from your analysis. Format with section headers in ALL CAPS. Output only the resume, no commentary.'}]}]);
+  var strippedHistory = conversationHistory.map(function(m) {
+    if(Array.isArray(m.content)) {
+      var stripped = m.content.map(function(block) {
+        if(block.type === 'image' || block.type === 'document') {
+          return {type:'text', text:'[attached file already reviewed earlier in this conversation]'};
+        }
+        return block;
+      });
+      return {role:m.role, content:stripped};
+    }
+    return m;
+  });
+  var messages = strippedHistory.concat([{role:'user',content:[{type:'text',text:'Now write the complete rewritten resume in clean plain text. Include all sections: Summary, Work Experience, Education, Skills, Certifications. Use the rewritten bullets from your analysis. Format with section headers in ALL CAPS. Output only the resume, no commentary.'}]}]);
   fetch('/api/ai/chat', {
     method: 'POST',
     headers: {'Content-Type':'application/json','Authorization':'Bearer ' + authToken},
