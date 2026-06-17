@@ -46,6 +46,8 @@ function createUser({ id, email, passwordHash = null, plan = 'starter', stripeCu
     plan,
     stripeCustomerId,
     stripeSubscriptionId: null,
+    resetToken: null,
+    resetTokenExpires: null,
     createdAt: new Date().toISOString(),
     usage: {
       resume:      { count: 0, resetAt: nextMonthISO() },
@@ -63,6 +65,11 @@ function createUser({ id, email, passwordHash = null, plan = 'starter', stripeCu
   db.users[email.toLowerCase()] = user;
   save(db);
   return user;
+}
+
+function getUserByResetToken(token) {
+  const db = load();
+  return Object.values(db.users).find(u => u.resetToken === token) || null;
 }
 
 function updateUser(email, updates) {
@@ -111,6 +118,7 @@ function nextMonthISO() {
 module.exports = {
   getUser,
   getUserById,
+  getUserByResetToken,
   createUser,
   updateUser,
   updateUserByStripeCustomerId,
