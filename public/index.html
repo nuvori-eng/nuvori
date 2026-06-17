@@ -6,6 +6,7 @@
 <title>Nuvori — Your New Beginning Starts Here</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -427,6 +428,12 @@ footer{background:var(--ink);padding:72px 56px 40px;}
       </button>
     </div>
     <button class="modal-submit" id="auth-submit" onclick="submitAuth()">Sign in</button>
+    <div style="display:flex;align-items:center;gap:10px;margin:6px 0;">
+      <div style="flex:1;height:1px;background:var(--rule);"></div>
+      <span style="font-size:.72rem;color:var(--soft);">OR</span>
+      <div style="flex:1;height:1px;background:var(--rule);"></div>
+    </div>
+    <div id="google-signin-btn" style="display:flex;justify-content:center;"></div>
     <p class="modal-note">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
   </div>
 </div>
@@ -484,6 +491,7 @@ function showAuthModal(mode) {
   var modal = document.getElementById('auth-modal');
   if(modal) modal.style.display = 'flex';
   switchTab(mode);
+  initGoogleSignIn();
 }
 
 function closeAuthIfLoggedIn() {
@@ -571,6 +579,67 @@ function initAuth() {
       else { authToken = null; localStorage.removeItem('nuvori_token'); }
     })
     .catch(function() { authToken = null; localStorage.removeItem('nuvori_token'); });
+}
+
+// ── GOOGLE SIGN-IN ──
+var GOOGLE_CLIENT_ID = '709740642262-h32p4d97j3k0lqp2n6nrnh6ue3v4ssok.apps.googleusercontent.com';
+var googleInitialized = false;
+
+function initGoogleSignIn() {
+  if(googleInitialized) {
+    renderGoogleButton();
+    return;
+  }
+  if(typeof google === 'undefined' || !google.accounts) {
+    // Google script not loaded yet, try again shortly
+    setTimeout(initGoogleSignIn, 300);
+    return;
+  }
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleCredential
+  });
+  googleInitialized = true;
+  renderGoogleButton();
+}
+
+function renderGoogleButton() {
+  var btnContainer = document.getElementById('google-signin-btn');
+  if(!btnContainer) return;
+  btnContainer.innerHTML = '';
+  google.accounts.id.renderButton(btnContainer, {
+    type: 'standard',
+    theme: 'outline',
+    size: 'large',
+    text: 'continue_with',
+    shape: 'rectangular',
+    width: 320
+  });
+}
+
+function handleGoogleCredential(response) {
+  fetch('/api/auth/google', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    credentials: 'include',
+    body: JSON.stringify({credential: response.credential})
+  })
+  .then(function(r){ return r.json().then(function(d){ return {ok: r.ok, data: d}; }); })
+  .then(function(result) {
+    if(!result.ok) {
+      showAuthError(result.data.error || 'Could not sign in with Google.');
+      return;
+    }
+    authToken = result.data.token;
+    currentUser = result.data.user;
+    localStorage.setItem('nuvori_token', authToken);
+    var modal = document.getElementById('auth-modal');
+    if(modal) modal.style.display = 'none';
+    updateAuthUI();
+  })
+  .catch(function() {
+    showAuthError('Could not sign in with Google. Please try again.');
+  });
 }
 
 // ── ACCOUNT MODAL ──
