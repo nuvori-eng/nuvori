@@ -440,690 +440,605 @@ footer{background:var(--ink);padding:72px 56px 40px;}
   </div>
 </div>
 <script>
+// ── ALL GLOBALS ──
+var authToken = localStorage.getItem('nuvori_token') || null;
+var currentUser = null;
+var authMode = 'login';
+var currentFeature = 'resume';
+var conversationHistory = [];
+var isLoading = false;
+var pendingFiles = [];
+var featureHistories = {};
+var featureMessages = {};
+
+var featureWelcomes = {
+  resume: "Hey, I'm Nuvori! I'm here to make your resume impossible to ignore. Paste your current resume and the job description you're targeting, and I'll rewrite it to beat ATS filters and catch a recruiter's eye.",
+  interview: "Hey, I'm Nuvori! Think of me as your personal interview coach. Tell me what role you're interviewing for and I'll put you through the real questions — then give you honest, specific feedback on every answer.",
+  coverletter: "Hey, I'm Nuvori! Cover letters are my thing. Tell me the role, the company, and what genuinely excites you about this opportunity — and I'll write you something that actually gets read.",
+  company: "Hey, I'm Nuvori! Walking into an interview blind is never a good look. Tell me which company you're researching and I'll brief you on everything — culture, recent news, who's who, and what questions they're likely to ask.",
+  career: "Hey, I'm Nuvori! Not sure where your career is headed? Let's figure it out together. Tell me where you are right now — your role, experience, and what you're hoping for — and I'll map out what's realistically possible.",
+  salary: "Hey, I'm Nuvori! Most people leave money on the table because they don't practice negotiating. I can roleplay as a hiring manager making you an offer so you can practice pushing back — or help you with a real offer you've received.",
+  decoder: "Hey, I'm Nuvori! Job descriptions are full of jargon that hides what they actually want. Paste one below and I'll break it down — the real requirements, the red flags, and exactly how to position yourself to stand out.",
+  skills: "Hey, I'm Nuvori! Let's be honest about where you stand. Share your current skills and the role you're targeting, and I'll tell you exactly what's missing and how to close the gap as fast as possible.",
+  outreach: "Hey, I'm Nuvori! Cold outreach is awkward — until you know what to say. Tell me who you're trying to reach and why, and I'll write you a message that feels genuine and actually gets a reply.",
+  plan: "Hey, I'm Nuvori! Landing the job is just the beginning. Tell me about your new role and company, and I'll build you a 30/60/90 day plan so you show up ready to make a real impression from week one."
+};
+
 // ── PARALLAX ──
 function handleParallax(){
-  var bg=document.getElementById('hero-parallax');
-  if(bg) bg.style.transform='translateY('+window.scrollY*.45+'px)';
+  var bg = document.getElementById('hero-parallax');
+  if(bg) bg.style.transform = 'translateY(' + (window.scrollY * 0.45) + 'px)';
 }
-window.addEventListener('scroll',handleParallax,{passive:true});
+window.addEventListener('scroll', handleParallax, {passive:true});
 
-// ── NAV ──
-var nav=document.getElementById('main-nav');
-window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>60);},{passive:true});
+// ── NAV SCROLL ──
+window.addEventListener('scroll', function(){
+  var nav = document.getElementById('main-nav');
+  if(nav) nav.classList.toggle('scrolled', window.scrollY > 60);
+}, {passive:true});
 
-// ── SMOOTH SCROLL ──
-document.querySelectorAll('a[href^="#"]').forEach(function(a){
-  if(a.id==='nav-cta-btn')return;
-  a.addEventListener('click',function(e){
-    var target=a.getAttribute('href');
-    if(target==="#")return;
-    e.preventDefault();
-    var el=document.querySelector(target);
-    if(el) el.scrollIntoView({behavior:'smooth'});
+// ── AUTH MODAL ──
+function showAuthModal(mode) {
+  mode = mode || 'login';
+  var modal = document.getElementById('auth-modal');
+  if(modal) modal.style.display = 'flex';
+  switchTab(mode);
+}
+
+function closeAuthIfLoggedIn() {
+  if(currentUser) {
+    var modal = document.getElementById('auth-modal');
+    if(modal) modal.style.display = 'none';
+  }
+}
+
+function switchTab(mode) {
+  authMode = mode;
+  var loginTab = document.getElementById('tab-login');
+  var signupTab = document.getElementById('tab-signup');
+  var submitBtn = document.getElementById('auth-submit');
+  if(loginTab) loginTab.classList.toggle('active', mode === 'login');
+  if(signupTab) signupTab.classList.toggle('active', mode === 'signup');
+  if(submitBtn) submitBtn.textContent = mode === 'login' ? 'Sign in' : 'Create account';
+  var errEl = document.getElementById('auth-error');
+  if(errEl) errEl.style.display = 'none';
+}
+
+function submitAuth() {
+  var email = document.getElementById('auth-email').value.trim();
+  var password = document.getElementById('auth-password').value;
+  var btn = document.getElementById('auth-submit');
+  var errEl = document.getElementById('auth-error');
+  if(!email || !password) { showAuthError('Please enter your email and password.'); return; }
+  btn.disabled = true;
+  btn.textContent = 'Please wait...';
+  fetch('/api/auth/' + authMode, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    credentials: 'include',
+    body: JSON.stringify({email: email, password: password})
+  })
+  .then(function(r){ return r.json().then(function(d){ return {ok: r.ok, data: d}; }); })
+  .then(function(result) {
+    if(!result.ok) {
+      showAuthError(result.data.error || 'Something went wrong.');
+      btn.disabled = false;
+      btn.textContent = authMode === 'login' ? 'Sign in' : 'Create account';
+      return;
+    }
+    authToken = result.data.token;
+    currentUser = result.data.user;
+    localStorage.setItem('nuvori_token', authToken);
+    var modal = document.getElementById('auth-modal');
+    if(modal) modal.style.display = 'none';
+    updateAuthUI();
+  })
+  .catch(function() {
+    showAuthError('Connection error. Please try again.');
+    btn.disabled = false;
+    btn.textContent = authMode === 'login' ? 'Sign in' : 'Create account';
   });
-});
+}
 
-// ── FEATURE SYSTEM PROMPTS ──
-var featurePrompts={
-  resume:'You are Nuvori, an expert AI Resume Coach and ATS optimization specialist. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis in your responses. Format responses with clear section headers using markdown ## and ###, bullet points, and clean plain text.\n\nWhen a user shares their resume and job description, follow this process:\n\n## ATS Keyword Analysis\nExtract the top 12-15 exact keywords and phrases from the JD. List them clearly.\n\n## Match Score\nGive an honest 0-100% score. Explain what is driving the score.\n\n## Missing Keywords\nList every important JD keyword absent from the resume, ranked by importance.\n\n## Rewritten Bullet Points\nRewrite experience bullets to mirror exact JD phrases, start with strong action verbs, include measurable results, and embed missing keywords naturally.\n\n## ATS Formatting Audit\nFlag: tables or multi-column layouts, images or graphics, non-standard headers, inconsistent dates, acronyms without expansion, headers/footers, text boxes.\n\n## Job Title Optimization\nAdvise on adjusting the job title to match the JD target title.\n\n## Keyword Density Check\nConfirm top 5 JD keywords each appear at least once.\n\nAfter the analysis, always end with: "Would you like me to rebuild your entire resume from scratch with all of these improvements and export it as a PDF?"',
-  interview:'You are Nuvori, an expert AI Mock Interview Coach. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Ask what role the user is interviewing for, then ask one question at a time and give detailed STAR method feedback after each answer.',
-  coverletter:'You are Nuvori, an expert AI Cover Letter Writer. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Ask for target role, company, key experience, and what excites them. Write a compelling, tailored cover letter under 400 words.',
-  company:'You are Nuvori, an expert AI Company Research Analyst. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. When given a company name, provide a thorough briefing with clear sections: Company Overview, Recent News, Culture and Values, Interview Process, Likely Interview Questions, Key People, Green and Red Flags, How to Stand Out.',
-  career:'You are Nuvori, an expert AI Career Path Advisor. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Ask about current role, experience, skills, goals. Provide: immediate next role, 2-3 year path, 5-year vision, skills to prioritize, certifications, salary trajectory, alternative paths.',
-  salary:'You are Nuvori, an expert AI Salary Negotiation Coach. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Roleplay as a hiring manager or help with a real offer. Teach: anchoring high, silence as a tool, bundling compensation, getting it in writing.',
-  decoder:'You are Nuvori, an expert AI Job Description Decoder. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Analyze JDs with clear sections: What They Actually Want, Must-Have vs Nice-to-Have, Keyword Density, Culture Signals, Red Flags, Green Flags, Compensation Reality, How to Position Yourself.',
-  skills:'You are Nuvori, an expert AI Skills Gap Analyzer. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Ask for current skills and target role. Provide: Current Strengths, Critical Gaps, Nice-to-Have Gaps, Priority Action Plan, Specific Resources, Realistic Timeline, Shortcut Opportunities.',
-  outreach:'You are Nuvori, an expert AI Networking Coach. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Help write outreach messages under 150 words that sound human and get replies. Provide 2-3 versions.',
-  plan:'You are Nuvori, an expert AI Onboarding Coach. Your name is Nuvori. Never refer to yourself as Ivy. Do not use emojis. Build a 30/60/90 day plan with clear sections: Days 1-30 Listen and Learn, Days 31-60 Contribute, Days 61-90 Lead.'
-};
+function showAuthError(msg) {
+  var el = document.getElementById('auth-error');
+  if(el) { el.textContent = msg; el.style.display = 'block'; }
+}
 
-var featureWelcomes={
-  resume:"Hey, I'm Nuvori! I'm here to make your resume impossible to ignore. Paste your current resume and the job description you're targeting, and I'll rewrite it to beat ATS filters and catch a recruiter's eye.",
-  interview:"Hey, I'm Nuvori! Think of me as your personal interview coach. Tell me what role you're interviewing for and I'll put you through the real questions — then give you honest, specific feedback on every answer.",
-  coverletter:"Hey, I'm Nuvori! Cover letters are my thing. Tell me the role, the company, and what genuinely excites you about this opportunity — and I'll write you something that actually gets read.",
-  company:"Hey, I'm Nuvori! Walking into an interview blind is never a good look. Tell me which company you're researching and I'll brief you on everything — culture, recent news, who's who, and what questions they're likely to ask.",
-  career:"Hey, I'm Nuvori! Not sure where your career is headed? Let's figure it out together. Tell me where you are right now — your role, experience, and what you're hoping for — and I'll map out what's realistically possible.",
-  salary:"Hey, I'm Nuvori! Most people leave money on the table because they don't practice negotiating. I can roleplay as a hiring manager making you an offer so you can practice pushing back — or help you with a real offer you've received.",
-  decoder:"Hey, I'm Nuvori! Job descriptions are full of jargon that hides what they actually want. Paste one below and I'll break it down — the real requirements, the red flags, and exactly how to position yourself to stand out.",
-  skills:"Hey, I'm Nuvori! Let's be honest about where you stand. Share your current skills and the role you're targeting, and I'll tell you exactly what's missing and how to close the gap as fast as possible.",
-  outreach:"Hey, I'm Nuvori! Cold outreach is awkward — until you know what to say. Tell me who you're trying to reach and why, and I'll write you a message that feels genuine and actually gets a reply.",
-  plan:"Hey, I'm Nuvori! Landing the job is just the beginning. Tell me about your new role and company, and I'll build you a 30/60/90 day plan so you show up ready to make a real impression from week one."
-};
+function updateAuthUI() {
+  var btn = document.getElementById('nav-cta-btn');
+  if(btn && currentUser) {
+    btn.textContent = 'My Account';
+  }
+  var badge = document.getElementById('plan-badge');
+  if(badge && currentUser) {
+    badge.textContent = currentUser.plan.charAt(0).toUpperCase() + currentUser.plan.slice(1) + ' Plan';
+    badge.style.display = 'inline-block';
+  }
+  var heroBtn = document.getElementById('hero-primary-btn');
+  if(heroBtn && currentUser) {
+    heroBtn.textContent = 'Open Nuvori AI';
+  }
+}
 
-// ── AUTH ──
-var authToken=localStorage.getItem('nuvori_token')||null;
-var currentUser=null;
-var authMode='login';
-
-function initAuth(){
-  // Always update nav immediately based on token presence
-  updateNavState();
-  if(!authToken)return;
-  fetch('/api/auth/me',{headers:{'Authorization':'Bearer '+authToken}})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(d.user){currentUser=d.user;updateAuthUI();}
-      else{authToken=null;localStorage.removeItem('nuvori_token');updateNavState();}
+function initAuth() {
+  if(!authToken) return;
+  fetch('/api/auth/me', {headers: {'Authorization': 'Bearer ' + authToken}})
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+      if(d.user) { currentUser = d.user; updateAuthUI(); }
+      else { authToken = null; localStorage.removeItem('nuvori_token'); }
     })
-    .catch(function(){authToken=null;localStorage.removeItem('nuvori_token');updateNavState();});
+    .catch(function() { authToken = null; localStorage.removeItem('nuvori_token'); });
 }
 
-function updateNavState(){
-  var btn=document.getElementById('nav-cta-btn');
-  if(!btn)return;
-  if(!authToken){
-    btn.textContent='Get started free';
-    btn.href='#';
-  }
-}
-
-function updateAuthUI(){
-  var btn=document.getElementById('nav-cta-btn');
-  if(currentUser&&btn){
-    // Always show My Account when logged in
-    btn.textContent='My Account';
-    btn.href='#';
-    btn.onclick=function(e){e.preventDefault();showAccountModal();};
-    btn.style.background='';
-  }
-  var badge=document.getElementById('plan-badge');
-  if(badge&&currentUser){
-    badge.textContent=currentUser.plan.charAt(0).toUpperCase()+currentUser.plan.slice(1)+' Plan';
-    badge.style.display='inline-block';
-  }
-  // Also update the hero button
-  var heroBtn=document.querySelector('.btn-hero-primary');
-  if(heroBtn&&currentUser){
-    heroBtn.textContent='Open Nuvori AI';
-    heroBtn.onclick=function(){document.getElementById('chat').scrollIntoView({behavior:'smooth'});};
-  }
-}
-
-function showAccountModal(){
-  var existing=document.getElementById('account-modal');
-  if(existing){existing.style.display='flex';return;}
-  var modal=document.createElement('div');
-  modal.id='account-modal';
-  modal.style.cssText='position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;';
-  var planLabel=currentUser.plan.charAt(0).toUpperCase()+currentUser.plan.slice(1);
-  var planColor=currentUser.plan==='pro'?'#2d6a4f':currentUser.plan==='teams'?'#1a5a8f':'#666';
-  modal.innerHTML=
-    '<div onclick="document.getElementById('account-modal').style.display='none'" style="position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);"></div>'+
-    '<div style="position:relative;z-index:1;background:#fff;border-radius:10px;padding:40px;width:100%;max-width:460px;box-shadow:0 32px 80px rgba(0,0,0,.2);margin:24px;">'+
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">'+
-        '<div style="font-family:var(--font-serif);font-size:1.4rem;font-weight:700;color:var(--ink);">My Account</div>'+
-        '<button onclick="document.getElementById('account-modal').style.display='none'" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#9a9a8e;">&times;</button>'+
-      '</div>'+
-      '<div style="background:var(--off);border-radius:8px;padding:20px;margin-bottom:20px;">'+
-        '<div style="font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:12px;">Account Details</div>'+
-        '<div style="display:flex;flex-direction:column;gap:10px;">'+
-          '<div style="display:flex;justify-content:space-between;align-items:center;font-size:.875rem;">'+
-            '<span style="color:var(--mid);">Email</span>'+
-            '<span style="color:var(--ink);font-weight:500;">'+currentUser.email+'</span>'+
-          '</div>'+
-          '<div style="border-top:1px solid var(--rule);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:.875rem;">'+
-            '<span style="color:var(--mid);">Current Plan</span>'+
-            '<span style="background:'+planColor+';color:#fff;padding:3px 12px;border-radius:100px;font-size:.75rem;font-weight:600;">'+planLabel+'</span>'+
-          '</div>'+
-          '<div style="border-top:1px solid var(--rule);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:.875rem;">'+
-            '<span style="color:var(--mid);">Member since</span>'+
-            '<span style="color:var(--ink);">'+new Date(currentUser.createdAt).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+'</span>'+
-          '</div>'+
-        '</div>'+
-      '</div>'+
-      (currentUser.plan==='starter'?
-        '<div style="background:var(--green-light);border:1px solid #b8dfc9;border-radius:8px;padding:16px;margin-bottom:20px;">'+
-          '<div style="font-size:.875rem;font-weight:600;color:#1a5a3a;margin-bottom:6px;">Upgrade to Pro</div>'+
-          '<div style="font-size:.82rem;color:#2d6a4f;margin-bottom:12px;">Get unlimited access to all features for $19/month.</div>'+
-          '<button onclick="document.getElementById('account-modal').style.display='none';startCheckout('pro')" style="background:#2d6a4f;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;">Upgrade to Pro — $19/mo</button>'+
-        '</div>':
-        '<div style="background:var(--off);border-radius:8px;padding:16px;margin-bottom:20px;">'+
-          '<div style="font-size:.875rem;font-weight:600;color:var(--ink);margin-bottom:6px;">Manage Subscription</div>'+
-          '<div style="font-size:.82rem;color:var(--mid);margin-bottom:12px;">Update billing, cancel, or change your plan.</div>'+
-          '<button onclick="openBillingPortal()" style="background:var(--ink);color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;">Manage Billing</button>'+
-        '</div>')+
-      '<button onclick="logOut()" style="width:100%;padding:10px;border-radius:6px;font-size:.82rem;font-weight:500;cursor:pointer;border:1px solid var(--rule);background:transparent;color:var(--mid);">Sign out</button>'+
+// ── ACCOUNT MODAL ──
+function showAccountModal() {
+  var existing = document.getElementById('account-modal');
+  if(existing) { existing.style.display = 'flex'; return; }
+  var modal = document.createElement('div');
+  modal.id = 'account-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;';
+  var planLabel = currentUser.plan.charAt(0).toUpperCase() + currentUser.plan.slice(1);
+  var planColor = currentUser.plan === 'pro' ? '#2d6a4f' : currentUser.plan === 'teams' ? '#1a5a8f' : '#666';
+  var upgradeSection = currentUser.plan === 'starter'
+    ? '<div style="background:#e8f4ef;border:1px solid #b8dfc9;border-radius:8px;padding:16px;margin-bottom:16px;"><div style="font-size:.875rem;font-weight:600;color:#1a5a3a;margin-bottom:6px;">Upgrade to Pro</div><div style="font-size:.82rem;color:#2d6a4f;margin-bottom:12px;">Get unlimited access to all features for $19/month.</div><button onclick="document.getElementById('account-modal').style.display='none';startCheckout('pro')" style="background:#2d6a4f;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;">Upgrade to Pro — $19/mo</button></div>'
+    : '<div style="background:#f8f7f4;border-radius:8px;padding:16px;margin-bottom:16px;"><div style="font-size:.875rem;font-weight:600;color:#0f0f0d;margin-bottom:6px;">Manage Subscription</div><button onclick="openBillingPortal()" style="background:#0f1a14;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;">Manage Billing</button></div>';
+  modal.innerHTML =
+    '<div onclick="document.getElementById('account-modal').style.display='none'" style="position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);"></div>' +
+    '<div style="position:relative;z-index:1;background:#fff;border-radius:10px;padding:36px;width:100%;max-width:440px;box-shadow:0 32px 80px rgba(0,0,0,.2);margin:24px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">' +
+        '<div style="font-family:Georgia,serif;font-size:1.4rem;font-weight:700;">My Account</div>' +
+        '<button onclick="document.getElementById('account-modal').style.display='none'" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#9a9a8e;">&times;</button>' +
+      '</div>' +
+      '<div style="background:#f8f7f4;border-radius:8px;padding:18px;margin-bottom:16px;">' +
+        '<div style="font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#9a9a8e;margin-bottom:12px;">Account Details</div>' +
+        '<div style="font-size:.875rem;display:flex;justify-content:space-between;margin-bottom:10px;"><span style="color:#5a5a52;">Email</span><span style="font-weight:500;">' + currentUser.email + '</span></div>' +
+        '<div style="border-top:1px solid #e2e2da;padding-top:10px;font-size:.875rem;display:flex;justify-content:space-between;margin-bottom:10px;"><span style="color:#5a5a52;">Plan</span><span style="background:' + planColor + ';color:#fff;padding:2px 10px;border-radius:100px;font-size:.75rem;font-weight:600;">' + planLabel + '</span></div>' +
+        '<div style="border-top:1px solid #e2e2da;padding-top:10px;font-size:.875rem;display:flex;justify-content:space-between;"><span style="color:#5a5a52;">Member since</span><span>' + new Date(currentUser.createdAt).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) + '</span></div>' +
+      '</div>' +
+      upgradeSection +
+      '<button onclick="logOut()" style="width:100%;padding:10px;border-radius:6px;font-size:.82rem;font-weight:500;cursor:pointer;border:1px solid #e2e2da;background:transparent;color:#9a9a8e;">Sign out</button>' +
     '</div>';
   document.body.appendChild(modal);
 }
 
-function logOut(){
-  authToken=null;currentUser=null;
+function logOut() {
+  authToken = null; currentUser = null;
   localStorage.removeItem('nuvori_token');
-  var modal=document.getElementById('account-modal');
-  if(modal)modal.style.display='none';
-  var btn=document.getElementById('nav-cta-btn');
-  if(btn){btn.textContent='Get started free';}
-  var badge=document.getElementById('plan-badge');
-  if(badge)badge.style.display='none';
-  // Reset hero button
-  var heroBtn=document.querySelector('.btn-hero-primary');
-  if(heroBtn){heroBtn.textContent="Try Nuvori AI — it's free";}
-  featureHistories={};featureMessages={};
-  conversationHistory=[];
-  var msgs=document.getElementById('chat-messages');
-  if(msgs){msgs.innerHTML='';}
-  addMessage('ai',featureWelcomes[currentFeature]);
+  var modal = document.getElementById('account-modal');
+  if(modal) modal.remove();
+  var btn = document.getElementById('nav-cta-btn');
+  if(btn) btn.textContent = 'Get started free';
+  var badge = document.getElementById('plan-badge');
+  if(badge) badge.style.display = 'none';
+  var heroBtn = document.getElementById('hero-primary-btn');
+  if(heroBtn) heroBtn.textContent = "Try Nuvori AI — it's free";
+  featureHistories = {}; featureMessages = {};
+  conversationHistory = [];
+  var msgs = document.getElementById('chat-messages');
+  if(msgs) msgs.innerHTML = '';
+  addMessage('ai', featureWelcomes[currentFeature]);
 }
 
-function openBillingPortal(){
-  fetch('/api/payments/portal',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
-    credentials:'include'
+function openBillingPortal() {
+  fetch('/api/payments/portal', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken},
+    credentials: 'include'
   })
-  .then(function(r){return r.json();})
-  .then(function(d){if(d.url)window.location.href=d.url;})
-  .catch(function(){alert('Could not open billing portal. Please try again.');});
+  .then(function(r){ return r.json(); })
+  .then(function(d){ if(d.url) window.location.href = d.url; })
+  .catch(function(){ alert('Could not open billing portal.'); });
 }
 
-function showAuthModal(mode){
-  mode=mode||'login';
-  document.getElementById('auth-modal').style.display='flex';
-  switchTab(mode);
-}
-
-function closeAuthIfLoggedIn(){
-  if(currentUser)document.getElementById('auth-modal').style.display='none';
-}
-
-function switchTab(mode){
-  authMode=mode;
-  document.getElementById('tab-login').classList.toggle('active',mode==='login');
-  document.getElementById('tab-signup').classList.toggle('active',mode==='signup');
-  document.getElementById('auth-submit').textContent=mode==='login'?'Sign in':'Create account';
-  document.getElementById('auth-error').style.display='none';
-}
-
-function submitAuth(){
-  var email=document.getElementById('auth-email').value.trim();
-  var password=document.getElementById('auth-password').value;
-  var btn=document.getElementById('auth-submit');
-  if(!email||!password){showAuthError('Please enter your email and password.');return;}
-  btn.disabled=true;btn.textContent='Please wait...';
-  fetch('/api/auth/'+authMode,{
-    method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',
-    body:JSON.stringify({email:email,password:password})
-  })
-  .then(function(r){return r.json().then(function(d){return{ok:r.ok,data:d};});})
-  .then(function(result){
-    if(!result.ok){
-      showAuthError(result.data.error||'Something went wrong.');
-      btn.disabled=false;
-      btn.textContent=authMode==='login'?'Sign in':'Create account';
-      return;
-    }
-    authToken=result.data.token;
-    currentUser=result.data.user;
-    localStorage.setItem('nuvori_token',authToken);
-    document.getElementById('auth-modal').style.display='none';
-    updateAuthUI();
-    updateNavState();
-  })
-  .catch(function(){
-    showAuthError('Connection error. Please try again.');
-    btn.disabled=false;
-    btn.textContent=authMode==='login'?'Sign in':'Create account';
-  });
-}
-
-function showAuthError(msg){
-  var el=document.getElementById('auth-error');
-  el.textContent=msg;el.style.display='block';
-}
-
-function startCheckout(plan){
-  if(!currentUser){
-    showAuthModal('signup');
-    // After signup, attempt checkout
-    var checkInterval=setInterval(function(){
-      if(currentUser){
-        clearInterval(checkInterval);
-        doCheckout(plan);
-      }
-    },500);
-    return;
-  }
+// ── CHECKOUT ──
+function startCheckout(plan) {
+  if(!currentUser) { showAuthModal('signup'); return; }
   doCheckout(plan);
 }
 
-function doCheckout(plan){
-  fetch('/api/payments/checkout',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
-    credentials:'include',
-    body:JSON.stringify({plan:plan})
+function doCheckout(plan) {
+  fetch('/api/payments/checkout', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken},
+    credentials: 'include',
+    body: JSON.stringify({plan: plan})
   })
-  .then(function(r){return r.json();})
+  .then(function(r){ return r.json(); })
   .then(function(d){
-    if(d.url){
-      window.location.href=d.url;
-    } else {
-      alert('Could not start checkout: '+(d.error||'Unknown error'));
-    }
+    if(d.url) window.location.href = d.url;
+    else alert('Could not start checkout: ' + (d.error || 'Unknown error'));
   })
-  .catch(function(err){
-    alert('Could not start checkout. Please check your connection and try again.');
-  });
+  .catch(function(){ alert('Could not start checkout. Please try again.'); });
 }
 
 // ── FILE UPLOAD ──
-var pendingFiles=[];
+function toBase64(file) {
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function(){ resolve(reader.result.split(',')[1]); };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
-document.addEventListener('DOMContentLoaded',function(){
-  // Nav CTA button
-  var navBtn = document.getElementById('nav-cta-btn');
-  if(navBtn){
-    navBtn.addEventListener('click', function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      if(currentUser){
-        showAccountModal();
-      } else {
-        document.getElementById('auth-modal').style.display='flex';
-        switchTab('signup');
-      }
+function processFiles(fileList, callback) {
+  var files = Array.from(fileList);
+  var promises = files.map(function(file) {
+    var isImage = file.type.startsWith('image/');
+    var isPDF = file.type === 'application/pdf';
+    if(!isImage && !isPDF) return Promise.resolve(null);
+    return toBase64(file).then(function(base64) {
+      return {file: file, base64: base64, mediaType: file.type, isImage: isImage, isPDF: isPDF};
     });
-  }
-  // Hero primary button
-  var heroBtn = document.getElementById('hero-primary-btn');
-  if(heroBtn){
-    heroBtn.addEventListener('click', function(){
-      if(currentUser){
-        document.getElementById('chat').scrollIntoView({behavior:'smooth'});
-      } else {
-        document.getElementById('auth-modal').style.display='flex';
-        switchTab('signup');
-      }
-    });
-  }
+  });
+  Promise.all(promises).then(function(results) {
+    results.forEach(function(r){ if(r) pendingFiles.push(r); });
+    renderPreview();
+    if(callback) callback();
+  });
+}
 
-  var fileInput=document.getElementById('file-upload');
-  if(fileInput){
-    fileInput.addEventListener('change',function(){
-      var files=Array.from(this.files);
-      var promises=files.map(function(file){
-        var isImage=file.type.startsWith('image/');
-        var isPDF=file.type==='application/pdf';
-        if(!isImage&&!isPDF)return Promise.resolve(null);
-        return new Promise(function(resolve){
-          var reader=new FileReader();
-          reader.onload=function(){
-            resolve({file:file,base64:reader.result.split(',')[1],mediaType:file.type,isImage:isImage,isPDF:isPDF});
-          };
-          reader.readAsDataURL(file);
-        });
-      });
-      Promise.all(promises).then(function(results){
-        results.forEach(function(r){if(r)pendingFiles.push(r);});
-        fileInput.value='';
-        renderPreview();
-      });
-    });
-  }
-
-  // drag and drop
-  var msgs=document.getElementById('chat-messages');
-  if(msgs){
-    msgs.addEventListener('dragover',function(e){e.preventDefault();});
-    msgs.addEventListener('drop',function(e){
-      e.preventDefault();
-      var files=Array.from(e.dataTransfer.files);
-      var promises=files.map(function(file){
-        var isImage=file.type.startsWith('image/');
-        var isPDF=file.type==='application/pdf';
-        if(!isImage&&!isPDF)return Promise.resolve(null);
-        return new Promise(function(resolve){
-          var reader=new FileReader();
-          reader.onload=function(){resolve({file:file,base64:reader.result.split(',')[1],mediaType:file.type,isImage:isImage,isPDF:isPDF});};
-          reader.readAsDataURL(file);
-        });
-      });
-      Promise.all(promises).then(function(results){
-        results.forEach(function(r){if(r)pendingFiles.push(r);});
-        renderPreview();
-      });
-    });
-  }
-
-  // paste
-  var chatInput=document.getElementById('chat-input');
-  if(chatInput){
-    chatInput.addEventListener('paste',function(e){
-      var items=Array.from(e.clipboardData.items);
-      var imageItems=items.filter(function(i){return i.type.startsWith('image/');});
-      if(!imageItems.length)return;
-      var promises=imageItems.map(function(item){
-        var file=item.getAsFile();
-        return new Promise(function(resolve){
-          var reader=new FileReader();
-          reader.onload=function(){resolve({file:file,base64:reader.result.split(',')[1],mediaType:file.type,isImage:true,isPDF:false});};
-          reader.readAsDataURL(file);
-        });
-      });
-      Promise.all(promises).then(function(results){
-        results.forEach(function(r){if(r)pendingFiles.push(r);});
-        renderPreview();
-      });
-    });
-    chatInput.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
-    chatInput.addEventListener('focus',function(){if(!currentUser){this.blur();showAuthModal('signup');}});
-    chatInput.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
-  }
-
-  setFeature('resume');
-  initAuth();
-});
-
-function renderPreview(){
-  var el=document.getElementById('attachment-preview');
-  if(!el)return;
-  el.innerHTML='';
-  if(!pendingFiles.length){el.classList.remove('has-files');return;}
+function renderPreview() {
+  var el = document.getElementById('attachment-preview');
+  if(!el) return;
+  el.innerHTML = '';
+  if(!pendingFiles.length) { el.classList.remove('has-files'); return; }
   el.classList.add('has-files');
-  pendingFiles.forEach(function(pf,i){
-    var item=document.createElement('div');
-    item.className='preview-item';
-    if(pf.isImage){
-      var img=document.createElement('img');
-      img.src='data:'+pf.mediaType+';base64,'+pf.base64;
+  pendingFiles.forEach(function(pf, i) {
+    var item = document.createElement('div');
+    item.className = 'preview-item';
+    if(pf.isImage) {
+      var img = document.createElement('img');
+      img.src = 'data:' + pf.mediaType + ';base64,' + pf.base64;
       item.appendChild(img);
     } else {
-      item.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>';
+      item.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>';
     }
-    var name=document.createElement('span');name.className='preview-name';name.textContent=pf.file.name;
-    var btn=document.createElement('button');btn.className='preview-remove';btn.textContent='\u00d7';
-    btn.onclick=(function(idx){return function(){removeFile(idx);};})(i);
-    item.appendChild(name);item.appendChild(btn);
+    var name = document.createElement('span');
+    name.className = 'preview-name';
+    name.textContent = pf.file.name;
+    var btn = document.createElement('button');
+    btn.className = 'preview-remove';
+    btn.textContent = '×';
+    btn.onclick = (function(idx){ return function(){ pendingFiles.splice(idx,1); renderPreview(); }; })(i);
+    item.appendChild(name);
+    item.appendChild(btn);
     el.appendChild(item);
   });
 }
 
-function removeFile(i){pendingFiles.splice(i,1);renderPreview();}
-
 // ── CHAT ──
-var currentFeature='resume';
-var conversationHistory=[];
-var isLoading=false;
-
-document.getElementById('feature-tabs').addEventListener('click',function(e){
-  var tab=e.target.closest('.feat-tab');
-  if(!tab)return;
-  var f=tab.dataset.feature;
-  if(f===currentFeature)return;
-  document.querySelectorAll('.feat-tab').forEach(function(t){t.classList.remove('active');});
-  tab.classList.add('active');
-  setFeature(f);
-});
-
-// Save conversation histories per feature
-var featureHistories={};
-var featureMessages={};
-
-function setFeature(f){
-  // Save current feature state
-  if(currentFeature){
-    featureHistories[currentFeature]=conversationHistory.slice();
-    var msgs=document.getElementById('chat-messages');
-    if(msgs)featureMessages[currentFeature]=msgs.innerHTML;
+function setFeature(f) {
+  if(currentFeature && currentFeature !== f) {
+    featureHistories[currentFeature] = conversationHistory.slice();
+    var msgs = document.getElementById('chat-messages');
+    if(msgs) featureMessages[currentFeature] = msgs.innerHTML;
   }
-
-  currentFeature=f;
-  pendingFiles=[];
+  currentFeature = f;
+  pendingFiles = [];
   renderPreview();
-
-  var msgEl=document.getElementById('chat-messages');
-  if(!msgEl)return;
-
-  // Restore saved state or show welcome
-  if(featureHistories[f]&&featureHistories[f].length>0){
-    conversationHistory=featureHistories[f].slice();
-    msgEl.innerHTML=featureMessages[f]||'';
-    msgEl.scrollTop=msgEl.scrollHeight;
+  var msgEl = document.getElementById('chat-messages');
+  if(!msgEl) return;
+  if(featureHistories[f] && featureHistories[f].length > 0) {
+    conversationHistory = featureHistories[f].slice();
+    msgEl.innerHTML = featureMessages[f] || '';
+    msgEl.scrollTop = msgEl.scrollHeight;
   } else {
-    conversationHistory=[];
-    msgEl.innerHTML='';
-    addMessage('ai',featureWelcomes[f]);
+    conversationHistory = [];
+    msgEl.innerHTML = '';
+    addMessage('ai', featureWelcomes[f]);
   }
-
-  // Remove PDF button if not resume
-  var pdfBtn=document.getElementById('pdf-btn-wrap');
-  if(pdfBtn&&f!=='resume')pdfBtn.remove();
+  var pdfBtn = document.getElementById('pdf-btn-wrap');
+  if(pdfBtn && f !== 'resume') pdfBtn.remove();
 }
 
-function addMessage(role,text,attachments){
-  var el=document.getElementById('chat-messages');
-  if(!el)return;
-  var div=document.createElement('div');
-  div.className='msg '+role;
-  var avatar=document.createElement('div');
-  avatar.className='msg-avatar';
-  avatar.textContent=role==='ai'?'N':'You';
-  var bubble=document.createElement('div');
-  bubble.className='msg-bubble';
-  if(attachments&&attachments.length){
-    var attachDiv=document.createElement('div');
-    attachDiv.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;';
-    attachments.forEach(function(a){
-      if(a.isImage){
-        var img=document.createElement('img');
-        img.src='data:'+a.mediaType+';base64,'+a.base64;
-        img.style.cssText='max-width:160px;max-height:120px;border-radius:4px;object-fit:cover;';
+function addMessage(role, text, attachments) {
+  var el = document.getElementById('chat-messages');
+  if(!el) return;
+  var div = document.createElement('div');
+  div.className = 'msg ' + role;
+  var avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.textContent = role === 'ai' ? 'N' : 'You';
+  var bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  if(attachments && attachments.length) {
+    var attachDiv = document.createElement('div');
+    attachDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;';
+    attachments.forEach(function(a) {
+      if(a.isImage) {
+        var img = document.createElement('img');
+        img.src = 'data:' + a.mediaType + ';base64,' + a.base64;
+        img.style.cssText = 'max-width:160px;max-height:120px;border-radius:4px;object-fit:cover;';
         attachDiv.appendChild(img);
       } else {
-        var fileDiv=document.createElement('div');
-        fileDiv.style.cssText='display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:4px;padding:4px 10px;font-size:.75rem;';
-        fileDiv.textContent=a.file.name;
-        attachDiv.appendChild(fileDiv);
+        var fd = document.createElement('div');
+        fd.style.cssText = 'display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:4px;padding:4px 10px;font-size:.75rem;';
+        fd.textContent = a.file.name;
+        attachDiv.appendChild(fd);
       }
     });
     bubble.appendChild(attachDiv);
   }
-  bubble.innerHTML+=formatMessage(text);
-  div.appendChild(avatar);div.appendChild(bubble);
+  bubble.innerHTML += formatMessage(text);
+  div.appendChild(avatar);
+  div.appendChild(bubble);
   el.appendChild(div);
-  el.scrollTop=el.scrollHeight;
+  el.scrollTop = el.scrollHeight;
 }
 
-function formatMessage(text){
-  // Process line by line for better control
-  var lines = text.split('\n');
+function formatMessage(text) {
+  var lines = text.split('
+');
   var result = [];
-  var inUl = false;
-  var inOl = false;
-  var olCounter = 0;
-
-  for(var i=0;i<lines.length;i++){
+  var inUl = false, inOl = false;
+  for(var i = 0; i < lines.length; i++) {
     var line = lines[i];
-
-    // Bold and italic
-    line = line.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
-    line = line.replace(/\*(.*?)\*/g,'<em>$1</em>');
-    // Inline code
-    line = line.replace(/`([^`]+)`/g,'<code style="background:var(--rule);padding:1px 5px;border-radius:3px;font-size:.85em;font-family:monospace;">$1</code>');
-
-    // Headings
-    if(/^## /.test(line)){
-      if(inUl){result.push('</ul>');inUl=false;}
-      if(inOl){result.push('</ol>');inOl=false;olCounter=0;}
-      result.push('<div style="font-family:var(--font-serif);font-size:1rem;font-weight:700;margin-top:18px;margin-bottom:6px;color:var(--ink);border-bottom:1px solid var(--rule);padding-bottom:4px;">'+line.replace(/^## /,'')+'</div>');
-    } else if(/^### /.test(line)){
-      if(inUl){result.push('</ul>');inUl=false;}
-      if(inOl){result.push('</ol>');inOl=false;olCounter=0;}
-      result.push('<div style="font-size:.9rem;font-weight:600;margin-top:14px;margin-bottom:4px;color:var(--ink);">'+line.replace(/^### /,'')+'</div>');
-    // HR
-    } else if(/^---$/.test(line)){
-      if(inUl){result.push('</ul>');inUl=false;}
-      if(inOl){result.push('</ol>');inOl=false;olCounter=0;}
+    line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    line = line.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    line = line.replace(/`([^`]+)`/g, '<code style="background:var(--rule);padding:1px 5px;border-radius:3px;font-size:.85em;">$1</code>');
+    if(/^## /.test(line)) {
+      if(inUl){result.push('</ul>');inUl=false;} if(inOl){result.push('</ol>');inOl=false;}
+      result.push('<div style="font-family:Georgia,serif;font-size:1rem;font-weight:700;margin-top:18px;margin-bottom:6px;border-bottom:1px solid var(--rule);padding-bottom:4px;">' + line.replace(/^## /,'') + '</div>');
+    } else if(/^### /.test(line)) {
+      if(inUl){result.push('</ul>');inUl=false;} if(inOl){result.push('</ol>');inOl=false;}
+      result.push('<div style="font-size:.9rem;font-weight:600;margin-top:14px;margin-bottom:4px;">' + line.replace(/^### /,'') + '</div>');
+    } else if(/^---$/.test(line)) {
+      if(inUl){result.push('</ul>');inUl=false;} if(inOl){result.push('</ol>');inOl=false;}
       result.push('<hr style="border:none;border-top:1px solid var(--rule);margin:12px 0;">');
-    // Unordered list
-    } else if(/^- /.test(line)||/^\* /.test(line)){
-      if(inOl){result.push('</ol>');inOl=false;olCounter=0;}
+    } else if(/^[-*] /.test(line)) {
+      if(inOl){result.push('</ol>');inOl=false;}
       if(!inUl){result.push('<ul style="padding-left:20px;margin:6px 0;">');inUl=true;}
-      result.push('<li style="margin-bottom:4px;">'+line.replace(/^[-\*] /,'')+'</li>');
-    // Ordered list - preserve actual numbers
-    } else if(/^\d+\.\s/.test(line)){
+      result.push('<li style="margin-bottom:4px;">' + line.replace(/^[-*] /,'') + '</li>');
+    } else if(/^\d+\.\s/.test(line)) {
       if(inUl){result.push('</ul>');inUl=false;}
       var num = parseInt(line.match(/^(\d+)/)[1]);
       var itemText = line.replace(/^\d+\.\s/,'');
-      if(!inOl){
-        result.push('<ol style="padding-left:20px;margin:6px 0;">');
-        inOl=true;
-      }
-      result.push('<li value="'+num+'" style="margin-bottom:4px;">'+itemText+'</li>');
-    // Empty line
-    } else if(line.trim()===''){
-      if(inUl){result.push('</ul>');inUl=false;}
-      if(inOl){result.push('</ol>');inOl=false;olCounter=0;}
+      if(!inOl){result.push('<ol style="padding-left:20px;margin:6px 0;">');inOl=true;}
+      result.push('<li value="' + num + '" style="margin-bottom:4px;">' + itemText + '</li>');
+    } else if(line.trim() === '') {
+      if(inUl){result.push('</ul>');inUl=false;} if(inOl){result.push('</ol>');inOl=false;}
       result.push('<br>');
-    // Regular line
     } else {
-      if(inUl){result.push('</ul>');inUl=false;}
-      if(inOl){result.push('</ol>');inOl=false;olCounter=0;}
-      result.push('<span>'+line+'</span><br>');
+      if(inUl){result.push('</ul>');inUl=false;} if(inOl){result.push('</ol>');inOl=false;}
+      result.push('<span>' + line + '</span><br>');
     }
   }
-  if(inUl)result.push('</ul>');
-  if(inOl)result.push('</ol>');
+  if(inUl) result.push('</ul>');
+  if(inOl) result.push('</ol>');
   return result.join('');
 }
 
-function showTyping(){
-  var el=document.getElementById('chat-messages');
-  var d=document.createElement('div');
-  d.className='msg ai';d.id='typing';
-  var phrases=['Analyzing your resume...','Checking ATS compatibility...','Researching the role...','Crafting your response...','Reviewing your profile...','Thinking carefully...'];
-  var phrase=phrases[Math.floor(Math.random()*phrases.length)];
-  d.innerHTML='<div class="msg-avatar">N</div><div class="typing-indicator"><div class="typing-bars"><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div></div><span class="typing-text">'+phrase+'</span></div>';
-  el.appendChild(d);el.scrollTop=el.scrollHeight;
+function showTyping() {
+  var el = document.getElementById('chat-messages');
+  if(!el) return;
+  var d = document.createElement('div');
+  d.className = 'msg ai'; d.id = 'typing';
+  var phrases = ['Analyzing your resume...','Checking ATS compatibility...','Researching the role...','Crafting your response...','Reviewing your profile...','Thinking carefully...'];
+  var phrase = phrases[Math.floor(Math.random() * phrases.length)];
+  d.innerHTML = '<div class="msg-avatar">N</div><div class="typing-indicator"><div class="typing-bars"><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div><div class="typing-bar"></div></div><span class="typing-text">' + phrase + '</span></div>';
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
 }
 
-function removeTyping(){var t=document.getElementById('typing');if(t)t.remove();}
+function removeTyping() {
+  var t = document.getElementById('typing');
+  if(t) t.remove();
+}
 
-function sendMessage(){
-  if(!currentUser){
-    showAuthModal('signup');
-    return;
-  }
-  var input=document.getElementById('chat-input');
-  var text=input.value.trim();
-  if((!text&&!pendingFiles.length)||isLoading)return;
-  var filesToSend=pendingFiles.slice();
-  pendingFiles=[];renderPreview();
-  input.value='';input.style.height='auto';
-  isLoading=true;
-  document.getElementById('send-btn').disabled=true;
-  addMessage('user',text||'(see attached file)',filesToSend);
-  var userContent=[];
-  filesToSend.forEach(function(pf){
-    if(pf.isImage)userContent.push({type:'image',source:{type:'base64',media_type:pf.mediaType,data:pf.base64}});
-    else if(pf.isPDF)userContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:pf.base64}});
+function sendMessage() {
+  if(!currentUser) { showAuthModal('signup'); return; }
+  var input = document.getElementById('chat-input');
+  var text = input.value.trim();
+  if((!text && !pendingFiles.length) || isLoading) return;
+  var filesToSend = pendingFiles.slice();
+  pendingFiles = []; renderPreview();
+  input.value = ''; input.style.height = 'auto';
+  isLoading = true;
+  document.getElementById('send-btn').disabled = true;
+  addMessage('user', text || '(see attached file)', filesToSend);
+  var userContent = [];
+  filesToSend.forEach(function(pf) {
+    if(pf.isImage) userContent.push({type:'image',source:{type:'base64',media_type:pf.mediaType,data:pf.base64}});
+    else if(pf.isPDF) userContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:pf.base64}});
   });
-  if(text)userContent.push({type:'text',text:text});
-  else userContent.push({type:'text',text:'Please analyze the attached file and help me in the context of '+currentFeature+'.'});
+  if(text) userContent.push({type:'text',text:text});
+  else userContent.push({type:'text',text:'Please analyze the attached file in the context of ' + currentFeature + '.'});
   conversationHistory.push({role:'user',content:userContent});
   showTyping();
-  fetch('/api/ai/chat',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
-    credentials:'include',
-    body:JSON.stringify({feature:currentFeature,messages:conversationHistory})
+  fetch('/api/ai/chat', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer ' + authToken},
+    credentials: 'include',
+    body: JSON.stringify({feature: currentFeature, messages: conversationHistory})
   })
-  .then(function(r){return r.json().then(function(d){return{ok:r.ok,status:r.status,data:d};});})
-  .then(function(result){
+  .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,status:r.status,data:d}; }); })
+  .then(function(result) {
     removeTyping();
-    if(result.status===403&&result.data.upgradeRequired){
-      addMessage('ai',result.data.error);
+    if(result.status === 403 && result.data.upgradeRequired) {
+      addMessage('ai', result.data.error);
       showUpgradeBanner(result.data.error);
-    } else if(!result.ok){
-      addMessage('ai',result.data.error||'Something went wrong. Please try again.');
+    } else if(!result.ok) {
+      addMessage('ai', result.data.error || 'Something went wrong. Please try again.');
     } else {
       conversationHistory.push({role:'assistant',content:result.data.reply});
-      addMessage('ai',result.data.reply);
+      addMessage('ai', result.data.reply);
       updateUsageBadge(result.data.usage);
-      if(currentFeature==='resume')showPDFButton();
+      if(currentFeature === 'resume') showPDFButton();
     }
   })
-  .catch(function(){removeTyping();addMessage('ai','Connection issue — please try again.');})
-  .finally(function(){isLoading=false;document.getElementById('send-btn').disabled=false;input.focus();});
+  .catch(function(){ removeTyping(); addMessage('ai','Connection issue — please try again.'); })
+  .finally(function(){ isLoading=false; document.getElementById('send-btn').disabled=false; input.focus(); });
 }
 
-function updateUsageBadge(usage){
-  if(!usage||usage.remaining==='unlimited')return;
-  var badge=document.getElementById('usage-badge');
-  if(badge){
-    badge.textContent=usage.remaining===0?'Limit reached':usage.remaining+' left this month';
-    badge.style.color=usage.remaining<=1?'#ff6b6b':'rgba(255,255,255,.35)';
+function updateUsageBadge(usage) {
+  if(!usage || usage.remaining === 'unlimited') return;
+  var badge = document.getElementById('usage-badge');
+  if(badge) {
+    badge.textContent = usage.remaining === 0 ? 'Limit reached' : usage.remaining + ' left this month';
+    badge.style.color = usage.remaining <= 1 ? '#ff6b6b' : 'rgba(255,255,255,.35)';
   }
 }
 
-function showUpgradeBanner(msg){
-  var existing=document.getElementById('upgrade-banner');
-  if(existing)return;
-  var banner=document.createElement('div');
-  banner.id='upgrade-banner';
-  banner.style.cssText='background:#0f1a14;color:#fff;text-align:center;padding:12px 24px;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:16px;border-top:1px solid rgba(255,255,255,.08);';
-  banner.innerHTML=msg+'<button onclick="startCheckout(\'pro\')" style="background:#7ed4a8;color:#0f1a14;border:none;padding:7px 16px;border-radius:4px;font-weight:600;cursor:pointer;font-size:.8rem;">Upgrade to Pro</button>';
-  document.querySelector('.chat-layout').insertAdjacentElement('afterend',banner);
+function showUpgradeBanner(msg) {
+  if(document.getElementById('upgrade-banner')) return;
+  var banner = document.createElement('div');
+  banner.id = 'upgrade-banner';
+  banner.style.cssText = 'background:#0f1a14;color:#fff;text-align:center;padding:12px 24px;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:16px;border-top:1px solid rgba(255,255,255,.08);';
+  banner.innerHTML = '<span>' + msg + '</span><button onclick="startCheckout('pro')" style="background:#7ed4a8;color:#0f1a14;border:none;padding:7px 16px;border-radius:4px;font-weight:600;cursor:pointer;font-size:.8rem;">Upgrade to Pro</button>';
+  var layout = document.querySelector('.chat-layout');
+  if(layout) layout.insertAdjacentElement('afterend', banner);
 }
 
-function showPDFButton(){
-  if(document.getElementById('pdf-btn-wrap'))return;
-  var wrap=document.createElement('div');
-  wrap.id='pdf-btn-wrap';
-  wrap.style.cssText='padding:12px 24px;border-top:1px solid var(--rule);background:var(--off);display:flex;align-items:center;gap:12px;';
-  wrap.innerHTML='<button onclick="generateResumePDF()" style="background:#0f1a14;color:#fff;border:none;padding:10px 20px;border-radius:4px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">Download Rebuilt Resume as PDF</button><span style="font-size:.75rem;color:var(--soft);">Nuvori will rebuild your full resume with all improvements</span>';
-  document.querySelector('.chat-input-wrap').insertAdjacentElement('beforebegin',wrap);
+function showPDFButton() {
+  if(document.getElementById('pdf-btn-wrap')) return;
+  var wrap = document.createElement('div');
+  wrap.id = 'pdf-btn-wrap';
+  wrap.style.cssText = 'padding:12px 24px;border-top:1px solid var(--rule);background:var(--off);display:flex;align-items:center;gap:12px;';
+  wrap.innerHTML = '<button onclick="generateResumePDF()" style="background:#0f1a14;color:#fff;border:none;padding:10px 20px;border-radius:4px;font-size:.82rem;font-weight:600;cursor:pointer;">Download Rebuilt Resume as PDF</button><span style="font-size:.75rem;color:var(--soft);">Nuvori will rebuild your full resume with all improvements</span>';
+  var inputWrap = document.querySelector('.chat-input-wrap');
+  if(inputWrap) inputWrap.insertAdjacentElement('beforebegin', wrap);
 }
 
-function generateResumePDF(){
-  if(!conversationHistory||conversationHistory.length<2){alert('Please complete a resume analysis first.');return;}
-  var btn=document.querySelector('#pdf-btn-wrap button');
-  if(btn){btn.textContent='Generating...';btn.disabled=true;}
-  var messages=conversationHistory.concat([{role:'user',content:[{type:'text',text:'Now please write the complete rewritten resume in clean plain text format ready to use. Include all sections: Summary, Work Experience, Education, Skills, Certifications. Use the rewritten bullets from your analysis. Format with section headers in ALL CAPS and bullets starting with dashes. Output the resume only, no commentary.'}]}]);
-  fetch('/api/ai/chat',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
-    credentials:'include',
-    body:JSON.stringify({feature:'resume',messages:messages})
+function generateResumePDF() {
+  if(!conversationHistory || conversationHistory.length < 2) { alert('Please complete a resume analysis first.'); return; }
+  var btn = document.querySelector('#pdf-btn-wrap button');
+  if(btn) { btn.textContent = 'Generating...'; btn.disabled = true; }
+  var messages = conversationHistory.concat([{role:'user',content:[{type:'text',text:'Now write the complete rewritten resume in clean plain text. Include all sections: Summary, Work Experience, Education, Skills, Certifications. Use the rewritten bullets from your analysis. Format with section headers in ALL CAPS. Output only the resume, no commentary.'}]}]);
+  fetch('/api/ai/chat', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer ' + authToken},
+    credentials: 'include',
+    body: JSON.stringify({feature:'resume',messages:messages})
   })
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(!d.reply){alert('Could not generate resume. Please try again.');return;}
-    var win=window.open('','_blank');
-    var safeText=d.reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    var html='<!DOCTYPE html><html><head><title>Resume - Nuvori AI</title>'
-      +'<style>body{font-family:Georgia,serif;max-width:750px;margin:40px auto;padding:0 40px;color:#111;line-height:1.7;font-size:11pt;}'
-      +'pre{white-space:pre-wrap;font-family:Georgia,serif;font-size:11pt;line-height:1.7;}'
-      +'.footer{margin-top:40px;font-size:8pt;color:#999;text-align:center;border-top:1px solid #eee;padding-top:12px;}'
-      +'@media print{.footer{display:none;}}</style></head><body>'
-      +'<pre>'+safeText+'</pre>'
-      +'<div class="footer">Generated by Nuvori AI &mdash; nuvoriai.com</div>'
-      +'</body></html>';
+  .then(function(r){ return r.json(); })
+  .then(function(d) {
+    if(!d.reply) { alert('Could not generate. Please try again.'); return; }
+    var win = window.open('','_blank');
+    var safeText = d.reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var html = '<!DOCTYPE html><html><head><title>Resume - Nuvori AI</title><style>body{font-family:Georgia,serif;max-width:750px;margin:40px auto;padding:0 40px;color:#111;line-height:1.7;font-size:11pt;}pre{white-space:pre-wrap;font-size:11pt;}.footer{margin-top:40px;font-size:8pt;color:#999;text-align:center;border-top:1px solid #eee;padding-top:12px;}@media print{.footer{display:none;}}</style></head><body><pre>' + safeText + '</pre><div class="footer">Generated by Nuvori AI &mdash; nuvoriai.com</div></body></html>';
     win.document.write(html);
     win.document.close();
-    setTimeout(function(){win.print();},800);
+    setTimeout(function(){ win.print(); }, 800);
   })
-  .catch(function(){alert('Error generating PDF. Please try again.');})
-  .finally(function(){if(btn){btn.textContent='Download Rebuilt Resume as PDF';btn.disabled=false;}});
+  .catch(function(){ alert('Error generating PDF.'); })
+  .finally(function(){ if(btn){ btn.textContent='Download Rebuilt Resume as PDF'; btn.disabled=false; } });
 }
 
 // ── LEGAL ──
-var legalContent={
-  terms:{title:'Terms of Service',body:'<p><strong>Last updated: June 2026</strong></p><p style="margin-top:14px;">Welcome to Nuvori. By using our platform, you agree to these Terms of Service.</p><h3 style="margin-top:20px;font-weight:700;">1. Use of Service</h3><p>Nuvori provides an AI-powered career coaching platform. You must be 18 or older to use Nuvori.</p><h3 style="margin-top:20px;font-weight:700;">2. AI-Generated Content</h3><p>Nuvori uses artificial intelligence to generate career advice. This content is for informational purposes only. Nuvori is not a licensed career counselor, attorney, or financial advisor. Results may vary.</p><h3 style="margin-top:20px;font-weight:700;">3. Subscriptions & Billing</h3><p>Paid plans are billed monthly. You may cancel at any time. Refunds are at our discretion for unused billing periods.</p><h3 style="margin-top:20px;font-weight:700;">4. Acceptable Use</h3><p>You agree not to misuse the platform, upload harmful content, or attempt to reverse-engineer our systems.</p><h3 style="margin-top:20px;font-weight:700;">5. Limitation of Liability</h3><p>Nuvori is provided "as is." Our total liability shall not exceed the amount you paid us in the last 3 months.</p><p style="margin-top:20px;">Questions? Email <strong>legal@nuvoriai.com</strong></p>'},
-  privacy:{title:'Privacy Policy',body:'<p><strong>Last updated: June 2026</strong></p><p style="margin-top:14px;">Your privacy matters to us.</p><h3 style="margin-top:20px;font-weight:700;">1. Data We Collect</h3><p>We collect your email, hashed password, resume content you share, usage data, and payment info processed by Stripe.</p><h3 style="margin-top:20px;font-weight:700;">2. How We Use It</h3><p>To provide Nuvori, process payments, and improve the service. We do not sell your data.</p><h3 style="margin-top:20px;font-weight:700;">3. AI Processing</h3><p>Content you share is sent to Anthropic\'s Claude API. Anthropic\'s privacy policy governs their handling of this data.</p><h3 style="margin-top:20px;font-weight:700;">4. Your Rights</h3><p>You may request deletion of your data at any time by emailing <strong>privacy@nuvoriai.com</strong>.</p>'},
-  ai:{title:'AI Disclosure',body:'<p><strong>Last updated: June 2026</strong></p><h3 style="margin-top:20px;font-weight:700;">1. You Are Talking to an AI</h3><p>Nuvori AI is an artificial intelligence system, not a human. It is not a licensed career counselor, recruiter, or advisor.</p><h3 style="margin-top:20px;font-weight:700;">2. Powered by Anthropic Claude</h3><p>Nuvori AI is built on Claude, developed by Anthropic PBC, an AI safety company.</p><h3 style="margin-top:20px;font-weight:700;">3. AI Limitations</h3><p>AI-generated content may sometimes be inaccurate. Always use your own judgment and verify important information.</p><h3 style="margin-top:20px;font-weight:700;">4. No Guarantee of Results</h3><p>Nuvori cannot guarantee employment outcomes. Results depend on many factors outside our control.</p><h3 style="margin-top:20px;font-weight:700;">5. FTC Compliance</h3><p>Nuvori clearly identifies AI-generated content and never represents responses as coming from a human.</p>'}
+var legalContent = {
+  terms: {title:'Terms of Service',body:'<p><strong>Last updated: June 2026</strong></p><p style="margin-top:14px;">Welcome to Nuvori. By using our platform, you agree to these Terms of Service.</p><h3 style="margin-top:20px;font-weight:700;">1. Use of Service</h3><p>Nuvori provides an AI-powered career coaching platform. You must be 18 or older.</p><h3 style="margin-top:20px;font-weight:700;">2. AI-Generated Content</h3><p>Nuvori uses AI to generate career advice for informational purposes only. We are not a licensed career counselor or advisor. Results may vary.</p><h3 style="margin-top:20px;font-weight:700;">3. Billing</h3><p>Paid plans are billed monthly. Cancel anytime.</p><h3 style="margin-top:20px;font-weight:700;">4. Liability</h3><p>Nuvori is provided as-is. Our liability shall not exceed the amount you paid in the last 3 months.</p><p style="margin-top:16px;">Questions? <strong>legal@nuvoriai.com</strong></p>'},
+  privacy: {title:'Privacy Policy',body:'<p><strong>Last updated: June 2026</strong></p><h3 style="margin-top:20px;font-weight:700;">Data We Collect</h3><p>Email, hashed password, resume content you share, usage data, and payment info processed by Stripe.</p><h3 style="margin-top:20px;font-weight:700;">How We Use It</h3><p>To provide Nuvori, process payments, and improve the service. We do not sell your data.</p><h3 style="margin-top:20px;font-weight:700;">AI Processing</h3><p>Content you share is sent to Anthropic's Claude API. We do not use your data to train models.</p><h3 style="margin-top:20px;font-weight:700;">Your Rights</h3><p>Request deletion anytime: <strong>privacy@nuvoriai.com</strong></p>'},
+  ai: {title:'AI Disclosure',body:'<p><strong>Last updated: June 2026</strong></p><h3 style="margin-top:20px;font-weight:700;">You Are Talking to an AI</h3><p>Nuvori AI is an artificial intelligence, not a human. It is not a licensed career counselor or advisor.</p><h3 style="margin-top:20px;font-weight:700;">Powered by Anthropic Claude</h3><p>Nuvori AI is built on Claude, developed by Anthropic PBC.</p><h3 style="margin-top:20px;font-weight:700;">No Guarantee of Results</h3><p>Nuvori cannot guarantee employment outcomes. Results depend on many factors outside our control.</p><h3 style="margin-top:20px;font-weight:700;">FTC Compliance</h3><p>Nuvori clearly identifies AI-generated content and never represents responses as coming from a human.</p>'}
 };
 
-function showLegal(type){
-  var c=legalContent[type];
-  document.getElementById('legal-title').textContent=c.title;
-  document.getElementById('legal-body').innerHTML=c.body;
-  document.getElementById('legal-modal').style.display='flex';
+function showLegal(type) {
+  var c = legalContent[type];
+  document.getElementById('legal-title').textContent = c.title;
+  document.getElementById('legal-body').innerHTML = c.body;
+  document.getElementById('legal-modal').style.display = 'flex';
 }
 
-document.getElementById('auth-email').addEventListener('keydown',function(e){if(e.key==='Enter')submitAuth();});
-document.getElementById('auth-password').addEventListener('keydown',function(e){if(e.key==='Enter')submitAuth();});
-</script>
+// ── DOM READY ── everything that touches the DOM goes here
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Smooth scroll for nav links (skip nav-cta-btn)
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    if(a.id === 'nav-cta-btn') return;
+    a.addEventListener('click', function(e) {
+      var target = a.getAttribute('href');
+      if(target === '#') return;
+      e.preventDefault();
+      var el = document.querySelector(target);
+      if(el) el.scrollIntoView({behavior:'smooth'});
+    });
+  });
+
+  // Nav CTA button
+  var navBtn = document.getElementById('nav-cta-btn');
+  if(navBtn) {
+    navBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if(currentUser) showAccountModal();
+      else showAuthModal('signup');
+    });
+  }
+
+  // Hero primary button
+  var heroBtn = document.getElementById('hero-primary-btn');
+  if(heroBtn) {
+    heroBtn.addEventListener('click', function() {
+      if(currentUser) document.getElementById('chat').scrollIntoView({behavior:'smooth'});
+      else showAuthModal('signup');
+    });
+  }
+
+  // Auth modal email/password enter key
+  var emailInput = document.getElementById('auth-email');
+  var passInput = document.getElementById('auth-password');
+  if(emailInput) emailInput.addEventListener('keydown', function(e){ if(e.key==='Enter') submitAuth(); });
+  if(passInput) passInput.addEventListener('keydown', function(e){ if(e.key==='Enter') submitAuth(); });
+
+  // Feature tabs
+  var tabs = document.getElementById('feature-tabs');
+  if(tabs) {
+    tabs.addEventListener('click', function(e) {
+      var tab = e.target.closest('.feat-tab');
+      if(!tab) return;
+      var f = tab.dataset.feature;
+      if(f === currentFeature) return;
+      document.querySelectorAll('.feat-tab').forEach(function(t){ t.classList.remove('active'); });
+      tab.classList.add('active');
+      setFeature(f);
+    });
+  }
+
+  // File upload
+  var fileInput = document.getElementById('file-upload');
+  if(fileInput) {
+    fileInput.addEventListener('change', function() {
+      processFiles(this.files);
+      this.value = '';
+    });
+  }
+
+  // Drag and drop on chat
+  var chatMsgs = document.getElementById('chat-messages');
+  if(chatMsgs) {
+    chatMsgs.addEventListener('dragover', function(e){ e.preventDefault(); });
+    chatMsgs.addEventListener('drop', function(e){
+      e.preventDefault();
+      processFiles(e.dataTransfer.files);
+    });
+  }
+
+  // Chat input
+  var chatInput = document.getElementById('chat-input');
+  if(chatInput) {
+    chatInput.addEventListener('focus', function(){
+      if(!currentUser){ this.blur(); showAuthModal('signup'); }
+    });
+    chatInput.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
+    });
+    chatInput.addEventListener('input', function(){
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+    chatInput.addEventListener('paste', function(e){
+      var items = Array.from(e.clipboardData.items).filter(function(i){ return i.type.startsWith('image/'); });
+      if(!items.length) return;
+      processFiles(items.map(function(i){ return i.getAsFile(); }));
+    });
+  }
+
+  // Initialize chat and auth
+  setFeature('resume');
+  initAuth();
+});
+</script></script>
 </body>
 </html>
