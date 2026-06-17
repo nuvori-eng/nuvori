@@ -35,12 +35,14 @@ function getUserById(id) {
   return Object.values(db.users).find(u => u.id === id) || null;
 }
 
-function createUser({ id, email, passwordHash, plan = 'starter', stripeCustomerId = null }) {
+function createUser({ id, email, passwordHash = null, plan = 'starter', stripeCustomerId = null, authProvider = 'email', googleId = null }) {
   const db = load();
   const user = {
     id,
     email: email.toLowerCase(),
     passwordHash,
+    authProvider,
+    googleId,
     plan,
     stripeCustomerId,
     stripeSubscriptionId: null,

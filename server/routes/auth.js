@@ -4,10 +4,12 @@ const express  = require('express');
 const bcrypt   = require('bcryptjs');
 const jwt      = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
+const { OAuth2Client } = require('google-auth-library');
 const db       = require('../db');
 const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const COOKIE_OPTS = {
   httpOnly: true,
@@ -89,6 +91,55 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     console.error('Login error:', err);
     return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ── POST /api/auth/google ──────────────────────────────────────────────────
+router.post('/google', async (req, res) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) {
+      return res.status(400).json({ error: 'Missing Google credential.' });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const email   = payload.email;
+    const googleId = payload.sub;
+
+    if (!payload.email_verified) {
+      return res.status(401).json({ error: 'Google email is not verified.' });
+    }
+
+    let user = db.getUser(email);
+
+    if (!user) {
+      user = db.createUser({
+        id: uuidv4(),
+        email,
+        plan: 'starter',
+        authProvider: 'google',
+        googleId,
+      });
+    } else if (!user.googleId) {
+      // Existing email/password account signing in with Google for the first time
+      user = db.updateUser(email, { googleId, authProvider: user.authProvider === 'email' ? 'email' : 'google' });
+    }
+
+    const token = issueToken(user.id);
+    res.cookie('landit_token', token, COOKIE_OPTS);
+
+    return res.json({
+      message: 'Logged in with Google.',
+      token,
+      user: safeUser(user),
+    });
+  } catch (err) {
+    console.error('Google auth error:', err);
+    return res.status(401).json({ error: 'Could not verify Google sign-in. Please try again.' });
   }
 });
 
