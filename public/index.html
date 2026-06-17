@@ -235,7 +235,7 @@ footer{background:var(--ink);padding:72px 56px 40px;}
     <li><a href="#chat">Try Nuvori AI</a></li>
     <li><a href="#pricing">Pricing</a></li>
   </ul>
-  <button class="nav-cta" id="nav-cta-btn" onclick="handleNavCta(event)">Get started free</button>
+  <button class="nav-cta" id="nav-cta-btn">Get started free</button>
 </nav>
 <section class="hero" id="home">
   <div class="hero-bg" id="hero-parallax"></div>
@@ -244,7 +244,7 @@ footer{background:var(--ink);padding:72px 56px 40px;}
     <h1>Your new beginning<br><em>starts here.</em></h1>
     <p class="hero-sub">Nuvori is your AI-powered career coach that rewrites your resume, preps you for every interview, and guides you from first application to signed offer.</p>
     <div class="hero-btns">
-      <button class="btn-hero-primary" onclick="document.getElementById('chat').scrollIntoView({behavior:'smooth'})">Try Nuvori AI — it's free</button>
+      <button class="btn-hero-primary" id="hero-primary-btn">Try Nuvori AI — it's free</button>
       <button class="btn-hero-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">See all features</button>
     </div>
   </div>
@@ -517,16 +517,6 @@ function updateNavState(){
   }
 }
 
-function handleNavCta(e){
-  if(e){e.preventDefault();e.stopPropagation();}
-  if(currentUser){
-    showAccountModal();
-  } else {
-    showAuthModal('signup');
-  }
-  return false;
-}
-
 function updateAuthUI(){
   var btn=document.getElementById('nav-cta-btn');
   if(currentUser&&btn){
@@ -721,6 +711,33 @@ function doCheckout(plan){
 var pendingFiles=[];
 
 document.addEventListener('DOMContentLoaded',function(){
+  // Nav CTA button
+  var navBtn = document.getElementById('nav-cta-btn');
+  if(navBtn){
+    navBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      if(currentUser){
+        showAccountModal();
+      } else {
+        document.getElementById('auth-modal').style.display='flex';
+        switchTab('signup');
+      }
+    });
+  }
+  // Hero primary button
+  var heroBtn = document.getElementById('hero-primary-btn');
+  if(heroBtn){
+    heroBtn.addEventListener('click', function(){
+      if(currentUser){
+        document.getElementById('chat').scrollIntoView({behavior:'smooth'});
+      } else {
+        document.getElementById('auth-modal').style.display='flex';
+        switchTab('signup');
+      }
+    });
+  }
+
   var fileInput=document.getElementById('file-upload');
   if(fileInput){
     fileInput.addEventListener('change',function(){
