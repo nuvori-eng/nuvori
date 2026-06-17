@@ -124,14 +124,36 @@ nav.scrolled .nav-cta{background:var(--ink);color:var(--white);}
 .preview-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;}
 .preview-remove{background:none;border:none;cursor:pointer;color:var(--soft);font-size:1rem;padding:0 0 0 4px;line-height:1;flex-shrink:0;}
 .preview-remove:hover{color:var(--ink);}
-.chat-input-row{display:flex;}
-.attach-btn{display:flex;align-items:center;justify-content:center;width:48px;flex-shrink:0;color:var(--soft);cursor:pointer;border:none;background:transparent;border-right:1px solid var(--rule);transition:all .15s;}
+.chat-input-row{display:flex;align-items:flex-end;}
+.attach-btn{display:flex;align-items:center;justify-content:center;width:44px;height:44px;flex-shrink:0;color:var(--soft);cursor:pointer;border:none;background:transparent;border-radius:8px;margin:6px 4px;transition:all .15s;}
 .attach-btn:hover{color:var(--ink);background:var(--off);}
-#chat-input{flex:1;border:none;outline:none;padding:15px 18px;font-size:.875rem;font-family:var(--font-body);color:var(--ink);background:transparent;resize:none;min-height:50px;max-height:120px;line-height:1.5;}
+#chat-input{flex:1;border:none;outline:none;padding:12px 14px;font-size:.875rem;font-family:var(--font-body);color:var(--ink);background:transparent;resize:none;min-height:44px;max-height:160px;line-height:1.6;}
 #chat-input::placeholder{color:var(--soft);}
-#send-btn{border:none;border-left:1px solid var(--rule);background:#0f1a14;color:var(--white);padding:0 24px;cursor:pointer;font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-family:var(--font-body);transition:background .18s;flex-shrink:0;}
-#send-btn:hover{background:var(--accent);}
-#send-btn:disabled{background:var(--rule);color:var(--soft);cursor:not-allowed;}
+#send-btn{
+  border:none;background:#0f1a14;color:var(--white);
+  width:36px;height:36px;border-radius:8px;
+  cursor:pointer;font-size:.95rem;
+  transition:all .18s;flex-shrink:0;
+  margin:8px 10px 8px 6px;
+  display:flex;align-items:center;justify-content:center;
+}
+#send-btn:hover{background:var(--accent);transform:scale(1.05);}
+#send-btn:disabled{background:var(--rule);color:var(--soft);cursor:not-allowed;transform:none;}
+.chat-input-wrap{
+  border-top:1px solid var(--rule);
+  background:var(--white);
+}
+.input-inner-wrap{
+  margin:8px 12px;
+  background:var(--off);
+  border:1.5px solid var(--rule);
+  border-radius:12px;
+  transition:border-color .2s;
+}
+.input-inner-wrap:focus-within{
+  border-color:#0f1a14;
+  background:var(--white);
+}
 .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px;}
 .price-card{background:var(--white);border:1px solid var(--rule);border-radius:8px;padding:40px 36px;position:relative;transition:transform .2s,box-shadow .2s;}
 .price-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.08);}
@@ -213,7 +235,7 @@ footer{background:var(--ink);padding:72px 56px 40px;}
     <li><a href="#chat">Try Nuvori AI</a></li>
     <li><a href="#pricing">Pricing</a></li>
   </ul>
-  <a href="#chat" class="nav-cta" id="nav-cta-btn">Get started free</a>
+  <a href="#chat" class="nav-cta" id="nav-cta-btn">Start for Free</a>
 </nav>
 <section class="hero" id="home">
   <div class="hero-bg" id="hero-parallax"></div>
@@ -316,13 +338,17 @@ footer{background:var(--ink);padding:72px 56px 40px;}
         <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input-wrap">
           <div class="attach-preview" id="attachment-preview"></div>
-          <div class="chat-input-row">
-            <button type="button" class="attach-btn" title="Attach image or PDF" onclick="document.getElementById('file-upload').click()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.41 17.41a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-            </button>
-            <input type="file" id="file-upload" accept="image/*,.pdf" style="position:fixed;left:-9999px;opacity:0;" multiple/>
-            <textarea id="chat-input" placeholder="Message Nuvori AI..." rows="1"></textarea>
-            <button id="send-btn" onclick="sendMessage()">Send</button>
+          <div class="input-inner-wrap">
+            <div class="chat-input-row">
+              <button type="button" class="attach-btn" title="Attach image or PDF" onclick="document.getElementById('file-upload').click()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.41 17.41a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+              </button>
+              <input type="file" id="file-upload" accept="image/*,.pdf" style="position:fixed;left:-9999px;opacity:0;" multiple/>
+              <textarea id="chat-input" placeholder="Message Nuvori AI..." rows="1"></textarea>
+              <button id="send-btn" onclick="sendMessage()" title="Send message">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -350,20 +376,20 @@ footer{background:var(--ink);padding:72px 56px 40px;}
         <div class="price-tier">Starter</div><div class="price-amount">$0</div><div class="price-per">per month, forever free</div>
         <div class="price-desc">Try Nuvori with no commitment.</div><hr class="price-divider"/>
         <ul class="price-features"><li>1 resume review per month</li><li>3 cover letters</li><li>5 mock interview sessions</li><li>Company research (3 searches)</li><li>Application tracker (10 jobs)</li></ul>
-        <button class="price-btn" onclick="showAuthModal('signup')">Get started free</button>
+        <button class="price-btn" onclick="showAuthModal('signup')">Start for Free</button>
       </div>
       <div class="price-card popular">
         <div class="popular-badge">Most Popular</div>
         <div class="price-tier">Pro</div><div class="price-amount">$19</div><div class="price-per">per month</div>
         <div class="price-desc">Everything you need to land the role.</div><hr class="price-divider"/>
         <ul class="price-features"><li>Unlimited resume rewrites</li><li>Unlimited cover letters</li><li>Unlimited mock interviews</li><li>Salary negotiation coach</li><li>Skills gap analyzer</li><li>LinkedIn optimizer</li><li>Unlimited company research</li><li>Career path suggester</li><li>Cold outreach writer</li></ul>
-        <button class="price-btn" onclick="startCheckout('pro')">Start Pro free</button>
+        <button class="price-btn" onclick="startCheckout('pro')">Get Pro — $19/mo</button>
       </div>
       <div class="price-card">
         <div class="price-tier">Teams</div><div class="price-amount">$49</div><div class="price-per">per month</div>
         <div class="price-desc">For bootcamps and career programs.</div><hr class="price-divider"/>
         <ul class="price-features"><li>Everything in Pro</li><li>Up to 25 team seats</li><li>Admin dashboard</li><li>Progress analytics</li><li>White-label option</li><li>Priority support</li></ul>
-        <button class="price-btn" onclick="startCheckout('teams')">Contact sales</button>
+        <button class="price-btn" onclick="startCheckout('teams')">Get Teams — $49/mo</button>
       </div>
     </div>
   </div>
@@ -482,13 +508,90 @@ function initAuth(){
 function updateAuthUI(){
   var btn=document.getElementById('nav-cta-btn');
   if(currentUser&&btn){
-    btn.textContent=currentUser.plan==='starter'?'Upgrade to Pro':'My Account';
+    if(currentUser.plan==='starter'){
+      btn.textContent='Upgrade to Pro';
+      btn.onclick=function(){startCheckout('pro');};
+    } else {
+      btn.textContent='My Account';
+      btn.onclick=function(){showAccountModal();};
+    }
   }
   var badge=document.getElementById('plan-badge');
   if(badge&&currentUser){
     badge.textContent=currentUser.plan.charAt(0).toUpperCase()+currentUser.plan.slice(1)+' Plan';
     badge.style.display='inline-block';
   }
+}
+
+function showAccountModal(){
+  var existing=document.getElementById('account-modal');
+  if(existing){existing.style.display='flex';return;}
+  var modal=document.createElement('div');
+  modal.id='account-modal';
+  modal.style.cssText='position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;';
+  var planLabel=currentUser.plan.charAt(0).toUpperCase()+currentUser.plan.slice(1);
+  var planColor=currentUser.plan==='pro'?'#2d6a4f':currentUser.plan==='teams'?'#1a5a8f':'#666';
+  modal.innerHTML=
+    '<div onclick="document.getElementById('account-modal').style.display='none'" style="position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);"></div>'+
+    '<div style="position:relative;z-index:1;background:#fff;border-radius:10px;padding:40px;width:100%;max-width:460px;box-shadow:0 32px 80px rgba(0,0,0,.2);margin:24px;">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">'+
+        '<div style="font-family:var(--font-serif);font-size:1.4rem;font-weight:700;color:var(--ink);">My Account</div>'+
+        '<button onclick="document.getElementById('account-modal').style.display='none'" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#9a9a8e;">&times;</button>'+
+      '</div>'+
+      '<div style="background:var(--off);border-radius:8px;padding:20px;margin-bottom:20px;">'+
+        '<div style="font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:12px;">Account Details</div>'+
+        '<div style="display:flex;flex-direction:column;gap:10px;">'+
+          '<div style="display:flex;justify-content:space-between;align-items:center;font-size:.875rem;">'+
+            '<span style="color:var(--mid);">Email</span>'+
+            '<span style="color:var(--ink);font-weight:500;">'+currentUser.email+'</span>'+
+          '</div>'+
+          '<div style="border-top:1px solid var(--rule);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:.875rem;">'+
+            '<span style="color:var(--mid);">Current Plan</span>'+
+            '<span style="background:'+planColor+';color:#fff;padding:3px 12px;border-radius:100px;font-size:.75rem;font-weight:600;">'+planLabel+'</span>'+
+          '</div>'+
+          '<div style="border-top:1px solid var(--rule);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:.875rem;">'+
+            '<span style="color:var(--mid);">Member since</span>'+
+            '<span style="color:var(--ink);">'+new Date(currentUser.createdAt).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+'</span>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      (currentUser.plan==='starter'?
+        '<div style="background:var(--green-light);border:1px solid #b8dfc9;border-radius:8px;padding:16px;margin-bottom:20px;">'+
+          '<div style="font-size:.875rem;font-weight:600;color:#1a5a3a;margin-bottom:6px;">Upgrade to Pro</div>'+
+          '<div style="font-size:.82rem;color:#2d6a4f;margin-bottom:12px;">Get unlimited access to all features for $19/month.</div>'+
+          '<button onclick="document.getElementById('account-modal').style.display='none';startCheckout('pro')" style="background:#2d6a4f;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;">Upgrade to Pro — $19/mo</button>'+
+        '</div>':
+        '<div style="background:var(--off);border-radius:8px;padding:16px;margin-bottom:20px;">'+
+          '<div style="font-size:.875rem;font-weight:600;color:var(--ink);margin-bottom:6px;">Manage Subscription</div>'+
+          '<div style="font-size:.82rem;color:var(--mid);margin-bottom:12px;">Update billing, cancel, or change your plan.</div>'+
+          '<button onclick="openBillingPortal()" style="background:var(--ink);color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;">Manage Billing</button>'+
+        '</div>')+
+      '<button onclick="logOut()" style="width:100%;padding:10px;border-radius:6px;font-size:.82rem;font-weight:500;cursor:pointer;border:1px solid var(--rule);background:transparent;color:var(--mid);">Sign out</button>'+
+    '</div>';
+  document.body.appendChild(modal);
+}
+
+function logOut(){
+  authToken=null;currentUser=null;
+  localStorage.removeItem('nuvori_token');
+  document.getElementById('account-modal').style.display='none';
+  var btn=document.getElementById('nav-cta-btn');
+  if(btn){btn.textContent='Get started free';btn.onclick=null;}
+  var badge=document.getElementById('plan-badge');
+  if(badge)badge.style.display='none';
+  featureHistories={};featureMessages={};
+  setFeature('resume');
+}
+
+function openBillingPortal(){
+  fetch('/api/payments/portal',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
+    credentials:'include'
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){if(d.url)window.location.href=d.url;})
+  .catch(function(){alert('Could not open billing portal. Please try again.');});
 }
 
 function showAuthModal(mode){
@@ -546,14 +649,38 @@ function showAuthError(msg){
 }
 
 function startCheckout(plan){
-  if(!currentUser)return showAuthModal();
+  if(!currentUser){
+    showAuthModal('signup');
+    // After signup, attempt checkout
+    var checkInterval=setInterval(function(){
+      if(currentUser){
+        clearInterval(checkInterval);
+        doCheckout(plan);
+      }
+    },500);
+    return;
+  }
+  doCheckout(plan);
+}
+
+function doCheckout(plan){
   fetch('/api/payments/checkout',{
-    method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
-    credentials:'include',body:JSON.stringify({plan:plan})
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
+    credentials:'include',
+    body:JSON.stringify({plan:plan})
   })
   .then(function(r){return r.json();})
-  .then(function(d){if(d.url)window.location.href=d.url;})
-  .catch(function(){alert('Could not start checkout. Please try again.');});
+  .then(function(d){
+    if(d.url){
+      window.location.href=d.url;
+    } else {
+      alert('Could not start checkout: '+(d.error||'Unknown error'));
+    }
+  })
+  .catch(function(err){
+    alert('Could not start checkout. Please check your connection and try again.');
+  });
 }
 
 // ── FILE UPLOAD ──
@@ -677,12 +804,39 @@ document.getElementById('feature-tabs').addEventListener('click',function(e){
   setFeature(f);
 });
 
+// Save conversation histories per feature
+var featureHistories={};
+var featureMessages={};
+
 function setFeature(f){
-  currentFeature=f;conversationHistory=[];pendingFiles=[];
-  var msgs=document.getElementById('chat-messages');
-  if(msgs)msgs.innerHTML='';
+  // Save current feature state
+  if(currentFeature){
+    featureHistories[currentFeature]=conversationHistory.slice();
+    var msgs=document.getElementById('chat-messages');
+    if(msgs)featureMessages[currentFeature]=msgs.innerHTML;
+  }
+
+  currentFeature=f;
+  pendingFiles=[];
   renderPreview();
-  addMessage('ai',featureWelcomes[f]);
+
+  var msgEl=document.getElementById('chat-messages');
+  if(!msgEl)return;
+
+  // Restore saved state or show welcome
+  if(featureHistories[f]&&featureHistories[f].length>0){
+    conversationHistory=featureHistories[f].slice();
+    msgEl.innerHTML=featureMessages[f]||'';
+    msgEl.scrollTop=msgEl.scrollHeight;
+  } else {
+    conversationHistory=[];
+    msgEl.innerHTML='';
+    addMessage('ai',featureWelcomes[f]);
+  }
+
+  // Remove PDF button if not resume
+  var pdfBtn=document.getElementById('pdf-btn-wrap');
+  if(pdfBtn&&f!=='resume')pdfBtn.remove();
 }
 
 function addMessage(role,text,attachments){
@@ -720,18 +874,66 @@ function addMessage(role,text,attachments){
 }
 
 function formatMessage(text){
-  return text
-    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g,'<em>$1</em>')
-    .replace(/^## (.*?)$/gm,'<h3 style="font-family:var(--font-serif);font-size:1rem;font-weight:700;margin-top:16px;margin-bottom:6px;color:var(--ink);border-bottom:1px solid var(--rule);padding-bottom:4px;">$1</h3>')
-    .replace(/^### (.*?)$/gm,'<h3 style="font-size:.9rem;font-weight:600;margin-top:12px;margin-bottom:4px;color:var(--ink);">$1</h3>')
-    .replace(/^- (.*?)$/gm,'<li style="margin-bottom:3px;padding-left:2px;">$1</li>')
-    .replace(/^(\d+)\. (.*?)$/gm,'<li style="margin-bottom:3px;list-style-type:decimal;">$2</li>')
-    .replace(/(<li[^>]*>.*<\/li>\n?)+/g,'<ul style="padding-left:18px;margin:6px 0;">$&</ul>')
-    .replace(/^---$/gm,'<hr style="border:none;border-top:1px solid var(--rule);margin:12px 0;">')
-    .replace(/`([^`]+)`/g,'<code style="background:var(--rule);padding:1px 4px;border-radius:3px;font-size:.85em;">$1</code>')
-    .replace(/\n\n/g,'<br><br>')
-    .replace(/\n/g,'<br>');
+  // Process line by line for better control
+  var lines = text.split('\n');
+  var result = [];
+  var inUl = false;
+  var inOl = false;
+  var olCounter = 0;
+
+  for(var i=0;i<lines.length;i++){
+    var line = lines[i];
+
+    // Bold and italic
+    line = line.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+    line = line.replace(/\*(.*?)\*/g,'<em>$1</em>');
+    // Inline code
+    line = line.replace(/`([^`]+)`/g,'<code style="background:var(--rule);padding:1px 5px;border-radius:3px;font-size:.85em;font-family:monospace;">$1</code>');
+
+    // Headings
+    if(/^## /.test(line)){
+      if(inUl){result.push('</ul>');inUl=false;}
+      if(inOl){result.push('</ol>');inOl=false;olCounter=0;}
+      result.push('<div style="font-family:var(--font-serif);font-size:1rem;font-weight:700;margin-top:18px;margin-bottom:6px;color:var(--ink);border-bottom:1px solid var(--rule);padding-bottom:4px;">'+line.replace(/^## /,'')+'</div>');
+    } else if(/^### /.test(line)){
+      if(inUl){result.push('</ul>');inUl=false;}
+      if(inOl){result.push('</ol>');inOl=false;olCounter=0;}
+      result.push('<div style="font-size:.9rem;font-weight:600;margin-top:14px;margin-bottom:4px;color:var(--ink);">'+line.replace(/^### /,'')+'</div>');
+    // HR
+    } else if(/^---$/.test(line)){
+      if(inUl){result.push('</ul>');inUl=false;}
+      if(inOl){result.push('</ol>');inOl=false;olCounter=0;}
+      result.push('<hr style="border:none;border-top:1px solid var(--rule);margin:12px 0;">');
+    // Unordered list
+    } else if(/^- /.test(line)||/^\* /.test(line)){
+      if(inOl){result.push('</ol>');inOl=false;olCounter=0;}
+      if(!inUl){result.push('<ul style="padding-left:20px;margin:6px 0;">');inUl=true;}
+      result.push('<li style="margin-bottom:4px;">'+line.replace(/^[-\*] /,'')+'</li>');
+    // Ordered list - preserve actual numbers
+    } else if(/^\d+\.\s/.test(line)){
+      if(inUl){result.push('</ul>');inUl=false;}
+      var num = parseInt(line.match(/^(\d+)/)[1]);
+      var itemText = line.replace(/^\d+\.\s/,'');
+      if(!inOl){
+        result.push('<ol style="padding-left:20px;margin:6px 0;">');
+        inOl=true;
+      }
+      result.push('<li value="'+num+'" style="margin-bottom:4px;">'+itemText+'</li>');
+    // Empty line
+    } else if(line.trim()===''){
+      if(inUl){result.push('</ul>');inUl=false;}
+      if(inOl){result.push('</ol>');inOl=false;olCounter=0;}
+      result.push('<br>');
+    // Regular line
+    } else {
+      if(inUl){result.push('</ul>');inUl=false;}
+      if(inOl){result.push('</ol>');inOl=false;olCounter=0;}
+      result.push('<span>'+line+'</span><br>');
+    }
+  }
+  if(inUl)result.push('</ul>');
+  if(inOl)result.push('</ol>');
+  return result.join('');
 }
 
 function showTyping(){
