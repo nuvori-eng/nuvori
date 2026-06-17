@@ -1165,9 +1165,12 @@ function showUpgradeBanner(msg) {
   banner.id = 'upgrade-banner';
   banner.style.cssText = 'background:#0f1a14;color:#fff;text-align:center;padding:12px 24px;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:16px;border-top:1px solid rgba(255,255,255,.08);';
   var upgradeBtn = document.createElement('button');
-  upgradeBtn.textContent = 'Upgrade to Pro';
+  upgradeBtn.textContent = 'See plans';
   upgradeBtn.style.cssText = 'background:#7ed4a8;color:#0f1a14;border:none;padding:7px 16px;border-radius:4px;font-weight:600;cursor:pointer;font-size:.8rem;';
-  upgradeBtn.addEventListener('click', function(){ startCheckout('pro'); });
+  upgradeBtn.addEventListener('click', function(){
+    var pricingSection = document.getElementById('pricing');
+    if(pricingSection) pricingSection.scrollIntoView({behavior:'smooth'});
+  });
   var msgSpan = document.createElement('span');
   msgSpan.textContent = msg;
   banner.appendChild(msgSpan);
