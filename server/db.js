@@ -48,7 +48,10 @@ function createUser({ id, email, passwordHash = null, plan = 'starter', stripeCu
     stripeSubscriptionId: null,
     resetToken: null,
     resetTokenExpires: null,
+    emailVerified: false,
+    verifyToken: null,
     createdAt: new Date().toISOString(),
+    conversations: {},
     usage: {
       resume:      { count: 0, resetAt: nextMonthISO() },
       coverletter: { count: 0, resetAt: nextMonthISO() },
@@ -70,6 +73,11 @@ function createUser({ id, email, passwordHash = null, plan = 'starter', stripeCu
 function getUserByResetToken(token) {
   const db = load();
   return Object.values(db.users).find(u => u.resetToken === token) || null;
+}
+
+function getUserByVerifyToken(token) {
+  const db = load();
+  return Object.values(db.users).find(u => u.verifyToken === token) || null;
 }
 
 function updateUser(email, updates) {
@@ -115,12 +123,38 @@ function nextMonthISO() {
   return d.toISOString();
 }
 
+// ── Conversation persistence ────────────────────────────────────────────
+// Stores the last MAX_HISTORY messages per feature, per user, so chats
+// survive page reloads and sync across devices. Caps growth on the flat file.
+const MAX_HISTORY_MESSAGES = 30;
+
+function saveConversation(email, feature, messages) {
+  const db   = load();
+  const key  = email.toLowerCase();
+  const user = db.users[key];
+  if (!user) return null;
+
+  if (!user.conversations) user.conversations = {};
+  user.conversations[feature] = messages.slice(-MAX_HISTORY_MESSAGES);
+
+  save(db);
+  return user;
+}
+
+function getConversations(email) {
+  const user = getUser(email);
+  return (user && user.conversations) || {};
+}
+
 module.exports = {
   getUser,
   getUserById,
   getUserByResetToken,
+  getUserByVerifyToken,
   createUser,
   updateUser,
   updateUserByStripeCustomerId,
   incrementUsage,
+  saveConversation,
+  getConversations,
 };
