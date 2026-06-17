@@ -260,7 +260,7 @@ footer{background:var(--ink);padding:72px 56px 40px;}
 </head>
 <body>
 <nav id="main-nav">
-  <div class="nav-logo">Nuvori</div>
+  <div class="nav-logo" id="nav-logo-home" style="cursor:pointer;">Nuvori</div>
   <ul>
     <li><a href="#features">Features</a></li>
     <li><a href="#how">How it works</a></li>
@@ -344,7 +344,7 @@ footer{background:var(--ink);padding:72px 56px 40px;}
     <div class="chat-layout">
       <div class="chat-sidebar">
         <div class="chat-sidebar-header">
-          <div class="ivy-brand"><span class="ivy-dot"></span>Nuvori AI</div>
+          <div class="ivy-brand" id="ivy-brand-home" style="cursor:pointer;"><span class="ivy-dot"></span>Nuvori AI</div>
           <div class="ivy-tagline">Powered by Claude</div>
           <div style="margin-top:6px;display:flex;align-items:center;gap:8px;"><span id="plan-badge"></span><span id="usage-badge"></span></div>
         </div>
@@ -1109,6 +1109,13 @@ function collapseChat() {
   }
 }
 
+function goToHome() {
+  collapseChat();
+  var home = document.getElementById('home');
+  if(home) home.scrollIntoView({behavior:'smooth'});
+  else window.scrollTo({top:0, behavior:'smooth'});
+}
+
 function setFeature(f) {
   if(currentFeature && currentFeature !== f) {
     featureHistories[currentFeature] = conversationHistory.slice();
@@ -1433,6 +1440,12 @@ document.addEventListener('DOMContentLoaded', function() {
       if(layout && layout.classList.contains('expanded')) collapseChat();
     }
   });
+
+  // Logo click -> back to home landing screen
+  var navLogo = document.getElementById('nav-logo-home');
+  if(navLogo) navLogo.addEventListener('click', goToHome);
+  var ivyBrand = document.getElementById('ivy-brand-home');
+  if(ivyBrand) ivyBrand.addEventListener('click', goToHome);
 
   // Smooth scroll for nav links (skip nav-cta-btn)
   document.querySelectorAll('a[href^="#"]').forEach(function(a) {
