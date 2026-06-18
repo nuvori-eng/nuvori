@@ -27,6 +27,29 @@ function issueToken(userId) {
   });
 }
 
+async function sendEmail(to, subject, html) {
+  try {
+    await resend.emails.send({
+      from: 'Nuvori <noreply@nuvoriai.com>',
+      to,
+      subject,
+      html,
+    });
+  } catch (err) {
+    // Don't block the main request if email fails — just log it
+    console.error('Email send error:', err);
+  }
+}
+
+function emailWrapper(innerHtml) {
+  return `
+    <div style="font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;color:#0f0f0d;">
+      ${innerHtml}
+      <p style="font-size:12px;color:#b0b0a8;margin-top:32px;border-top:1px solid #eee;padding-top:16px;">Nuvori AI &middot; nuvoriai.com</p>
+    </div>
+  `;
+}
+
 // ── POST /api/auth/signup ──────────────────────────────────────────────────
 router.post('/signup', async (req, res) => {
   try {
@@ -43,20 +66,34 @@ router.post('/signup', async (req, res) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
+    const verifyToken = crypto.randomBytes(32).toString('hex');
     const user = db.createUser({
       id: uuidv4(),
       email,
       passwordHash,
       plan: 'starter',
     });
+    db.updateUser(email, { emailVerified: false, verifyToken });
 
     const token = issueToken(user.id);
     res.cookie('landit_token', token, COOKIE_OPTS);
 
+    const verifyUrl = `${process.env.FRONTEND_URL}/?verify_token=${verifyToken}`;
+    sendEmail(
+      user.email,
+      'Welcome to Nuvori — verify your email',
+      emailWrapper(`
+        <h2 style="font-family:Georgia,serif;">Welcome to Nuvori</h2>
+        <p style="font-size:15px;line-height:1.6;color:#5a5a52;">Your account is ready. Before you get started, please verify your email address by clicking the button below.</p>
+        <a href="${verifyUrl}" style="display:inline-block;background:#0f1a14;color:#ffffff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;margin:16px 0;">Verify Email</a>
+        <p style="font-size:15px;line-height:1.6;color:#5a5a52;margin-top:20px;">Once verified, you're ready to rewrite your resume, prep for interviews, and land your next role with Nuvori AI.</p>
+      `)
+    );
+
     return res.status(201).json({
       message: 'Account created.',
       token,
-      user: safeUser(user),
+      user: safeUser(db.getUser(email)),
     });
   } catch (err) {
     console.error('Signup error:', err);
@@ -118,6 +155,7 @@ router.post('/google', async (req, res) => {
     }
 
     let user = db.getUser(email);
+    let isNewUser = false;
 
     if (!user) {
       user = db.createUser({
@@ -127,6 +165,7 @@ router.post('/google', async (req, res) => {
         authProvider: 'google',
         googleId,
       });
+      isNewUser = true;
     } else if (!user.googleId) {
       // Existing email/password account signing in with Google for the first time
       user = db.updateUser(email, { googleId, authProvider: user.authProvider === 'email' ? 'email' : 'google' });
@@ -139,6 +178,7 @@ router.post('/google', async (req, res) => {
       message: 'Logged in with Google.',
       token,
       user: safeUser(user),
+      isNewUser,
     });
   } catch (err) {
     console.error('Google auth error:', err);
@@ -220,6 +260,28 @@ router.post('/reset-password', async (req, res) => {
     return res.json({ message: 'Password reset successfully. You can now sign in.' });
   } catch (err) {
     console.error('Reset password error:', err);
+    return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ── POST /api/auth/verify-email ────────────────────────────────────────────
+router.post('/verify-email', async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).json({ error: 'Verification token is required.' });
+    }
+
+    const user = db.getUserByVerifyToken(token);
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid or expired verification link.' });
+    }
+
+    db.updateUser(user.email, { emailVerified: true, verifyToken: null });
+
+    return res.json({ message: 'Email verified successfully.' });
+  } catch (err) {
+    console.error('Verify email error:', err);
     return res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

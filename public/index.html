@@ -9,6 +9,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<!-- TikTok Pixel Code Start -->
+<script>
+!function (w, d, t) {
+  w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
+var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
+;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+  ttq.load('D8PK5KRC77U8KI7III2G');
+  ttq.page();
+}(window, document, 'ttq');
+</script>
+<!-- TikTok Pixel Code End -->
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -641,6 +652,9 @@ function submitAuth() {
     var modal = document.getElementById('auth-modal');
     if(modal) modal.style.display = 'none';
     updateAuthUI();
+    if(authMode === 'signup' && window.ttq) {
+      ttq.track('CompleteRegistration');
+    }
   })
   .catch(function() {
     showAuthError('Connection error. Please try again.');
@@ -785,10 +799,35 @@ function initAuth() {
   fetch('/api/auth/me', {headers: {'Authorization': 'Bearer ' + authToken}})
     .then(function(r){ return r.json(); })
     .then(function(d) {
-      if(d.user) { currentUser = d.user; updateAuthUI(); loadSavedConversations(); }
+      if(d.user) {
+        currentUser = d.user;
+        updateAuthUI();
+        loadSavedConversations();
+        handlePostCheckoutRedirect();
+      }
       else { authToken = null; localStorage.removeItem('nuvori_token'); }
     })
     .catch(function() { authToken = null; localStorage.removeItem('nuvori_token'); });
+}
+
+function handlePostCheckoutRedirect() {
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('upgraded') !== 'true') return;
+
+  var planPrices = {core: 19, pro: 39};
+  var plan = currentUser ? currentUser.plan : null;
+  var value = planPrices[plan] || 0;
+
+  if(window.ttq && value > 0) {
+    ttq.track('Purchase', {value: value, currency: 'USD', content_id: plan, content_type: 'product'});
+  }
+
+  // Strip the param so refreshing this page never double-fires the purchase event
+  var url = new URL(window.location.href);
+  url.searchParams.delete('upgraded');
+  window.history.replaceState({}, '', url.toString());
+
+  showVerifyBanner("You're all set! Your " + (plan ? plan.charAt(0).toUpperCase() + plan.slice(1) : '') + " plan is active.", true);
 }
 
 function loadSavedConversations() {
@@ -898,6 +937,9 @@ function handleGoogleCredential(response) {
     var modal = document.getElementById('auth-modal');
     if(modal) modal.style.display = 'none';
     updateAuthUI();
+    if(result.data.isNewUser && window.ttq) {
+      ttq.track('CompleteRegistration');
+    }
   })
   .catch(function() {
     showAuthError('Could not sign in with Google. Please try again.');
