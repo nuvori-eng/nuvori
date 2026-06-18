@@ -7,7 +7,10 @@ const { requireAuth } = require('../middleware/auth');
 const { checkLimit }  = require('../plans');
 
 const router  = express.Router();
-const claude  = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const claude  = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+  defaultHeaders: { 'Accept-Encoding': 'identity' },
+});
 
 const SYSTEM_PROMPTS = {
 
