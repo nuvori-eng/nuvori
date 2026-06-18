@@ -1565,7 +1565,6 @@ async function executeStream(feature, historyForRequest, refs) {
             finalizeStreamingBubble(refs, fullText);
             conversationHistory.push({role:'assistant',content:fullText});
             updateUsageBadge(data.usage);
-            if(feature === 'resume') showPDFButton();
           }
         } catch(e) {}
       }
