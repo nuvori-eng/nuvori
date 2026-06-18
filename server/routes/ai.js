@@ -187,67 +187,75 @@ Make it specific to their role and industry, not generic advice.`
 
 // ── POST /api/ai/chat ──────────────────────────────────────────────────────
 router.post('/chat', requireAuth, async (req, res) => {
+  const { feature, messages } = req.body;
+
+  if (!SYSTEM_PROMPTS[feature]) {
+    return res.status(400).json({ error: 'Invalid feature.' });
+  }
+
+  const limit = checkLimit(req.user, feature);
+  if (!limit.allowed) {
+    return res.status(403).json({
+      error: limit.reason,
+      upgradeRequired: true,
+      plan: req.user.plan,
+    });
+  }
+
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return res.status(400).json({ error: 'Messages are required.' });
+  }
+
+  const trimmedMessages = messages.slice(-20);
+
+  // SSE headers — X-Accel-Buffering disables Nginx buffering on Render
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders();
+
+  let fullText = '';
+
   try {
-    const { feature, messages } = req.body;
-
-    if (!SYSTEM_PROMPTS[feature]) {
-      return res.status(400).json({ error: 'Invalid feature.' });
-    }
-
-    const limit = checkLimit(req.user, feature);
-    if (!limit.allowed) {
-      return res.status(403).json({
-        error: limit.reason,
-        upgradeRequired: true,
-        plan: req.user.plan,
-      });
-    }
-
-    if (!Array.isArray(messages) || messages.length === 0) {
-      return res.status(400).json({ error: 'Messages are required.' });
-    }
-
-    const trimmedMessages = messages.slice(-20);
-
-    const response = await claude.messages.create({
+    const stream = claude.messages.stream({
       model:      'claude-sonnet-4-6',
       max_tokens: 4000,
       system:     SYSTEM_PROMPTS[feature],
       messages:   trimmedMessages,
+    }).on('text', (text) => {
+      fullText += text;
+      res.write(`data: ${JSON.stringify({ text })}\n\n`);
     });
 
-    const reply = response.content
-      .filter(b => b.type === 'text')
-      .map(b => b.text)
-      .join('');
+    await stream.finalMessage();
 
     db.incrementUsage(req.user.email, feature);
     const updatedUser = db.getUser(req.user.email);
     const remaining   = checkLimit(updatedUser, feature);
 
-    // Persist the conversation (sans raw file attachments) so it survives reloads
-    const historyToSave = trimmedMessages.concat([{ role: 'assistant', content: reply }]);
+    const historyToSave = trimmedMessages.concat([{ role: 'assistant', content: fullText }]);
     db.saveConversation(req.user.email, feature, historyToSave);
 
-    return res.json({
-      reply,
-      usage: {
-        feature,
-        remaining: remaining.remaining,
-        plan: req.user.plan,
-      }
-    });
+    res.write(`data: ${JSON.stringify({ done: true, usage: { feature, remaining: remaining.remaining, plan: req.user.plan } })}\n\n`);
+    res.end();
 
   } catch (err) {
     console.error('AI chat error:', err);
-    if (err.status === 401) {
-      return res.status(500).json({ error: 'AI service authentication failed.' });
-    }
-    if (err.status === 429) {
-      return res.status(429).json({ error: 'Too many requests. Please wait a moment and try again.' });
-    }
-    return res.status(500).json({ error: 'AI service unavailable. Please try again.' });
+    const errorMsg = err.status === 401 ? 'AI service authentication failed.'
+      : err.status === 429 ? 'Too many requests. Please wait a moment and try again.'
+      : 'AI service unavailable. Please try again.';
+    res.write(`data: ${JSON.stringify({ error: errorMsg })}\n\n`);
+    res.end();
   }
+});
+
+// ── DELETE /api/ai/conversations/:feature ─────────────────────────────────
+router.delete('/conversations/:feature', requireAuth, (req, res) => {
+  const { feature } = req.params;
+  if (!SYSTEM_PROMPTS[feature]) return res.status(400).json({ error: 'Invalid feature.' });
+  db.saveConversation(req.user.email, feature, []);
+  return res.json({ ok: true });
 });
 
 // ── GET /api/ai/usage ──────────────────────────────────────────────────────

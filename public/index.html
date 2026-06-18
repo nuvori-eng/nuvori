@@ -280,6 +280,27 @@ footer{background:var(--ink);padding:72px 56px 40px;}
 .fi-ring2{animation:fi-ring 2.4s ease-in-out infinite .4s;}
 .fi-check{stroke-dasharray:24;stroke-dashoffset:24;animation:fi-check 3s ease-in-out infinite;}
 .fi-blink{animation:fi-blink 2.6s ease-in-out infinite;}
+/* ── STREAMING ── */
+.streaming-text{white-space:pre-wrap;font-size:.875rem;line-height:1.7;word-break:break-word;}
+.streaming-cursor::after{content:'▋';animation:cursor-blink .7s step-end infinite;color:var(--accent);margin-left:1px;}
+@keyframes cursor-blink{0%,100%{opacity:1;}50%{opacity:0;}}
+/* ── SCROLL TO BOTTOM ── */
+.chat-main{position:relative;}
+#scroll-bottom-btn{position:absolute;bottom:76px;right:16px;width:34px;height:34px;border-radius:50%;border:1px solid var(--rule);background:var(--white);box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--mid);z-index:20;transition:all .15s;}
+#scroll-bottom-btn:hover{background:var(--off);transform:translateY(-1px);}
+#scroll-bottom-btn.visible{display:flex;}
+/* ── TOPBAR ICON BUTTONS ── */
+.topbar-icon-btn{display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--soft);cursor:pointer;padding:5px;border-radius:4px;transition:all .15s;flex-shrink:0;}
+.topbar-icon-btn:hover{background:var(--rule);color:var(--ink);}
+.topbar-icon-btn.muted{color:var(--rule);}
+/* ── RETRY BUTTON ── */
+.retry-btn{display:inline-flex;align-items:center;margin-top:10px;font-size:.75rem;font-weight:600;color:var(--accent);background:var(--green-light);border:1px solid rgba(45,106,79,.2);border-radius:100px;padding:5px 14px;cursor:pointer;font-family:var(--font-body);transition:all .15s;}
+.retry-btn:hover{background:#cce8d8;}
+/* ── TIMESTAMPS ── */
+.msg-time{font-size:.6rem;color:var(--soft);margin-top:6px;opacity:0;transition:opacity .2s;display:block;}
+.msg.user .msg-time{text-align:right;}
+.msg.ai .msg-time{text-align:left;}
+.msg:hover .msg-time{opacity:1;}
 </style>
 </head>
 <body>
@@ -405,10 +426,19 @@ footer{background:var(--ink);padding:72px 56px 40px;}
             <button class="chat-collapse-btn" id="chat-collapse-btn" title="Exit full screen">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="M14 10l7-7"/><path d="M3 21l7-7"/></svg>
             </button>
-            <span>Nuvori.ai</span>
+            <button class="topbar-icon-btn" id="new-chat-btn" title="New conversation">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </button>
+            <button class="topbar-icon-btn" id="sound-toggle-btn" title="Sound on">
+              <svg id="sound-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>
+            </button>
+            <span style="font-size:.7rem;color:var(--soft);letter-spacing:.06em;text-transform:uppercase;">Nuvori.ai</span>
           </div>
         </div>
         <div class="chat-messages" id="chat-messages"></div>
+        <button id="scroll-bottom-btn" title="Scroll to bottom">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 15l7 7 7-7"/></svg>
+        </button>
         <div class="chat-input-wrap">
           <div class="attach-preview" id="attachment-preview"></div>
           <div class="input-inner-wrap">
@@ -1223,27 +1253,7 @@ function setFeature(f) {
     conversationHistory = [];
     msgEl.innerHTML = '';
     addMessage('ai', featureWelcomes[f]);
-    var prompts = featurePrompts[f];
-    if(prompts) {
-      var lastBubble = msgEl.querySelector('.msg.ai:last-child .msg-bubble');
-      if(lastBubble) {
-        var chipsDiv = document.createElement('div');
-        chipsDiv.className = 'prompt-chips';
-        prompts.forEach(function(p) {
-          var chip = document.createElement('button');
-          chip.className = 'prompt-chip';
-          chip.textContent = p;
-          chip.addEventListener('click', function() {
-            chipsDiv.remove();
-            var inp = document.getElementById('chat-input');
-            if(inp) { inp.value = p; inp.dispatchEvent(new Event('input')); inp.focus(); }
-            sendMessage();
-          });
-          chipsDiv.appendChild(chip);
-        });
-        lastBubble.appendChild(chipsDiv);
-      }
-    }
+    appendPromptChips(f);
   }
   var pdfBtn = document.getElementById('pdf-btn-wrap');
   if(pdfBtn && f !== 'resume') pdfBtn.remove();
@@ -1284,22 +1294,47 @@ function addMessage(role, text, attachments) {
   bubble.innerHTML += formatMessage(text);
   if(role === 'ai') {
     var copyBtn = document.createElement('button');
-    copyBtn.className = 'msg-copy-btn';
-    copyBtn.title = 'Copy';
+    copyBtn.className = 'msg-copy-btn'; copyBtn.title = 'Copy';
     copyBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
     copyBtn.addEventListener('click', function(){
-      navigator.clipboard.writeText(bubble.innerText || bubble.textContent).then(function(){
-        copyBtn.classList.add('copied');
-        copyBtn.title = 'Copied!';
-        setTimeout(function(){ copyBtn.classList.remove('copied'); copyBtn.title = 'Copy'; }, 2000);
+      navigator.clipboard.writeText(bubble.innerText||bubble.textContent).then(function(){
+        copyBtn.classList.add('copied'); copyBtn.title='Copied!';
+        setTimeout(function(){ copyBtn.classList.remove('copied'); copyBtn.title='Copy'; },2000);
       });
     });
     bubble.appendChild(copyBtn);
   }
+  var timeEl = document.createElement('div');
+  timeEl.className = 'msg-time';
+  timeEl.textContent = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  bubble.appendChild(timeEl);
   div.appendChild(avatar);
   div.appendChild(bubble);
   el.appendChild(div);
   el.scrollTop = el.scrollHeight;
+}
+
+// ── PROMPT CHIPS HELPER ──
+function appendPromptChips(feature) {
+  var msgEl = document.getElementById('chat-messages');
+  if(!msgEl) return;
+  var lastBubble = msgEl.querySelector('.msg.ai:last-child .msg-bubble');
+  var prompts = featurePrompts[feature];
+  if(!lastBubble || !prompts) return;
+  var chipsDiv = document.createElement('div');
+  chipsDiv.className = 'prompt-chips';
+  prompts.forEach(function(p) {
+    var chip = document.createElement('button');
+    chip.className = 'prompt-chip'; chip.textContent = p;
+    chip.addEventListener('click', function() {
+      chipsDiv.remove();
+      var inp = document.getElementById('chat-input');
+      if(inp) { inp.value = p; inp.dispatchEvent(new Event('input')); inp.focus(); }
+      sendMessage();
+    });
+    chipsDiv.appendChild(chip);
+  });
+  lastBubble.appendChild(chipsDiv);
 }
 
 function formatMessage(text) {
@@ -1378,7 +1413,171 @@ function removeTyping() {
   if(t) t.remove();
 }
 
-function sendMessage() {
+// ── SOUND ──
+var soundEnabled = localStorage.getItem('nuvori_sound') !== 'off';
+function playPopSound() {
+  if(!soundEnabled) return;
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.07, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.12);
+  } catch(e) {}
+}
+
+// ── STREAMING BUBBLE ──
+function addStreamingBubble() {
+  var el = document.getElementById('chat-messages');
+  if(!el) return null;
+  var div = document.createElement('div');
+  div.className = 'msg ai'; div.id = 'streaming-msg';
+  var avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.innerHTML = getFeatureIcon(currentFeature, 15);
+  var bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  var content = document.createElement('span');
+  content.className = 'streaming-text streaming-cursor';
+  bubble.appendChild(content);
+  div.appendChild(avatar); div.appendChild(bubble);
+  el.appendChild(div); el.scrollTop = el.scrollHeight;
+  return {div:div, bubble:bubble, content:content};
+}
+
+function updateStreamingBubble(refs, text) {
+  if(!refs) return;
+  refs.content.textContent = text;
+  var el = document.getElementById('chat-messages');
+  if(el) el.scrollTop = el.scrollHeight;
+}
+
+function finalizeStreamingBubble(refs, text) {
+  if(!refs) return;
+  refs.div.id = '';
+  refs.bubble.innerHTML = formatMessage(text);
+  var copyBtn = document.createElement('button');
+  copyBtn.className = 'msg-copy-btn'; copyBtn.title = 'Copy';
+  copyBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+  copyBtn.addEventListener('click', function(){
+    navigator.clipboard.writeText(refs.bubble.innerText||refs.bubble.textContent).then(function(){
+      copyBtn.classList.add('copied'); copyBtn.title='Copied!';
+      setTimeout(function(){ copyBtn.classList.remove('copied'); copyBtn.title='Copy'; },2000);
+    });
+  });
+  refs.bubble.appendChild(copyBtn);
+  var timeEl = document.createElement('div');
+  timeEl.className = 'msg-time';
+  timeEl.textContent = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  refs.bubble.appendChild(timeEl);
+  var el = document.getElementById('chat-messages');
+  if(el) el.scrollTop = el.scrollHeight;
+}
+
+function removeStreamingBubble(refs) {
+  if(refs && refs.div) refs.div.remove();
+}
+
+// ── ERROR MESSAGE ──
+function addErrorMessage(errorText, canRetry) {
+  var el = document.getElementById('chat-messages');
+  if(!el) return;
+  var div = document.createElement('div');
+  div.className = 'msg ai';
+  var avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.innerHTML = getFeatureIcon(currentFeature, 15);
+  var bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.innerHTML = '<span style="color:#991b1b;">' + (errorText||'Something went wrong.') + '</span>';
+  if(canRetry) {
+    var retryBtn = document.createElement('button');
+    retryBtn.className = 'retry-btn'; retryBtn.textContent = 'Try again';
+    retryBtn.addEventListener('click', function(){ div.remove(); retryFromHistory(); });
+    bubble.appendChild(retryBtn);
+  }
+  div.appendChild(avatar); div.appendChild(bubble);
+  el.appendChild(div); el.scrollTop = el.scrollHeight;
+}
+
+// ── RETRY ──
+var _lastHistoryForRequest = null;
+var _lastFeatureForRequest = null;
+
+function retryFromHistory() {
+  if(!_lastHistoryForRequest || isLoading) return;
+  isLoading = true;
+  document.getElementById('send-btn').disabled = true;
+  var refs = addStreamingBubble();
+  executeStream(_lastFeatureForRequest, _lastHistoryForRequest, refs)
+    .finally(function(){
+      isLoading = false;
+      document.getElementById('send-btn').disabled = false;
+      var inp = document.getElementById('chat-input');
+      if(inp) inp.focus();
+    });
+}
+
+// ── EXECUTE STREAM ──
+async function executeStream(feature, historyForRequest, refs) {
+  var fullText = '';
+  try {
+    var response = await fetch('/api/ai/chat', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+authToken},
+      credentials: 'include',
+      body: JSON.stringify({feature:feature, messages:historyForRequest})
+    });
+    var contentType = response.headers.get('content-type') || '';
+    if(!contentType.includes('text/event-stream')) {
+      var errData = await response.json();
+      removeStreamingBubble(refs);
+      if(response.status === 403 && errData.upgradeRequired) {
+        addMessage('ai', errData.error);
+        showUpgradeBanner(errData.error);
+      } else {
+        addErrorMessage(errData.error || 'Something went wrong.', true);
+      }
+      return;
+    }
+    var reader = response.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = '';
+    while(true) {
+      var result = await reader.read();
+      if(result.done) break;
+      buffer += decoder.decode(result.value, {stream:true});
+      var lines = buffer.split('\n');
+      buffer = lines.pop();
+      for(var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        if(!line.startsWith('data: ')) continue;
+        try {
+          var data = JSON.parse(line.slice(6));
+          if(data.text) { fullText += data.text; updateStreamingBubble(refs, fullText); }
+          if(data.error) { removeStreamingBubble(refs); addErrorMessage(data.error, true); return; }
+          if(data.done) {
+            finalizeStreamingBubble(refs, fullText);
+            conversationHistory.push({role:'assistant',content:fullText});
+            updateUsageBadge(data.usage);
+            if(feature === 'resume') showPDFButton();
+          }
+        } catch(e) {}
+      }
+    }
+  } catch(err) {
+    removeStreamingBubble(refs);
+    addErrorMessage('Connection issue — please try again.', true);
+  }
+}
+
+// ── SEND MESSAGE ──
+async function sendMessage() {
   if(!currentUser) { showAuthModal('signup'); return; }
   var input = document.getElementById('chat-input');
   var text = input.value.trim();
@@ -1389,6 +1588,7 @@ function sendMessage() {
   input.value = ''; input.style.height = 'auto';
   isLoading = true;
   document.getElementById('send-btn').disabled = true;
+  playPopSound();
   addMessage('user', text || '(see attached file)', filesToSend);
   var userContent = [];
   filesToSend.forEach(function(pf) {
@@ -1396,49 +1596,49 @@ function sendMessage() {
     else if(pf.isPDF) userContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:pf.base64}});
   });
   if(text) userContent.push({type:'text',text:text});
-  else userContent.push({type:'text',text:'Please analyze the attached file in the context of ' + currentFeature + '.'});
+  else userContent.push({type:'text',text:'Please analyze the attached file in the context of '+currentFeature+'.'});
   conversationHistory.push({role:'user',content:userContent});
-
-  // Strip raw file data from older turns before sending, so attachments aren't
-  // re-uploaded on every single message (causes large/slow requests over time).
-  var historyForRequest = conversationHistory.map(function(m, idx) {
-    if(idx === conversationHistory.length - 1) return m;
+  var historyForRequest = conversationHistory.map(function(m,idx) {
+    if(idx === conversationHistory.length-1) return m;
     if(Array.isArray(m.content)) {
       var stripped = m.content.map(function(block) {
-        if(block.type === 'image' || block.type === 'document') {
-          return {type:'text', text:'[attached file already reviewed earlier in this conversation]'};
-        }
+        if(block.type==='image'||block.type==='document') return {type:'text',text:'[attached file already reviewed earlier in this conversation]'};
         return block;
       });
-      return {role:m.role, content:stripped};
+      return {role:m.role,content:stripped};
     }
     return m;
   });
+  _lastHistoryForRequest = historyForRequest;
+  _lastFeatureForRequest = currentFeature;
+  var refs = addStreamingBubble();
+  await executeStream(currentFeature, historyForRequest, refs);
+  isLoading = false;
+  document.getElementById('send-btn').disabled = false;
+  input.focus();
+}
 
-  showTyping();
-  fetch('/api/ai/chat', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json','Authorization':'Bearer ' + authToken},
-    credentials: 'include',
-    body: JSON.stringify({feature: currentFeature, messages: historyForRequest})
-  })
-  .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,status:r.status,data:d}; }); })
-  .then(function(result) {
-    removeTyping();
-    if(result.status === 403 && result.data.upgradeRequired) {
-      addMessage('ai', result.data.error);
-      showUpgradeBanner(result.data.error);
-    } else if(!result.ok) {
-      addMessage('ai', result.data.error || 'Something went wrong. Please try again.');
-    } else {
-      conversationHistory.push({role:'assistant',content:result.data.reply});
-      addMessage('ai', result.data.reply);
-      updateUsageBadge(result.data.usage);
-      if(currentFeature === 'resume') showPDFButton();
-    }
-  })
-  .catch(function(){ removeTyping(); addMessage('ai','Connection issue — please try again.'); })
-  .finally(function(){ isLoading=false; document.getElementById('send-btn').disabled=false; input.focus(); });
+// ── NEW CONVERSATION ──
+function newConversation() {
+  if(!conversationHistory.length && !featureHistories[currentFeature]) return;
+  if(!confirm('Start a new conversation? This will clear the current chat.')) return;
+  conversationHistory = [];
+  featureHistories[currentFeature] = [];
+  featureMessages[currentFeature] = '';
+  _lastHistoryForRequest = null;
+  if(authToken) {
+    fetch('/api/ai/conversations/'+currentFeature, {
+      method:'DELETE', headers:{'Authorization':'Bearer '+authToken}
+    }).catch(function(){});
+  }
+  var pdfBtn = document.getElementById('pdf-btn-wrap');
+  if(pdfBtn) pdfBtn.remove();
+  var upgradeBar = document.getElementById('upgrade-banner');
+  if(upgradeBar) upgradeBar.remove();
+  var msgEl = document.getElementById('chat-messages');
+  if(msgEl) msgEl.innerHTML = '';
+  addMessage('ai', featureWelcomes[currentFeature]);
+  appendPromptChips(currentFeature);
 }
 
 function updateUsageBadge(usage) {
@@ -1731,6 +1931,53 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     })
     .catch(function(){});
+  }
+
+  // New conversation button
+  var newChatBtn = document.getElementById('new-chat-btn');
+  if(newChatBtn) newChatBtn.addEventListener('click', newConversation);
+
+  // Sound toggle
+  var soundBtn = document.getElementById('sound-toggle-btn');
+  var soundIconEl = document.getElementById('sound-icon');
+  function updateSoundIcon() {
+    if(!soundBtn) return;
+    if(soundEnabled) {
+      soundBtn.classList.remove('muted'); soundBtn.title = 'Sound on (click to mute)';
+      if(soundIconEl) soundIconEl.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/>';
+    } else {
+      soundBtn.classList.add('muted'); soundBtn.title = 'Sound off (click to enable)';
+      if(soundIconEl) soundIconEl.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
+    }
+  }
+  updateSoundIcon();
+  if(soundBtn) soundBtn.addEventListener('click', function() {
+    soundEnabled = !soundEnabled;
+    localStorage.setItem('nuvori_sound', soundEnabled ? 'on' : 'off');
+    updateSoundIcon();
+  });
+
+  // Scroll-to-bottom button
+  var scrollBottomBtn = document.getElementById('scroll-bottom-btn');
+  var chatMsgsEl = document.getElementById('chat-messages');
+  if(chatMsgsEl && scrollBottomBtn) {
+    chatMsgsEl.addEventListener('scroll', function() {
+      var atBottom = chatMsgsEl.scrollHeight - chatMsgsEl.scrollTop - chatMsgsEl.clientHeight < 80;
+      scrollBottomBtn.classList.toggle('visible', !atBottom);
+    }, {passive:true});
+    scrollBottomBtn.addEventListener('click', function() {
+      chatMsgsEl.scrollTo({top:chatMsgsEl.scrollHeight, behavior:'smooth'});
+    });
+  }
+
+  // Mobile keyboard: shrink expanded chat to fit visual viewport on iOS
+  if(window.visualViewport) {
+    window.visualViewport.addEventListener('resize', function() {
+      var layout = document.querySelector('.chat-layout.expanded');
+      if(!layout) return;
+      layout.style.height = window.visualViewport.height + 'px';
+      layout.style.top = window.visualViewport.offsetTop + 'px';
+    });
   }
 
   // Initialize chat and auth
