@@ -10,6 +10,9 @@ const router  = express.Router();
 const claude  = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
   defaultHeaders: { 'Accept-Encoding': 'identity' },
+  // Force Node's built-in fetch (v18+) instead of node-fetch, which has a
+  // Gunzip stream bug that causes ERR_STREAM_PREMATURE_CLOSE on Render.
+  fetch: globalThis.fetch,
 });
 
 const SYSTEM_PROMPTS = {
