@@ -76,7 +76,9 @@ nav.scrolled .nav-cta{background:var(--ink);color:var(--white);border:none;curso
 .step p{font-size:.9rem;color:var(--mid);line-height:1.75;max-width:560px;}
 .chat-layout{display:grid;grid-template-columns:220px 1fr;border:1px solid var(--rule);border-radius:8px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.08);margin-top:60px;background:var(--white);}
 .chat-layout.expanded{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1000;margin-top:0;border:none;border-radius:0;box-shadow:none;width:100%;height:100%;}
-.chat-layout.expanded .chat-messages{max-height:none;min-height:0;}
+.chat-layout.expanded .chat-main{height:100%;min-height:0;}
+.chat-layout.expanded .chat-messages{max-height:none;min-height:0;flex:1 1 auto;}
+.chat-layout.expanded .chat-sidebar{height:100%;overflow-y:auto;}
 .chat-collapse-btn{display:none;background:transparent;border:none;color:var(--soft);cursor:pointer;padding:4px;border-radius:4px;align-items:center;justify-content:center;}
 .chat-collapse-btn:hover{background:var(--off);color:var(--ink);}
 .chat-layout.expanded .chat-collapse-btn{display:flex;}
@@ -93,7 +95,7 @@ body.chat-expanded-active{overflow:hidden;}
 .feat-tab-icon svg{display:block;}
 .feat-tab:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.04);}
 .feat-tab.active{color:var(--white);background:rgba(255,255,255,.07);border-left-color:#4ade80;font-weight:500;}
-.chat-main{display:flex;flex-direction:column;}
+.chat-main{display:flex;flex-direction:column;min-height:0;}
 .chat-topbar{background:var(--off);border-bottom:1px solid var(--rule);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;}
 .chat-topbar-title{font-size:.82rem;font-weight:600;color:var(--ink);}
 .chat-topbar-right{font-size:.7rem;color:var(--soft);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:10px;}
@@ -225,6 +227,7 @@ footer{background:var(--ink);padding:72px 56px 40px;}
 #plan-badge{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(126,212,168,.15);border:1px solid rgba(126,212,168,.3);color:#7ed4a8;padding:3px 8px;border-radius:3px;display:none;}
 #usage-badge{font-size:.7rem;color:rgba(255,255,255,.35);}
 #legal-modal{position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;}
+.mobile-feature-select{display:none;}
 @media(max-width:860px){
   nav{padding:0 24px;}nav ul{display:none;}
   .section{padding:72px 24px;}
@@ -233,6 +236,9 @@ footer{background:var(--ink);padding:72px 56px 40px;}
   .testimonials-grid{grid-template-columns:1fr;}
   .chat-layout{grid-template-columns:1fr;}
   .chat-sidebar{display:none;}
+  .chat-topbar{flex-wrap:wrap;gap:10px;}
+  .chat-topbar-title{flex:1 1 100%;}
+  .mobile-feature-select{display:block;flex:1 1 auto;font-size:.8rem;font-family:var(--font-body);color:var(--ink);background:var(--white);border:1px solid var(--rule);border-radius:6px;padding:7px 10px;}
   footer{padding:48px 24px 32px;}
 }
 @keyframes fi-check{0%,70%,100%{stroke-dashoffset:24;}85%{stroke-dashoffset:0;}}
@@ -365,6 +371,18 @@ footer{background:var(--ink);padding:72px 56px 40px;}
       <div class="chat-main">
         <div class="chat-topbar">
           <div class="chat-topbar-title">Nuvori AI — Your Career Coach</div>
+          <select id="mobile-feature-select" class="mobile-feature-select">
+            <option value="resume">Resume Review</option>
+            <option value="interview">Mock Interview</option>
+            <option value="coverletter">Cover Letter</option>
+            <option value="company">Company Research</option>
+            <option value="career">Career Path</option>
+            <option value="salary">Salary Coach</option>
+            <option value="decoder">JD Decoder</option>
+            <option value="skills">Skills Gap</option>
+            <option value="outreach">Cold Outreach</option>
+            <option value="plan">30/60/90 Plan</option>
+          </select>
           <div class="chat-topbar-right">
             <button class="chat-collapse-btn" id="chat-collapse-btn" title="Exit full screen">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="M14 10l7-7"/><path d="M3 21l7-7"/></svg>
@@ -479,7 +497,7 @@ footer{background:var(--ink);padding:72px 56px 40px;}
       <div style="flex:1;height:1px;background:var(--rule);"></div>
     </div>
     <div id="google-signin-btn" style="display:flex;justify-content:center;"></div>
-    <p class="modal-note">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+    <p class="modal-note">By continuing you agree to our <a href="#" onclick="showLegal('terms');return false;">Terms</a> and <a href="#" onclick="showLegal('privacy');return false;">Privacy Policy</a>.</p>
   </div>
 
   <div class="modal-box" id="forgot-password-box" style="display:none;position:relative;">
@@ -1124,6 +1142,14 @@ function setFeature(f) {
   currentFeature = f;
   pendingFiles = [];
   renderPreview();
+
+  // Keep sidebar tabs and mobile dropdown in sync regardless of which one triggered the change
+  document.querySelectorAll('.feat-tab').forEach(function(t){
+    t.classList.toggle('active', t.dataset.feature === f);
+  });
+  var mobileSelect = document.getElementById('mobile-feature-select');
+  if(mobileSelect && mobileSelect.value !== f) mobileSelect.value = f;
+
   var msgEl = document.getElementById('chat-messages');
   if(!msgEl) return;
   if(featureHistories[f] && featureHistories[f].length > 0) {
@@ -1509,9 +1535,16 @@ document.addEventListener('DOMContentLoaded', function() {
       if(!tab) return;
       var f = tab.dataset.feature;
       if(f === currentFeature) return;
-      document.querySelectorAll('.feat-tab').forEach(function(t){ t.classList.remove('active'); });
-      tab.classList.add('active');
       setFeature(f);
+    });
+  }
+
+  // Mobile feature dropdown
+  var mobileSelect = document.getElementById('mobile-feature-select');
+  if(mobileSelect) {
+    mobileSelect.addEventListener('change', function() {
+      if(mobileSelect.value === currentFeature) return;
+      setFeature(mobileSelect.value);
     });
   }
 
