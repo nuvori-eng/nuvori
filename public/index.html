@@ -119,9 +119,16 @@ body.chat-expanded-active{overflow:hidden;}
 .msg-avatar{width:28px;height:28px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;}
 .msg.ai .msg-avatar{background:#0f1a14;color:#4ade80;}
 .msg.user .msg-avatar{background:var(--off);color:var(--ink);border:1px solid var(--rule);}
-.msg-bubble{padding:12px 16px;border-radius:6px;font-size:.875rem;line-height:1.7;}
-.msg.ai .msg-bubble{background:var(--off);border:1px solid var(--rule);color:var(--ink);}
+.msg-bubble{padding:12px 16px;border-radius:6px;font-size:.875rem;line-height:1.7;position:relative;}
+.msg.ai .msg-bubble{background:var(--off);border:1px solid var(--rule);border-left:2px solid var(--accent);color:var(--ink);}
 .msg.user .msg-bubble{background:#0f1a14;color:var(--white);}
+.msg-copy-btn{position:absolute;top:7px;right:8px;opacity:0;transition:opacity .15s,color .15s;background:var(--white);border:1px solid var(--rule);border-radius:4px;padding:3px 5px;cursor:pointer;display:flex;align-items:center;color:var(--soft);line-height:1;}
+.msg.ai .msg-bubble:hover .msg-copy-btn{opacity:1;}
+.msg-copy-btn:hover,.msg-copy-btn.copied{color:var(--accent);}
+.prompt-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--rule);}
+.prompt-chip{font-size:.73rem;color:var(--accent);background:var(--green-light);border:1px solid rgba(45,106,79,.18);border-radius:100px;padding:5px 13px;cursor:pointer;transition:all .15s;font-family:var(--font-body);text-align:left;line-height:1.4;}
+.prompt-chip:hover{background:#cce8d8;border-color:var(--accent);transform:translateY(-1px);}
+.chat-input-hint{font-size:.66rem;color:var(--soft);padding:3px 16px 7px;text-align:right;letter-spacing:.02em;}
 .msg-bubble strong{font-weight:600;}
 .msg-bubble ul{padding-left:16px;margin-top:6px;}
 .msg-bubble li{margin-bottom:3px;}
@@ -416,6 +423,7 @@ footer{background:var(--ink);padding:72px 56px 40px;}
               </button>
             </div>
           </div>
+          <div class="chat-input-hint">&#9166; send &nbsp;&middot;&nbsp; &#8679;&#9166; new line</div>
         </div>
       </div>
     </div>
@@ -564,6 +572,19 @@ var isLoading = false;
 var pendingFiles = [];
 var featureHistories = {};
 var featureMessages = {};
+
+var featurePrompts = {
+  resume:      ["Review my resume for a Software Engineer role","Rewrite my bullet points to be more impactful","Analyze this job description and optimize my resume"],
+  interview:   ["Start a mock interview for a Product Manager","Give me common behavioral interview questions","Coach me on answering 'Tell me about yourself'"],
+  coverletter: ["Write a cover letter for a Marketing Director role","Tailor my cover letter to a specific company","Make my cover letter sound more human and less generic"],
+  company:     ["Research Google for my upcoming interview","Brief me on Amazon's leadership principles","What culture questions should I ask in an interview?"],
+  career:      ["What roles can I transition to from software engineering?","Map out a 5-year path from junior developer","Should I go into management or stay technical?"],
+  salary:      ["Roleplay a salary negotiation — I have a $120k offer","What's a fair salary for a senior UX designer?","How do I counter a lowball offer professionally?"],
+  decoder:     ["Decode this job description and find red flags","What does 'fast-paced environment' really mean?","What are they really looking for in this JD?"],
+  skills:      ["Compare my skills to a Data Scientist role","What certifications matter most for cloud engineering?","Build me a 90-day learning plan for Python"],
+  outreach:    ["Write a LinkedIn DM to a hiring manager at Stripe","Help me ask for a referral at a company I want to join","Write a cold email to a recruiter that gets replies"],
+  plan:        ["Build a 30/60/90 day plan for my new Product role","What should I accomplish in my first week?","How do I impress my manager in the first 90 days?"]
+};
 
 var featureWelcomes = {
   resume: "Hey, I'm Nuvori! I'm here to make your resume impossible to ignore. Paste your current resume and the job description you're targeting, and I'll rewrite it to beat ATS filters and catch a recruiter's eye.",
@@ -1202,6 +1223,27 @@ function setFeature(f) {
     conversationHistory = [];
     msgEl.innerHTML = '';
     addMessage('ai', featureWelcomes[f]);
+    var prompts = featurePrompts[f];
+    if(prompts) {
+      var lastBubble = msgEl.querySelector('.msg.ai:last-child .msg-bubble');
+      if(lastBubble) {
+        var chipsDiv = document.createElement('div');
+        chipsDiv.className = 'prompt-chips';
+        prompts.forEach(function(p) {
+          var chip = document.createElement('button');
+          chip.className = 'prompt-chip';
+          chip.textContent = p;
+          chip.addEventListener('click', function() {
+            chipsDiv.remove();
+            var inp = document.getElementById('chat-input');
+            if(inp) { inp.value = p; inp.dispatchEvent(new Event('input')); inp.focus(); }
+            sendMessage();
+          });
+          chipsDiv.appendChild(chip);
+        });
+        lastBubble.appendChild(chipsDiv);
+      }
+    }
   }
   var pdfBtn = document.getElementById('pdf-btn-wrap');
   if(pdfBtn && f !== 'resume') pdfBtn.remove();
@@ -1240,6 +1282,20 @@ function addMessage(role, text, attachments) {
     bubble.appendChild(attachDiv);
   }
   bubble.innerHTML += formatMessage(text);
+  if(role === 'ai') {
+    var copyBtn = document.createElement('button');
+    copyBtn.className = 'msg-copy-btn';
+    copyBtn.title = 'Copy';
+    copyBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+    copyBtn.addEventListener('click', function(){
+      navigator.clipboard.writeText(bubble.innerText || bubble.textContent).then(function(){
+        copyBtn.classList.add('copied');
+        copyBtn.title = 'Copied!';
+        setTimeout(function(){ copyBtn.classList.remove('copied'); copyBtn.title = 'Copy'; }, 2000);
+      });
+    });
+    bubble.appendChild(copyBtn);
+  }
   div.appendChild(avatar);
   div.appendChild(bubble);
   el.appendChild(div);
