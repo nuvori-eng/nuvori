@@ -213,7 +213,20 @@ router.post('/chat', requireAuth, async (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
   res.setHeader('X-Accel-Buffering', 'no');
+
+  // Disable socket timeout so Render doesn't cut long responses
+  if (req.socket) {
+    req.socket.setTimeout(0);
+    req.socket.setKeepAlive(true);
+    req.socket.setNoDelay(true);
+  }
+
   res.flushHeaders();
+
+  // Keepalive ping every 10s to prevent Render's proxy from closing idle connections
+  const keepalive = setInterval(() => {
+    if (!res.writableEnded) res.write(': ping\n\n');
+  }, 10000);
 
   let fullText = '';
 
@@ -229,6 +242,7 @@ router.post('/chat', requireAuth, async (req, res) => {
     });
 
     await stream.finalMessage();
+    clearInterval(keepalive);
 
     db.incrementUsage(req.user.email, feature);
     const updatedUser = db.getUser(req.user.email);
@@ -241,12 +255,15 @@ router.post('/chat', requireAuth, async (req, res) => {
     res.end();
 
   } catch (err) {
+    clearInterval(keepalive);
     console.error('AI chat error:', err);
     const errorMsg = err.status === 401 ? 'AI service authentication failed.'
       : err.status === 429 ? 'Too many requests. Please wait a moment and try again.'
       : 'AI service unavailable. Please try again.';
-    res.write(`data: ${JSON.stringify({ error: errorMsg })}\n\n`);
-    res.end();
+    if (!res.writableEnded) {
+      res.write(`data: ${JSON.stringify({ error: errorMsg })}\n\n`);
+      res.end();
+    }
   }
 });
 
