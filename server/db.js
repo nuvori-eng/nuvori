@@ -89,6 +89,11 @@ function updateUser(email, updates) {
   return db.users[key];
 }
 
+function getUserByStripeCustomerId(stripeCustomerId) {
+  const db = load();
+  return Object.values(db.users).find(u => u.stripeCustomerId === stripeCustomerId) || null;
+}
+
 function updateUserByStripeCustomerId(stripeCustomerId, updates) {
   const db = load();
   const user = Object.values(db.users).find(u => u.stripeCustomerId === stripeCustomerId);
@@ -154,6 +159,7 @@ module.exports = {
   createUser,
   updateUser,
   updateUserByStripeCustomerId,
+  getUserByStripeCustomerId,
   incrementUsage,
   saveConversation,
   getConversations,
